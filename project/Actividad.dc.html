@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Actividad del paciente</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px">
+    <a href="MovilFicha.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+    <div style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 16px; font-weight: 600">Actividad</span><span style="font-size: 12px; color: {{t.mutedFg}}">Elena Ramos</span></div>
+    <span style="width: 44px"></span>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding: 4px 20px 16px">
+    <section style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 10px">
+      <div style="display: flex; justify-content: space-between; align-items: center"><span style="font-size: 14px; font-weight: 600">Novedad editada</span><span style="font-size: 12px; color: {{t.mutedFg}}">Ayer 19:20 · Jorge S.</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px; font-size: 14px; line-height: 1.4">
+        <div style="background: {{t.dangerBg}}; color: {{t.dangerText}}; border-radius: 8px; padding: 8px 10px"><span style="font-size: 12px; font-weight: 600; display: block">Antes · versión 1 (19:05)</span><s>Visita de su hija, salieron a caminar.</s></div>
+        <div style="background: {{t.okBg}}; color: {{t.okFg}}; border-radius: 8px; padding: 8px 10px"><span style="font-size: 12px; font-weight: 600; display: block">Ahora · versión 2</span>Visita de su hija Silvia, salieron al jardín.</div>
+      </div>
+      <span style="font-size: 12px; color: {{t.mutedFg}}">Nada se borra: cada cambio guarda la versión anterior.</span>
+    </section>
+
+    <ol style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column">
+      <sc-for list="{{events}}" as="e" hint-placeholder-count="6">
+        <li style="display: flex; gap: 12px">
+          <div style="display: flex; flex-direction: column; align-items: center; width: 12px"><span style="width: 10px; height: 10px; border-radius: 999px; background: {{e.dot}}; margin-top: 5px"></span><span style="flex: 1; width: 2px; background: {{t.border}}; margin: 4px 0"></span></div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 2px; padding-bottom: 14px">
+            <span style="font-size: 14px; font-weight: 500">{{e.what}}</span>
+            <span style="font-size: 12px; color: {{t.mutedFg}}">{{e.who}} · {{e.when}}</span>
+          </div>
+        </li>
+      </sc-for>
+    </ol>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', dangerBg: '#FEF3F2', dangerText: '#B42318', okBg: '#ECFDF3', okFg: '#067647', warnFg: '#B54708' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', dangerBg: '#3A1512', dangerText: '#FDA29B', okBg: '#0B2E1E', okFg: '#47CD89', warnFg: '#FDB022' }
+};
+const t = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+const e = (what, who, when, dot) => ({ what, who, when, dot });
+return {
+t,
+events: [
+e('Abrió la ficha de emergencia', 'Laura P.', 'Hoy 10:14', t.dangerText),
+e('Registró una novedad con seguimiento', 'Laura P.', 'Hoy 07:15', t.warnFg),
+e('Registró una novedad', 'Marta G.', 'Hoy 08:42', t.primary),
+e('Editó una novedad', 'Jorge S.', 'Ayer 19:20', t.primary),
+e('Cambió el orden de contactos', 'Ana V.', '20/10 16:02', t.primary),
+e('Agregó alergia: penicilina', 'Laura P.', '02/06/2024', t.dangerText)
+]
+};
+}
+}
+</script>
+</body>
+</html>

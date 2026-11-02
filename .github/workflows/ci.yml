@@ -1,0 +1,72 @@
+# Controles de cada cambio (sección 10.10): formato, linter, tipos, pruebas
+# unitarias y de integración (PostgreSQL 18 real), compilación, auditoría de
+# dependencias y análisis de la imagen con Trivy.
+#
+# Las acciones van fijadas por commit, no por etiqueta (una etiqueta se puede
+# mover); Renovate las actualiza.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  checks:
+    name: Linter, tipos y pruebas
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .nvmrc
+      - name: Dependencias
+        run: corepack pnpm install --frozen-lockfile
+      - name: Formato
+        run: corepack pnpm format:check
+      - name: Linter, tipos y pruebas unitarias
+        run: corepack pnpm check
+      - name: Migraciones coherentes con el esquema
+        run: corepack pnpm exec drizzle-kit check
+      - name: Vulnerabilidades conocidas (dependencias de producción)
+        run: corepack pnpm audit --prod --audit-level high
+      - name: Pruebas de integración (PostgreSQL 18 en Docker)
+        run: corepack pnpm test:integration
+      - name: Compilación de la app, el worker y las herramientas
+        run: corepack pnpm build && corepack pnpm worker:build && corepack pnpm tools:build
+
+  image:
+    name: Imagen y análisis de seguridad
+    needs: checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Imagen de la app
+        run: docker build -t residencia360:ci .
+      - name: Imágenes del proxy y de la base
+        run: |
+          docker build -t residencia360-caddy:ci infra/caddy
+          docker build -t residencia360-postgres:ci infra/postgres
+      - name: Trivy (vulnerabilidades altas o críticas que ya tienen arreglo)
+        run: |
+          for image in residencia360:ci residencia360-caddy:ci residencia360-postgres:ci; do
+            docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:0.76.1 \
+              image --exit-code 1 --severity HIGH,CRITICAL --ignore-unfixed --no-progress "$image"
+          done

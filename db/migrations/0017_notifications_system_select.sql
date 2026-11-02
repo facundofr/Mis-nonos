@@ -1,0 +1,1 @@
+ALTER POLICY "notifications_select" ON "notifications" TO r360_app USING (organization_id = (select app.current_org_id()) and (recipient_user_id = (select app.current_user_id()) or (select app.current_user_id()) is null));

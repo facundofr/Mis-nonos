@@ -1,0 +1,160 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* El canvas de diseño (project/) es solo referencia: Tailwind no lo escanea. */
+@source not "../project";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Tokens del sistema visual "Calma clínica" (canvas, Main.dc.html).
+ * Verde pino como primario. El rojo se reserva para emergencias y alergias.
+ * Los estados nunca dependen solo del color: siempre llevan texto o ícono.
+ */
+:root {
+  --radius: 0.625rem;
+
+  --background: #ffffff;
+  --foreground: #16201e;
+  --card: #ffffff;
+  --card-foreground: #16201e;
+  --popover: #ffffff;
+  --popover-foreground: #16201e;
+  --primary: #145a52;
+  --primary-foreground: #ffffff;
+  --secondary: #e8f1ee;
+  --secondary-foreground: #145a52;
+  --muted: #f3f6f5;
+  --muted-foreground: #57625f;
+  --accent: #eef5f3;
+  --accent-foreground: #145a52;
+  --destructive: #b42318;
+  --destructive-foreground: #ffffff;
+  --border: #dfe6e3;
+  --input: #dfe6e3;
+  --ring: #145a52;
+
+  /* Estados */
+  --warning: #fef4e6;
+  --warning-foreground: #93370d;
+  --success: #ecfdf3;
+  --success-foreground: #067647;
+  --info: #eff4ff;
+  --info-foreground: #1849a9;
+  --danger-surface: #fef3f2;
+  --danger-surface-foreground: #b42318;
+  --danger-border: #fecdca;
+
+  /* Fondo de las pantallas móviles y del menú lateral */
+  --surface: #f7faf9;
+  --sidebar: #f7faf9;
+  --sidebar-foreground: #16201e;
+  --sidebar-primary: #145a52;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e8f1ee;
+  --sidebar-accent-foreground: #145a52;
+  --sidebar-border: #dfe6e3;
+  --sidebar-ring: #145a52;
+}
+
+.dark {
+  --background: #0e1513;
+  --foreground: #e8eeec;
+  --card: #151e1b;
+  --card-foreground: #e8eeec;
+  --popover: #151e1b;
+  --popover-foreground: #e8eeec;
+  --primary: #3fb39f;
+  --primary-foreground: #06201c;
+  --secondary: #183a34;
+  --secondary-foreground: #8fd9cb;
+  --muted: #1c2724;
+  --muted-foreground: #9ba8a4;
+  --accent: #183a34;
+  --accent-foreground: #8fd9cb;
+  --destructive: #d92d20;
+  --destructive-foreground: #ffffff;
+  --border: #26332f;
+  --input: #26332f;
+  --ring: #3fb39f;
+
+  --warning: #3a2508;
+  --warning-foreground: #fdb022;
+  --success: #0b2e1e;
+  --success-foreground: #47cd89;
+  --info: #102a56;
+  --info-foreground: #84adff;
+  --danger-surface: #3a1512;
+  --danger-surface-foreground: #fda29b;
+  --danger-border: #5c211c;
+
+  --surface: #0e1513;
+  --sidebar: #151e1b;
+  --sidebar-foreground: #e8eeec;
+  --sidebar-primary: #3fb39f;
+  --sidebar-primary-foreground: #06201c;
+  --sidebar-accent: #183a34;
+  --sidebar-accent-foreground: #8fd9cb;
+  --sidebar-border: #26332f;
+  --sidebar-ring: #3fb39f;
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-danger-surface: var(--danger-surface);
+  --color-danger-surface-foreground: var(--danger-surface-foreground);
+  --color-danger-border: var(--danger-border);
+
+  --color-surface: var(--surface);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+}

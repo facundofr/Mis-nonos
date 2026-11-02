@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Recuperar contraseña</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; padding: 8px 24px 32px">
+  <a href="Login.dc.html" aria-label="Volver al ingreso" style="width: 44px; height: 44px; margin-left: -12px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+
+  <div style="margin-top: 32px; width: 56px; height: 56px; border-radius: 16px; background: {{t.secondary}}; color: {{t.secondaryFg}}; display: flex; align-items: center; justify-content: center"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+
+  <sc-if value="{{notSent}}" hint-placeholder-val="{{true}}">
+    <div style="display: flex; flex-direction: column; gap: 24px; margin-top: 24px">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <h1 style="margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.02em">Recuperar contraseña</h1>
+        <p style="margin: 0; font-size: 16px; line-height: 1.5; color: {{t.mutedFg}}">Te mandamos un enlace para crear una nueva. Vence en 30 minutos.</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="rc-mail" style="font-size: 14px; font-weight: 500">Email</label><input id="rc-mail" type="email" autocomplete="email" placeholder="nombre@misnonos.com.ar" style="height: 52px; border: 1px solid {{t.border}}; border-radius: 12px; padding: 0 14px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}"></div>
+      <button type="button" onClick="{{send}}" style="height: 52px; border-radius: 12px; border: 0; background: {{t.primary}}; color: {{t.primaryFg}}; font: 600 16px 'Geist', sans-serif">Enviar enlace</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{sent}}" hint-placeholder-val="{{false}}">
+    <div style="display: flex; flex-direction: column; gap: 24px; margin-top: 24px">
+      <div style="display: flex; flex-direction: column; gap: 8px">
+        <h1 style="margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.02em">Revisá tu email</h1>
+        <p style="margin: 0; font-size: 16px; line-height: 1.5; color: {{t.mutedFg}}">Si el email está registrado en Mis Nonos, vas a recibir el enlace en unos minutos. Mirá también en spam.</p>
+      </div>
+      <a href="Login.dc.html" style="height: 52px; border-radius: 12px; border: 1px solid {{t.border}}; color: {{t.fg}}; font-size: 16px; font-weight: 500; display: flex; align-items: center; justify-content: center; text-decoration: none">Volver a ingresar</a>
+    </div>
+  </sc-if>
+
+  <p style="margin: auto 0 0; font-size: 13px; line-height: 1.5; color: {{t.mutedFg}}; text-align: center">¿Ya no tenés acceso a ese email? Pedile a la administración que actualice tu usuario.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { sent: false };
+}
+renderVals() {
+const T = {
+light: { bg: '#FFFFFF', fg: '#16201E', card: '#FFFFFF', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', primaryFg: '#FFFFFF', secondary: '#E8F1EE', secondaryFg: '#145A52' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', primaryFg: '#06201C', secondary: '#183A34', secondaryFg: '#8FD9CB' }
+};
+return {
+t: T[this.props.theme === 'dark' ? 'dark' : 'light'],
+sent: this.state.sent, notSent: !this.state.sent,
+send: () => this.setState({ sent: true })
+};
+}
+}
+</script>
+</body>
+</html>

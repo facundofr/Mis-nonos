@@ -1,0 +1,2 @@
+CREATE POLICY "domain_events_worker_select" ON "domain_events" AS PERMISSIVE FOR SELECT TO "r360_worker" USING (true);--> statement-breakpoint
+CREATE POLICY "domain_events_worker_update" ON "domain_events" AS PERMISSIVE FOR UPDATE TO "r360_worker" USING ("domain_events"."processed_at" is null) WITH CHECK (true);

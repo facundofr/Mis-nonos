@@ -1,0 +1,37 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Actualizaciones de dependencias (sección 10.16). Ver docs/decisions/0001 y 0006.",
+  "extends": [
+    "config:recommended",
+    "helpers:pinGitHubActionDigests",
+    ":pinAllExceptPeerDependencies"
+  ],
+  "timezone": "America/Argentina/Buenos_Aires",
+  "schedule": ["before 9am on monday"],
+  "minimumReleaseAge": "7 days",
+  "labels": ["dependencias"],
+  "dependencyDashboard": true,
+  "packageRules": [
+    {
+      "description": "Las versiones mayores no cambian durante el piloto sin una decisión registrada.",
+      "matchUpdateTypes": ["major"],
+      "dependencyDashboardApproval": true
+    },
+    {
+      "description": "Herramientas de desarrollo: un solo PR semanal.",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "groupName": "herramientas de desarrollo"
+    },
+    {
+      "description": "Imágenes de Docker: una sola versión de PostgreSQL y de Node en todo el repositorio.",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["postgres", "node"],
+      "groupName": "imágenes base"
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "labels": ["seguridad"],
+    "minimumReleaseAge": null
+  }
+}

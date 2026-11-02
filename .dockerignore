@@ -1,0 +1,19 @@
+# Lo que no entra a la imagen: dependencias y compilados locales (se
+# rehacen adentro), secretos, datos y documentación.
+node_modules
+.next
+dist
+.git
+.github
+.env
+.env.*
+storage
+coverage
+playwright-report
+test-results
+tests
+project
+docs
+infra
+*.md
+*.tsbuildinfo

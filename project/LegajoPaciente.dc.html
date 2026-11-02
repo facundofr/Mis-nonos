@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Legajo del paciente</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px 0">
+    <a href="MovilPacientes.dc.html" aria-label="Volver a pacientes" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+    <span style="font-size: 16px; font-weight: 600">Alberto Rossi</span>
+    <a href="Actividad.dc.html" aria-label="Ver actividad e historial" style="width: 44px; height: 44px; border-radius: 12px; color: {{t.fg}}; display: flex; align-items: center; justify-content: center"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5M12 7v5l3 2"/></svg></a>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 6px 20px 12px">
+    <div role="tablist" aria-label="Secciones" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); background: {{t.muted}}; border-radius: 12px; padding: 4px; gap: 4px">
+      <a href="MovilFicha.dc.html" role="tab" aria-selected="false" style="height: 38px; border-radius: 9px; color: {{t.mutedFg}}; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; text-decoration: none">Resumen</a>
+      <a href="MovilFicha.dc.html" role="tab" aria-selected="false" style="height: 38px; border-radius: 9px; color: {{t.mutedFg}}; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; text-decoration: none">Contactos</a>
+      <a href="MovilFicha.dc.html" role="tab" aria-selected="false" style="height: 38px; border-radius: 9px; color: {{t.mutedFg}}; font-size: 13px; font-weight: 500; display: flex; align-items: center; justify-content: center; text-decoration: none">Novedades</a>
+      <span role="tab" aria-selected="true" style="height: 38px; border-radius: 9px; background: {{t.card}}; color: {{t.fg}}; font-size: 13px; font-weight: 600; display: flex; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.08)">Legajo</span>
+    </div>
+
+    <section style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 12px 14px">
+      <h2 style="margin: 0 0 8px; font-size: 13px; font-weight: 600; color: {{t.mutedFg}}; text-transform: uppercase; letter-spacing: 0.06em">Datos de ingreso</h2>
+      <dl style="margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 14px">
+        <div style="display: flex; flex-direction: column; gap: 2px"><dt style="font-size: 12px; color: {{t.mutedFg}}">Ingreso</dt><dd style="margin: 0; font-size: 14px">14/10/2026</dd></div>
+        <div style="display: flex; flex-direction: column; gap: 2px"><dt style="font-size: 12px; color: {{t.mutedFg}}">Modalidad</dt><dd style="margin: 0; font-size: 14px">PAMI geriátrica</dd></div>
+        <div style="display: flex; flex-direction: column; gap: 2px"><dt style="font-size: 12px; color: {{t.mutedFg}}">Beneficiario</dt><dd style="margin: 0; font-size: 14px; font-variant-numeric: tabular-nums">15-01234567-89/00</dd></div>
+        <div style="display: flex; flex-direction: column; gap: 2px"><dt style="font-size: 12px; color: {{t.mutedFg}}">Nació en</dt><dd style="margin: 0; font-size: 14px">Rosario · 12/05/1946</dd></div>
+        <div style="display: flex; flex-direction: column; gap: 2px; grid-column: span 2"><dt style="font-size: 12px; color: {{t.mutedFg}}">Responsable de la internación</dt><dd style="margin: 0; font-size: 14px">Marcelo Rossi · hijo · DNI 25.678.901</dd></div>
+      </dl>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; justify-content: space-between; align-items: baseline"><h2 style="margin: 0; font-size: 13px; font-weight: 600; color: {{t.mutedFg}}; text-transform: uppercase; letter-spacing: 0.06em">Documentos</h2><span style="font-size: 12px; font-weight: 600; color: {{t.warnFg}}">2 pendientes</span></div>
+      <ul style="list-style: none; margin: 0; padding: 0; background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; overflow: hidden">
+        <sc-for list="{{docs}}" as="d" hint-placeholder-count="6">
+          <li style="display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 14px; border-bottom: 1px solid {{t.border}}">
+            <span style="flex: 1; font-size: 14px">{{d.name}}</span>
+            <span style="font-size: 12px; font-weight: 600; border-radius: 999px; padding: 2px 9px; background: {{d.bg}}; color: {{d.fg}}; white-space: nowrap">{{d.state}}</span>
+          </li>
+        </sc-for>
+      </ul>
+    </section>
+    <span style="font-size: 12px; color: {{t.mutedFg}}">Las fotos de los documentos solo las ven Administración y Dirección. Cada apertura queda registrada.</span>
+  </div>
+  <dc-import name="TabBar" active="pacientes" theme="{{theme}}" hint-size="390px,84px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', muted: '#EBF0EE', mutedFg: '#57625F', border: '#DFE6E3', okBg: '#ECFDF3', okFg: '#067647', warnBg: '#FEF4E6', warnFg: '#93370D' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', muted: '#1C2724', mutedFg: '#9BA8A4', border: '#26332F', okBg: '#0B2E1E', okFg: '#47CD89', warnBg: '#3A2508', warnFg: '#FDB022' }
+};
+const theme = this.props.theme === 'dark' ? 'dark' : 'light';
+const t = T[theme];
+const d = (name, ok) => ({ name, state: ok ? 'Ver foto' : 'Falta', bg: ok ? t.okBg : t.warnBg, fg: ok ? t.okFg : t.warnFg });
+return {
+t, theme,
+docs: [d('Ficha de ingreso Mis Nonos', true), d('Obligaciones de las partes', true), d('Consentimiento PAMI', true), d('Acta compromiso PAMI', false), d('DNI original en custodia', true), d('Credencial PAMI', false)]
+};
+}
+}
+</script>
+</body>
+</html>

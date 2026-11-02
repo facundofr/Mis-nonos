@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Cuotas y pagos — fase 7</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px">
+    <a href="MovilMas.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+    <span style="font-size: 16px; font-weight: 600">Cuotas · Octubre</span>
+    <span style="font-size: 12px; font-weight: 600; border-radius: 999px; padding: 4px 10px; margin-right: 6px; background: {{t.infoBg}}; color: {{t.infoFg}}">Fase 7</span>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding: 4px 20px 12px">
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px">
+      <div style="background: {{t.okBg}}; color: {{t.okFg}}; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 22px; font-weight: 600">30</span><span style="font-size: 12px">Pagadas</span></div>
+      <div style="background: {{t.warnBg}}; color: {{t.warnFg}}; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 22px; font-weight: 600">6</span><span style="font-size: 12px">Pendientes</span></div>
+      <div style="background: {{t.dangerBg}}; color: {{t.dangerText}}; border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 22px; font-weight: 600">2</span><span style="font-size: 12px">Vencidas</span></div>
+    </div>
+
+    <div style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 14px; display: flex; justify-content: space-between; align-items: baseline">
+      <span style="font-size: 14px; color: {{t.mutedFg}}">Cobrado del mes</span>
+      <span style="font-size: 20px; font-weight: 600">$ [MONTO]</span>
+    </div>
+
+    <ul style="list-style: none; margin: 0; padding: 0; background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; overflow: hidden">
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+        <li style="display: flex; align-items: center; gap: 10px; min-height: 60px; padding: 0 14px; border-bottom: 1px solid {{t.border}}">
+          <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 500">{{r.name}}</span><span style="font-size: 12px; color: {{t.mutedFg}}">Paga: {{r.payer}}</span></span>
+          <span style="font-size: 12px; font-weight: 600; border-radius: 999px; padding: 2px 9px; background: {{r.bg}}; color: {{r.fg}}; white-space: nowrap">{{r.state}}</span>
+        </li>
+      </sc-for>
+    </ul>
+
+    <button type="button" style="margin-top: auto; height: 52px; border-radius: 12px; border: 0; background: {{t.primary}}; color: {{t.primaryFg}}; font: 600 16px 'Geist', sans-serif">Registrar pago</button>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', primaryFg: '#FFFFFF', infoBg: '#EFF4FF', infoFg: '#1849A9', okBg: '#ECFDF3', okFg: '#067647', warnBg: '#FEF4E6', warnFg: '#93370D', dangerBg: '#FEF3F2', dangerText: '#B42318' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', primaryFg: '#06201C', infoBg: '#102A56', infoFg: '#84ADFF', okBg: '#0B2E1E', okFg: '#47CD89', warnBg: '#3A2508', warnFg: '#FDB022', dangerBg: '#3A1512', dangerText: '#FDA29B' }
+};
+const t = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+const s = { ok: ['Pagada', t.okBg, t.okFg], p: ['Pendiente', t.warnBg, t.warnFg], v: ['Vencida', t.dangerBg, t.dangerText] };
+const r = (name, payer, k) => ({ name, payer, state: s[k][0], bg: s[k][1], fg: s[k][2] });
+return {
+t,
+rows: [
+r('Carlos Ojeda', 'Nora Ojeda', 'v'),
+r('Héctor Benítez', 'Martín Benítez', 'p'),
+r('Elena Ramos', 'Silvia Ramos', 'ok'),
+r('Rosa Medina', 'Claudia Medina', 'ok'),
+r('Amalia Fernández', 'Jorge Fernández', 'p'),
+r('José Luis Acosta', 'Ana Acosta', 'ok')
+]
+};
+}
+}
+</script>
+</body>
+</html>

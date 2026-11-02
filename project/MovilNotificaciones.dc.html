@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Notificaciones</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px; border-bottom: 1px solid {{t.border}}">
+    <a href="MovilNovedades.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+    <span style="font-size: 16px; font-weight: 600">Notificaciones</span>
+    <button type="button" style="height: 44px; padding: 0 10px; border: 0; background: transparent; color: {{t.primary}}; font: 500 14px 'Geist', sans-serif">Marcar leídas</button>
+  </header>
+
+  <ul style="flex: 1; min-height: 0; overflow: hidden; list-style: none; margin: 0; padding: 8px 0">
+    <sc-for list="{{items}}" as="n" hint-placeholder-count="6">
+      <li style="display: flex; gap: 12px; padding: 14px 20px; background: {{n.bg}}; border-bottom: 1px solid {{t.border}}">
+        <span style="width: 40px; height: 40px; border-radius: 12px; background: {{n.iconBg}}; color: {{n.iconFg}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; font-weight: 700">{{n.icon}}</span>
+        <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+          <span style="font-size: 15px; font-weight: {{n.weight}}">{{n.title}}</span>
+          <span style="font-size: 14px; color: {{t.mutedFg}}">{{n.text}}</span>
+          <span style="font-size: 12px; color: {{t.mutedFg}}">{{n.when}}</span>
+        </div>
+      </li>
+    </sc-for>
+  </ul>
+
+  <p style="margin: 0; padding: 12px 20px 8px; font-size: 12px; color: {{t.mutedFg}}; text-align: center">Las notificaciones push del teléfono no muestran datos de salud: solo "Tenés una novedad en Mis Nonos".</p>
+  <dc-import name="TabBar" active="novedades" theme="{{theme}}" hint-size="390px,84px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', unread: '#EEF5F3', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', secondary: '#E8F1EE', secondaryFg: '#145A52', warnBg: '#FEF4E6', warnFg: '#93370D', dangerBg: '#FEF3F2', dangerText: '#B42318', infoBg: '#EFF4FF', infoFg: '#1849A9' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', unread: '#13231F', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', secondary: '#183A34', secondaryFg: '#8FD9CB', warnBg: '#3A2508', warnFg: '#FDB022', dangerBg: '#3A1512', dangerText: '#FDA29B', infoBg: '#102A56', infoFg: '#84ADFF' }
+};
+const theme = this.props.theme === 'dark' ? 'dark' : 'light';
+const t = T[theme];
+const mk = (unread, kind, icon, title, text, when) => {
+const k = { warn: [t.warnBg, t.warnFg], danger: [t.dangerBg, t.dangerText], info: [t.infoBg, t.infoFg], ok: [t.secondary, t.secondaryFg] }[kind];
+return { bg: unread ? t.unread : 'transparent', weight: unread ? '600' : '500', iconBg: k[0], iconFg: k[1], icon, title, text, when };
+};
+return {
+t, theme,
+items: [
+mk(true, 'warn', '◐', 'Te asignaron un seguimiento', 'Elena Ramos · revisar talón derecho', 'Hace 12 min'),
+mk(true, 'ok', '⇄', 'Turno noche entregado', 'Marta G. dejó 2 pendientes para vos', '06:02'),
+mk(false, 'danger', '!', 'Se abrió una ficha de emergencia', 'Héctor Benítez · por Jorge S.', 'Ayer 23:18'),
+mk(false, 'info', 'i', 'Contacto sin verificar', 'El teléfono de la familia de Rosa Medina no se verifica hace 6 meses', 'Ayer'),
+mk(false, 'ok', '✓', 'Seguimiento resuelto', 'General · reposición de guantes', 'Lun 19:40')
+]
+};
+}
+}
+</script>
+</body>
+</html>

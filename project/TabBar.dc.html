@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Barra de navegación móvil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<nav aria-label="Navegación principal" style="width: 100%; height: 84px; box-sizing: border-box; background: {{t.nav}}; border-top: 1px solid {{t.border}}; font-family: 'Geist', system-ui, sans-serif; color: {{t.fg}}; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); align-items: start; padding: 6px 4px 12px">
+  <a href="MovilPacientes{{sfx}}.dc.html" aria-current="{{cur.pacientes}}" style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: {{c.pacientes}}; font-size: 12px; font-weight: {{w.pacientes}}">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+    Pacientes
+  </a>
+  <a href="MovilNovedades.dc.html" aria-current="{{cur.novedades}}" style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: {{c.novedades}}; font-size: 12px; font-weight: {{w.novedades}}">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="2" width="8" height="4" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2M12 11h4M12 16h4M8 11h.01M8 16h.01"/></svg>
+    Novedades
+  </a>
+  <div style="display: flex; justify-content: center">
+    <a href="Novedad.dc.html" aria-label="Registrar novedad" style="width: 60px; height: 60px; margin-top: -26px; border-radius: 999px; background: {{t.primary}}; color: {{t.primaryFg}}; border: 4px solid {{t.nav}}; box-sizing: content-box; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(20,90,82,0.35); text-decoration: none">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>
+    </a>
+  </div>
+  <a href="MovilTurnos.dc.html" aria-current="{{cur.turnos}}" style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: {{c.turnos}}; font-size: 12px; font-weight: {{w.turnos}}">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m17 2 4 4-4 4M3 11v-1a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v1a4 4 0 0 1-4 4H3"/></svg>
+    Turnos
+  </a>
+  <a href="MovilMas{{sfx}}.dc.html" aria-current="{{cur.mas}}" style="height: 60px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: {{c.mas}}; font-size: 12px; font-weight: {{w.mas}}">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    Más
+  </a>
+</nav>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"active":{"editor":"enum","options":["pacientes","novedades","turnos","mas"],"default":"pacientes"},"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":84}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { nav: '#FFFFFF', border: '#DFE6E3', fg: '#16201E', mutedFg: '#57625F', primary: '#145A52', primaryFg: '#FFFFFF' },
+dark: { nav: '#151E1B', border: '#26332F', fg: '#E8EEEC', mutedFg: '#9BA8A4', primary: '#3FB39F', primaryFg: '#06201C' }
+};
+const theme = this.props.theme === 'dark' ? 'dark' : 'light';
+const t = T[theme];
+const active = this.props.active ?? 'pacientes';
+const keys = ['pacientes', 'novedades', 'turnos', 'mas'];
+const c = {}, w = {}, cur = {};
+keys.forEach((k) => {
+c[k] = k === active ? t.primary : t.mutedFg;
+w[k] = k === active ? '600' : '500';
+cur[k] = k === active ? 'page' : 'false';
+});
+return { t, c, w, cur, sfx: theme === 'dark' ? 'Oscuro' : '' };
+}
+}
+</script>
+</body>
+</html>

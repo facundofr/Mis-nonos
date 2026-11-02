@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Agregar contacto</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px; border-bottom: 1px solid {{t.border}}">
+    <a href="MovilFicha.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+    <span style="font-size: 16px; font-weight: 600">Contacto de Elena Ramos</span>
+    <span style="width: 44px"></span>
+  </header>
+
+  <form style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 16px 20px">
+    <div style="display: flex; flex-direction: column; gap: 6px"><label for="cf-nom" style="font-size: 14px; font-weight: 500">Nombre y apellido *</label><input id="cf-nom" type="text" value="Diego Ramos" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}"></div>
+
+    <fieldset style="border: 0; margin: 0; padding: 0">
+      <legend style="font-size: 14px; font-weight: 500; padding: 0; margin-bottom: 8px">Vínculo</legend>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{rels}}" as="r" hint-placeholder-count="5">
+          <button type="button" aria-pressed="{{r.pressed}}" onClick="{{r.pick}}" style="{{r.style}}">{{r.label}}</button>
+        </sc-for>
+      </div>
+    </fieldset>
+
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="cf-t1" style="font-size: 14px; font-weight: 500">Teléfono *</label><input id="cf-t1" type="tel" value="11 3367-0912" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}; min-width: 0"></div>
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="cf-t2" style="font-size: 14px; font-weight: 500">Alternativo</label><input id="cf-t2" type="tel" placeholder="Opcional" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}; min-width: 0"></div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px"><label for="cf-mail" style="font-size: 14px; font-weight: 500">Email</label><input id="cf-mail" type="email" placeholder="Opcional" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}"></div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px"><label for="cf-pri" style="font-size: 14px; font-weight: 500">Orden para emergencias</label><select id="cf-pri" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 10px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}"><option>2.º — después de Silvia Ramos</option><option>1.º — llamar primero</option><option>No es contacto de emergencia</option></select></div>
+
+    <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid {{t.border}}; border-radius: 12px; padding: 12px 14px; background: {{t.card}}">
+      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 500">Referente legal</span><span style="font-size: 13px; color: {{t.mutedFg}}">Apoderado o responsable</span></span>
+      <input type="checkbox" role="switch" style="width: 44px; height: 26px; accent-color: {{t.primary}}; margin: 0">
+    </label>
+
+    <div style="display: flex; flex-direction: column; gap: 6px"><label for="cf-obs" style="font-size: 14px; font-weight: 500">Observaciones</label><input id="cf-obs" type="text" value="No llamar antes de las 8" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}"></div>
+  </form>
+
+  <footer style="padding: 12px 20px 20px; border-top: 1px solid {{t.border}}">
+    <a href="MovilFicha.dc.html" style="height: 52px; border-radius: 12px; background: {{t.primary}}; color: {{t.primaryFg}}; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Guardar contacto</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { rel: 'Nieto/a' };
+}
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', primaryFg: '#FFFFFF', secondary: '#E8F1EE', secondaryFg: '#145A52' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', primaryFg: '#06201C', secondary: '#183A34', secondaryFg: '#8FD9CB' }
+};
+const t = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+const base = 'height: 40px; padding: 0 14px; border-radius: 999px; font: 500 14px Geist, sans-serif; ';
+const rels = ['Hijo/a', 'Nieto/a', 'Cónyuge', 'Sobrino/a', 'Otro'].map((label) => ({
+label,
+pressed: this.state.rel === label ? 'true' : 'false',
+style: this.state.rel === label ? base + 'border: 1.5px solid ' + t.primary + '; background: ' + t.secondary + '; color: ' + t.secondaryFg + ';' : base + 'border: 1px solid ' + t.border + '; background: transparent; color: ' + t.fg + ';',
+pick: () => this.setState({ rel: label })
+}));
+return { t, rels };
+}
+}
+</script>
+</body>
+</html>

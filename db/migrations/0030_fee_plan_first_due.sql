@@ -1,0 +1,1 @@
+ALTER TABLE "resident_fee_plans" ADD COLUMN "first_due_date" date NOT NULL;

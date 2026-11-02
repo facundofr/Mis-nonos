@@ -1,0 +1,169 @@
+# Producción en el VPS (etapa A, Apéndice F, F.8). Staging usa este mismo
+# archivo en otro VPS chico, con otra base y otros secretos.
+#
+# Uso (docs/runbooks/despliegue.md):
+#   docker compose --env-file /etc/residencia360/compose.env \
+#     -f infra/compose/production.yaml up -d
+#
+# compose.env (sin secretos): APP_IMAGE, APP_DOMAIN, ACME_EMAIL,
+# PG_ARCHIVE_MODE y, si hace falta, SECRETS_DIR. Los secretos van en
+# archivos aparte, con permisos 600 (docs/runbooks/vps.md):
+#   app.env       la app y el worker (sin el rol dueño)
+#   owner.env     solo DATABASE_URL_OWNER: migraciones y alta de residencias
+#   postgres.env  contraseñas de los roles y de WAL-G
+#   backup.env    copias de seguridad (WAL-G y restic)
+name: residencia360
+
+x-logging: &logging # Rotación de logs: que nunca llenen el disco.
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+x-app: &app
+  image: ${APP_IMAGE:?Falta APP_IMAGE, por ejemplo ghcr.io/organizacion/residencia360:sha-1a2b3c4d5e6f}
+  env_file: ${SECRETS_DIR:-/etc/residencia360}/app.env
+  restart: unless-stopped
+  # Sistema de archivos de solo lectura y sin privilegios (10.10).
+  read_only: true
+  tmpfs:
+    - /tmp
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  logging: *logging
+  depends_on:
+    postgres:
+      condition: service_healthy
+
+services:
+  caddy:
+    build: ../caddy
+    image: residencia360-caddy:2.11.7
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:?Falta APP_DOMAIN, el subdominio de la app}
+      ACME_EMAIL: ${ACME_EMAIL:?Falta ACME_EMAIL, el correo para Let's Encrypt}
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      app:
+        condition: service_healthy
+    logging: *logging
+
+  app:
+    <<: *app
+    command: ["node", "server.js"]
+    volumes:
+      - storage:/data/storage
+    tmpfs:
+      - /tmp
+      - /app/.next/cache:uid=1000,gid=1000
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+
+  worker:
+    <<: *app
+    command: ["node", "--enable-source-maps", "dist/worker/index.cjs"]
+    # Espera los trabajos en curso antes de cortar (apagado ordenado, 10.16).
+    stop_grace_period: 45s
+    healthcheck:
+      # El worker escribe este archivo en cada vuelta (worker/index.ts).
+      test:
+        - CMD
+        - node
+        - -e
+        - "const s = require('node:fs').statSync('/tmp/residencia360-worker.alive'); process.exit(Date.now() - s.mtimeMs < 120000 ? 0 : 1)"
+      interval: 30s
+      timeout: 5s
+      start_period: 60s
+      retries: 3
+
+  # Herramientas: no arrancan con "up". Se corren con
+  #   docker compose ... run --rm migrate
+  #   docker compose ... run --rm migrate node dist/tools/create-organization.cjs --residencia …
+  migrate:
+    <<: *app
+    profiles: ["tools"]
+    restart: "no"
+    env_file: ${SECRETS_DIR:-/etc/residencia360}/owner.env
+    command: ["node", "--enable-source-maps", "dist/tools/migrate.cjs"]
+
+  postgres:
+    build: ../postgres
+    image: residencia360-postgres:18.6
+    restart: unless-stopped
+    env_file: ${SECRETS_DIR:-/etc/residencia360}/postgres.env
+    command:
+      - postgres
+      - -c
+      - shared_preload_libraries=pg_stat_statements
+      # WAL continuo a las copias externas (PG_ARCHIVE_MODE=on una vez
+      # configuradas; cambiarlo exige reiniciar la base).
+      - -c
+      - archive_mode=${PG_ARCHIVE_MODE:-off}
+      - -c
+      - archive_command=/usr/local/share/residencia360-backup/archive-wal.sh %p
+      # Sube un segmento al menos cada 5 minutos: pérdida máxima de 5 min (10.16).
+      - -c
+      - archive_timeout=300
+    shm_size: 256mb
+    volumes:
+      # PostgreSQL 18 guarda los datos en /var/lib/postgresql/18/docker.
+      - pgdata:/var/lib/postgresql
+      # Crea los roles la primera vez (el mismo script que en desarrollo).
+      - ../../db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", 'pg_isready -U "$${POSTGRES_USER}" -d "$${POSTGRES_DB}"']
+      interval: 5s
+      timeout: 5s
+      retries: 30
+    logging: *logging
+
+  # Copias de seguridad cifradas fuera del VPS: base (WAL-G) y fotos (restic).
+  # Arranca solo con el perfil "backups" (COMPOSE_PROFILES=backups en
+  # compose.env), una vez que backup.env tiene el almacenamiento externo.
+  backup:
+    profiles: ["backups"]
+    build: ../postgres
+    image: residencia360-postgres:18.6
+    restart: unless-stopped
+    entrypoint: ["supercronic", "/usr/local/share/residencia360-backup/crontab"]
+    env_file: ${SECRETS_DIR:-/etc/residencia360}/backup.env
+    environment:
+      PGDATA: /var/lib/postgresql/18/docker
+      RESTIC_CACHE_DIR: /tmp/restic-cache
+    # Root sin privilegios salvo uno: leer archivos ajenos (la base es del
+    # usuario postgres y las fotos, del usuario de la app). Todo en solo lectura.
+    user: root
+    cap_drop: [ALL]
+    cap_add: [DAC_READ_SEARCH]
+    security_opt: ["no-new-privileges:true"]
+    read_only: true
+    tmpfs:
+      - /tmp
+    volumes:
+      - pgdata:/var/lib/postgresql:ro
+      - storage:/data/storage:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+    logging: *logging
+
+volumes:
+  pgdata:
+  storage:
+  caddy_data:
+  caddy_config:

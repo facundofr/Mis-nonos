@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Ingreso 1 de 4 — Paciente y cobertura</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; flex-direction: column; gap: 10px; padding: 8px 8px 12px; border-bottom: 1px solid {{t.border}}">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <a href="MovilPacientes.dc.html" aria-label="Cancelar ingreso" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></a>
+      <div style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 16px; font-weight: 600">Nuevo ingreso</span><span style="font-size: 12px; color: {{t.mutedFg}}">Paso 1 de 4 · Paciente y cobertura</span></div>
+      <span style="width: 44px"></span>
+    </div>
+    <div aria-hidden="true" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 0 12px">
+      <span style="height: 4px; border-radius: 999px; background: {{t.primary}}"></span><span style="height: 4px; border-radius: 999px; background: {{t.muted}}"></span><span style="height: 4px; border-radius: 999px; background: {{t.muted}}"></span><span style="height: 4px; border-radius: 999px; background: {{t.muted}}"></span>
+    </div>
+  </header>
+
+  <form style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding: 14px 20px">
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="ip-fi" style="font-size: 14px; font-weight: 500">Fecha de ingreso *</label><input id="ip-fi" type="text" value="14/10/2026" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}; min-width: 0"></div>
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="ip-hab" style="font-size: 14px; font-weight: 500">Habitación</label><input id="ip-hab" type="text" value="5" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}; min-width: 0"></div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 6px"><label for="ip-ref" style="font-size: 14px; font-weight: 500">Institución que lo deriva</label><input id="ip-ref" type="text" placeholder="Opcional · hospital, clínica o domicilio" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}"></div>
+
+    <div style="display: flex; flex-direction: column; gap: 6px"><label for="ip-nom" style="font-size: 14px; font-weight: 500">Nombre y apellido *</label><input id="ip-nom" type="text" value="Alberto Rossi" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}"></div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="ip-nac" style="font-size: 14px; font-weight: 500">Nacimiento *</label><input id="ip-nac" type="text" value="12/05/1946" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}; min-width: 0"><span style="font-size: 12px; color: {{t.mutedFg}}">80 años (se calcula)</span></div>
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="ip-dni" style="font-size: 14px; font-weight: 500">DNI *</label><input id="ip-dni" type="text" inputmode="numeric" value="6.123.456" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}; min-width: 0"></div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="ip-lug" style="font-size: 14px; font-weight: 500">Lugar de nacimiento</label><input id="ip-lug" type="text" value="Rosario" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}; min-width: 0"></div>
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="ip-dom" style="font-size: 14px; font-weight: 500">Domicilio anterior</label><input id="ip-dom" type="text" value="[DOMICILIO]" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}; min-width: 0"></div>
+    </div>
+
+    <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+      <legend style="font-size: 14px; font-weight: 500; padding: 0; margin-bottom: 8px">Modalidad de internación *</legend>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{mods}}" as="m" hint-placeholder-count="2">
+          <button type="button" aria-pressed="{{m.pressed}}" onClick="{{m.pick}}" style="{{m.style}}"><span style="font-size: 15px; font-weight: 600">{{m.label}}</span><span style="font-size: 12px; color: {{t.mutedFg}}">{{m.desc}}</span></button>
+        </sc-for>
+      </div>
+    </fieldset>
+    <sc-if value="{{isPami}}" hint-placeholder-val="{{true}}">
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="ip-ben" style="font-size: 14px; font-weight: 500">N.º de beneficiario PAMI *</label><input id="ip-ben" type="text" inputmode="numeric" value="15-01234567-89/00" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}; font-variant-numeric: tabular-nums"></div>
+    </sc-if>
+    <sc-if value="{{isPriv}}" hint-placeholder-val="{{false}}">
+      <div style="display: flex; flex-direction: column; gap: 6px"><label for="ip-os" style="font-size: 14px; font-weight: 500">Obra social o prepaga y N.º de afiliado</label><input id="ip-os" type="text" placeholder="Ej.: OSDE 210 · 61-234567-8" style="height: 48px; border: 1px solid {{t.border}}; border-radius: 10px; padding: 0 12px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}"></div>
+    </sc-if>
+  </form>
+
+  <footer style="padding: 12px 20px 20px; border-top: 1px solid {{t.border}}">
+    <a href="IngresoResponsable.dc.html" style="height: 52px; border-radius: 12px; background: {{t.primary}}; color: {{t.primaryFg}}; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Siguiente: responsable</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { mod: 'pami' };
+}
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', muted: '#EBF0EE', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', primaryFg: '#FFFFFF', secondary: '#E8F1EE' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', muted: '#1C2724', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', primaryFg: '#06201C', secondary: '#183A34' }
+};
+const t = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+const base = 'min-height: 60px; padding: 8px 12px; border-radius: 12px; font-family: Geist, sans-serif; color: ' + t.fg + '; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; text-align: left; ';
+const mods = [['pami', 'PAMI', 'Internación geriátrica'], ['priv', 'Privado', 'Obra social, prepaga o particular']].map(([key, label, desc]) => ({
+label, desc,
+pressed: this.state.mod === key ? 'true' : 'false',
+style: this.state.mod === key ? base + 'border: 1.5px solid ' + t.primary + '; background: ' + t.secondary + ';' : base + 'border: 1px solid ' + t.border + '; background: ' + t.card + ';',
+pick: () => this.setState({ mod: key })
+}));
+return { t, mods, isPami: this.state.mod === 'pami', isPriv: this.state.mod === 'priv' };
+}
+}
+</script>
+</body>
+</html>

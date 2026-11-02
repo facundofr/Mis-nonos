@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Pacientes — móvil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; padding: 16px 20px 0; overflow: hidden">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="display: flex; align-items: center; gap: 10px">
+        <div style="width: 32px; height: 32px; border-radius: 9px; background: {{t.primary}}; display: flex; align-items: center; justify-content: center; color: {{t.primaryFg}}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M12 17.5s-3.5-2-3.5-4.3a1.9 1.9 0 0 1 3.5-1 1.9 1.9 0 0 1 3.5 1c0 2.3-3.5 4.3-3.5 4.3z"/></svg></div>
+        <span style="font-size: 16px; font-weight: 600; letter-spacing: -0.01em">Mis Nonos</span>
+      </div>
+      <div style="display: flex; gap: 8px">
+      <a href="IngresoPaciente.dc.html" aria-label="Nuevo ingreso" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid {{t.border}}; background: {{t.card}}; color: {{t.fg}}; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4M19 14v6M16 17h6"/></svg></a>
+      <a href="MovilNotificaciones.dc.html" aria-label="Notificaciones" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid {{t.border}}; background: {{t.card}}; color: {{t.fg}}; display: flex; align-items: center; justify-content: center; position: relative"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg><span style="position: absolute; top: 9px; right: 10px; width: 8px; height: 8px; border-radius: 999px; background: {{t.dangerSolid}}"></span></a>
+      </div>
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 2px">
+      <h1 style="margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.02em">Pacientes</h1>
+      <span style="font-size: 14px; color: {{t.mutedFg}}">Turno mañana · 38 activos</span>
+    </div>
+
+    <div style="position: relative">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{t.mutedFg}}" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 14px; top: 15px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <label for="mp-buscar" style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0)">Buscar paciente</label>
+      <input id="mp-buscar" type="search" placeholder="Nombre o habitación" style="width: 100%; box-sizing: border-box; height: 48px; border: 1px solid {{t.border}}; border-radius: 12px; padding: 0 14px 0 42px; font: 16px 'Geist', sans-serif; color: {{t.fg}}; background: {{t.card}}">
+    </div>
+
+    <div style="display: flex; gap: 8px; overflow-x: auto">
+      <button type="button" aria-pressed="true" style="height: 36px; padding: 0 14px; border-radius: 999px; border: 0; background: {{t.fg}}; color: {{t.bg}}; font: 500 14px 'Geist', sans-serif; white-space: nowrap">Todos 38</button>
+      <button type="button" aria-pressed="false" style="height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid {{t.border}}; background: transparent; color: {{t.fg}}; font: 500 14px 'Geist', sans-serif; white-space: nowrap">Con seguimiento 3</button>
+      <button type="button" aria-pressed="false" style="height: 36px; padding: 0 14px; border-radius: 999px; border: 1px solid {{t.border}}; background: transparent; color: {{t.fg}}; font: 500 14px 'Geist', sans-serif; white-space: nowrap">Internados 1</button>
+    </div>
+
+    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{rows}}" as="r" hint-placeholder-count="6">
+        <li style="display: flex; align-items: center; gap: 12px; background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 10px 10px 10px 12px">
+          <a href="MovilFicha{{sfx}}.dc.html" style="flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; text-decoration: none; color: {{t.fg}}">
+            <div style="width: 44px; height: 44px; border-radius: 999px; background: {{t.secondary}}; color: {{t.secondaryFg}}; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; flex-shrink: 0">{{r.initials}}</div>
+            <div style="min-width: 0; display: flex; flex-direction: column; gap: 4px">
+              <span style="font-size: 16px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis">{{r.name}}</span>
+              <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: 13px; color: {{t.mutedFg}}">
+                <span>Hab. {{r.room}} · {{r.age}} años</span>
+                <sc-if value="{{r.allergy}}" hint-placeholder-val="{{true}}"><span style="font-size: 12px; font-weight: 600; border-radius: 999px; padding: 1px 8px; background: {{t.dangerBg}}; color: {{t.dangerText}}">⚠ Alergia</span></sc-if>
+                <sc-if value="{{r.follow}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 1px 8px; background: {{t.warnBg}}; color: {{t.warnFg}}">◐ Seguimiento</span></sc-if>
+                <sc-if value="{{r.out}}" hint-placeholder-val="{{false}}"><span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 1px 8px; background: {{t.infoBg}}; color: {{t.infoFg}}">Internado fuera</span></sc-if>
+              </div>
+            </div>
+          </a>
+          <a href="Emergencia.dc.html" aria-label="Emergencia de {{r.name}}" style="width: 44px; height: 44px; border-radius: 12px; background: {{t.dangerBg}}; color: {{t.dangerText}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+        </li>
+      </sc-for>
+    </ul>
+  </div>
+
+  <dc-import name="TabBar" active="pacientes" theme="{{theme}}" hint-size="390px,84px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', primaryFg: '#FFFFFF', secondary: '#E8F1EE', secondaryFg: '#145A52', dangerSolid: '#B42318', dangerBg: '#FEF3F2', dangerText: '#B42318', warnBg: '#FEF4E6', warnFg: '#93370D', infoBg: '#EFF4FF', infoFg: '#1849A9' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', primaryFg: '#06201C', secondary: '#183A34', secondaryFg: '#8FD9CB', dangerSolid: '#F97066', dangerBg: '#3A1512', dangerText: '#FDA29B', warnBg: '#3A2508', warnFg: '#FDB022', infoBg: '#102A56', infoFg: '#84ADFF' }
+};
+const theme = this.props.theme === 'dark' ? 'dark' : 'light';
+const rows = [
+{ initials: 'ER', name: 'Elena Ramos', room: '12', age: 84, allergy: true, follow: true, out: false },
+{ initials: 'HB', name: 'Héctor Benítez', room: '7', age: 79, allergy: false, follow: true, out: false },
+{ initials: 'RM', name: 'Rosa Medina', room: '3', age: 91, allergy: true, follow: false, out: false },
+{ initials: 'CO', name: 'Carlos Ojeda', room: '9', age: 76, allergy: false, follow: false, out: true },
+{ initials: 'AF', name: 'Amalia Fernández', room: '14', age: 88, allergy: true, follow: false, out: false },
+{ initials: 'JL', name: 'José Luis Acosta', room: '5', age: 82, allergy: false, follow: false, out: false }
+];
+return { t: T[theme], theme, rows, sfx: theme === 'dark' ? 'Oscuro' : '' };
+}
+}
+</script>
+</body>
+</html>

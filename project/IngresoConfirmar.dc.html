@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Ingreso 4 de 4 — Revisar y confirmar</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; flex-direction: column; gap: 10px; padding: 8px 8px 12px; border-bottom: 1px solid {{t.border}}">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <a href="IngresoDocumentos.dc.html" aria-label="Paso anterior" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+      <div style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 16px; font-weight: 600">Nuevo ingreso</span><span style="font-size: 12px; color: {{t.mutedFg}}">Paso 4 de 4 · Revisar y confirmar</span></div>
+      <span style="width: 44px"></span>
+    </div>
+    <div aria-hidden="true" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 0 12px">
+      <span style="height: 4px; border-radius: 999px; background: {{t.primary}}"></span><span style="height: 4px; border-radius: 999px; background: {{t.primary}}"></span><span style="height: 4px; border-radius: 999px; background: {{t.primary}}"></span><span style="height: 4px; border-radius: 999px; background: {{t.primary}}"></span>
+    </div>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 14px 20px">
+    <section style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+      <div style="display: flex; align-items: center; gap: 12px">
+        <div style="width: 44px; height: 44px; border-radius: 999px; background: {{t.secondary}}; color: {{t.secondaryFg}}; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600">AR</div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 600">Alberto Rossi</span><span style="font-size: 13px; color: {{t.mutedFg}}">80 años · DNI 6.123.456 · Hab. 5</span></div>
+        <a href="IngresoPaciente.dc.html" style="font-size: 13px; font-weight: 500; color: {{t.primary}}; text-decoration: none">Editar</a>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 6px"><span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 2px 9px; border: 1px solid {{t.border}}">PAMI · internación geriátrica</span><span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 2px 9px; border: 1px solid {{t.border}}">Ingresa 14/10/2026</span></div>
+    </section>
+
+    <section style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; gap: 10px">
+      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; color: {{t.mutedFg}}">Responsable</span><span style="font-size: 15px; font-weight: 500">Marcelo Rossi · hijo</span><span style="font-size: 13px; color: {{t.mutedFg}}">+ 2 contactos de emergencia</span></span>
+      <a href="IngresoResponsable.dc.html" style="font-size: 13px; font-weight: 500; color: {{t.primary}}; text-decoration: none">Editar</a>
+    </section>
+
+    <div role="alert" style="background: {{t.warnBg}}; color: {{t.warnFg}}; border-radius: 12px; padding: 12px 14px; display: flex; flex-direction: column; gap: 2px">
+      <span style="font-size: 14px; font-weight: 600">Faltan 2 documentos</span>
+      <span style="font-size: 13px">Acta compromiso PAMI y credencial PAMI. Podés confirmar igual: quedan como pendientes en el legajo.</span>
+    </div>
+
+    <section style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: {{t.mutedFg}}; text-transform: uppercase; letter-spacing: 0.06em">Acordado con la familia</h2>
+      <ul style="margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; line-height: 1.4">
+        <li>Provee pañales, medicación mensual, tocador y vestimenta</li>
+        <li>Pide turnos y acompaña a consultas y estudios externos</li>
+        <li>Entrega los estudios previos y respeta la dieta indicada</li>
+        <li>Cuota mes adelantado: vence el <b style="font-weight: 600">día 14</b> de cada mes</li>
+      </ul>
+    </section>
+  </div>
+
+  <footer style="padding: 12px 20px 20px; border-top: 1px solid {{t.border}}; display: flex; flex-direction: column; gap: 8px">
+    <a href="LegajoPaciente.dc.html" style="height: 52px; border-radius: 12px; background: {{t.primary}}; color: {{t.primaryFg}}; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Confirmar ingreso</a>
+    <span style="font-size: 12px; color: {{t.mutedFg}}; text-align: center">Queda registrado con tu usuario. Se puede editar después, con historial.</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', muted: '#EBF0EE', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', primaryFg: '#FFFFFF', secondary: '#E8F1EE', secondaryFg: '#145A52', warnBg: '#FEF4E6', warnFg: '#93370D' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', muted: '#1C2724', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', primaryFg: '#06201C', secondary: '#183A34', secondaryFg: '#8FD9CB', warnBg: '#3A2508', warnFg: '#FDB022' }
+};
+return { t: T[this.props.theme === 'dark' ? 'dark' : 'light'] };
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+# Dependencias
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+build/
+next-env.d.ts
+*.tsbuildinfo
+
+# Pruebas
+coverage/
+playwright-report/
+test-results/
+
+# Secretos: nunca al repositorio (sección 12.3)
+.env
+.env.*
+!.env.example
+
+# Archivos subidos en desarrollo (fotos de documentos)
+storage/
+
+# Sistema y logs
+.DS_Store
+Thumbs.db
+*.log
+
+# Worker compilado (corepack pnpm worker:build)
+dist/

@@ -1,0 +1,12 @@
+# Documentos y diseño de referencia: no se reformatean.
+RESIDENCIA360_CONTEXT.md
+project/
+
+# Generados
+pnpm-lock.yaml
+db/migrations/
+.next/
+dist/
+out/
+coverage/
+node_modules/

@@ -1,0 +1,10 @@
+# Finales de línea LF en todo el repositorio: los scripts de shell corren
+# dentro de contenedores Linux y se rompen con CRLF.
+* text=auto eol=lf
+
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.pdf binary
+*.woff2 binary

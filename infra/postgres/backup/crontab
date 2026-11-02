@@ -1,0 +1,11 @@
+# Programados del servicio "backup" (supercronic). Hora de Argentina.
+CRON_TZ=America/Argentina/Buenos_Aires
+
+# Base: copia completa diaria (el WAL sube continuo desde PostgreSQL).
+30 2 * * * /usr/local/share/residencia360-backup/backup-db.sh
+
+# Fotos del legajo.
+0 3 * * * /usr/local/share/residencia360-backup/backup-files.sh
+
+# Retención y verificación de las copias, los domingos.
+0 5 * * 0 /usr/local/share/residencia360-backup/prune.sh

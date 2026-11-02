@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Empleados</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px">
+    <a href="MovilMas.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+    <span style="font-size: 16px; font-weight: 600">Empleados</span>
+    <a href="InvitarUsuario.dc.html" aria-label="Agregar empleado" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.primary}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg></a>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding: 4px 20px 12px">
+    <div role="tablist" aria-label="Filtro" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: {{t.muted}}; border-radius: 12px; padding: 4px; gap: 4px">
+      <button type="button" role="tab" aria-selected="true" style="height: 38px; border: 0; border-radius: 9px; background: {{t.card}}; color: {{t.fg}}; font: 600 14px 'Geist', sans-serif">En turno ahora · 5</button>
+      <button type="button" role="tab" aria-selected="false" style="height: 38px; border: 0; border-radius: 9px; background: transparent; color: {{t.mutedFg}}; font: 500 14px 'Geist', sans-serif">Todos · 24</button>
+    </div>
+
+    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; overflow: hidden">
+      <sc-for list="{{people}}" as="p" hint-placeholder-count="6">
+        <li style="display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-bottom: 1px solid {{t.border}}">
+          <div style="width: 44px; height: 44px; border-radius: 999px; background: {{t.secondary}}; color: {{t.secondaryFg}}; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 600; flex-shrink: 0">{{p.initials}}</div>
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px">
+            <span style="font-size: 15px; font-weight: 500">{{p.name}}</span>
+            <span style="font-size: 13px; color: {{t.mutedFg}}">{{p.role}}</span>
+          </div>
+          <a href="tel:{{p.tel}}" aria-label="Llamar a {{p.name}}" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid {{t.border}}; color: {{t.fg}}; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>
+        </li>
+      </sc-for>
+    </ul>
+    <span style="font-size: 12px; color: {{t.mutedFg}}">En el MVP cada empleado es un usuario con perfil básico. Legajo, documentos y turnos llegan en la fase 5.</span>
+  </div>
+  <dc-import name="TabBar" active="mas" theme="{{theme}}" hint-size="390px,84px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', muted: '#EBF0EE', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', secondary: '#E8F1EE', secondaryFg: '#145A52' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', muted: '#1C2724', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', secondary: '#183A34', secondaryFg: '#8FD9CB' }
+};
+const theme = this.props.theme === 'dark' ? 'dark' : 'light';
+return {
+t: T[theme], theme,
+people: [
+{ initials: 'LP', name: 'Laura Pereyra', role: 'Enfermera · Mat. 58.214', tel: '1140112233' },
+{ initials: 'MG', name: 'Marta Gómez', role: 'Cuidadora', tel: '1140112234' },
+{ initials: 'JS', name: 'Jorge Suárez', role: 'Cuidador', tel: '1140112235' },
+{ initials: 'PG', name: 'Dra. Paula Giménez', role: 'Médica de cabecera · Mat. 104.552', tel: '1147892201' },
+{ initials: 'AV', name: 'Ana Villalba', role: 'Administración', tel: '1140112236' },
+{ initials: 'RC', name: 'Rubén Castro', role: 'Dirección', tel: '1140112237' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

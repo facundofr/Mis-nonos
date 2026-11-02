@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Medicación del turno — fase 3</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding: 16px 20px 12px">
+    <div style="display: flex; align-items: flex-start; justify-content: space-between">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h1 style="margin: 0; font-size: 26px; font-weight: 600; letter-spacing: -0.02em">Medicación del turno</h1>
+        <span style="font-size: 14px; color: {{t.mutedFg}}">{{doneCount}} de {{total}} dosis registradas</span>
+      </div>
+      <span style="font-size: 12px; font-weight: 600; border-radius: 999px; padding: 4px 10px; background: {{t.infoBg}}; color: {{t.infoFg}}">Fase 3</span>
+    </div>
+    <div role="progressbar" aria-valuenow="{{doneCount}}" aria-valuemin="0" aria-valuemax="{{total}}" aria-label="Avance de la ronda" style="height: 8px; border-radius: 999px; background: {{t.muted}}; overflow: hidden"><div style="height: 100%; width: {{pct}}%; background: {{t.primary}}; border-radius: 999px"></div></div>
+
+    <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: {{t.mutedFg}}; text-transform: uppercase; letter-spacing: 0.06em">10:00 h</h2>
+    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{doses}}" as="d" hint-placeholder-count="5">
+        <li style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 12px">
+          <div style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px">
+            <span style="font-size: 13px; color: {{t.mutedFg}}">{{d.who}}</span>
+            <span style="font-size: 16px; font-weight: 600">{{d.med}}</span>
+            <span style="font-size: 13px; color: {{t.mutedFg}}">{{d.dose}}</span>
+            <sc-if value="{{d.low}}" hint-placeholder-val="{{false}}"><span style="align-self: flex-start; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 1px 8px; background: {{t.warnBg}}; color: {{t.warnFg}}">Stock para {{d.low}}</span></sc-if>
+          </div>
+          <sc-if value="{{d.pending}}" hint-placeholder-val="{{true}}">
+            <div style="display: flex; gap: 6px">
+              <button type="button" aria-label="Otro estado: omitida, rechazada o diferida" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid {{t.border}}; background: transparent; color: {{t.fg}}; display: flex; align-items: center; justify-content: center"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg></button>
+              <button type="button" onClick="{{d.give}}" style="height: 44px; padding: 0 16px; border-radius: 12px; border: 0; background: {{t.primary}}; color: {{t.primaryFg}}; font: 600 15px 'Geist', sans-serif">Dada</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{d.statusLabel}}" hint-placeholder-val="{{false}}"><span style="font-size: 13px; font-weight: 600; border-radius: 999px; padding: 4px 10px; background: {{d.sBg}}; color: {{d.sFg}}; white-space: nowrap">{{d.statusLabel}}</span></sc-if>
+        </li>
+      </sc-for>
+    </ul>
+    <span style="font-size: 12px; color: {{t.mutedFg}}">Las dosis salen de las indicaciones del médico. El sistema no calcula ni sugiere dosis.</span>
+  </div>
+  <dc-import name="TabBar" active="turnos" theme="{{theme}}" hint-size="390px,84px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { given: {} };
+}
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', muted: '#EBF0EE', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', primaryFg: '#FFFFFF', infoBg: '#EFF4FF', infoFg: '#1849A9', warnBg: '#FEF4E6', warnFg: '#93370D', okBg: '#ECFDF3', okFg: '#067647', offBg: '#EBF0EE', offFg: '#57625F' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', muted: '#1C2724', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', primaryFg: '#06201C', infoBg: '#102A56', infoFg: '#84ADFF', warnBg: '#3A2508', warnFg: '#FDB022', okBg: '#0B2E1E', okFg: '#47CD89', offBg: '#1C2724', offFg: '#9BA8A4' }
+};
+const theme = this.props.theme === 'dark' ? 'dark' : 'light';
+const t = T[theme];
+const base = [
+{ id: 1, who: 'Elena Ramos · Hab. 12', med: 'Enalapril 10 mg', dose: '1 comprimido · oral', low: '', fixed: 'Dada · 09:58 · Laura P.', kind: 'ok' },
+{ id: 2, who: 'Héctor Benítez · Hab. 7', med: 'Metformina 850 mg', dose: '1 comprimido · con el desayuno', low: '3 días', fixed: '', kind: '' },
+{ id: 3, who: 'Rosa Medina · Hab. 3', med: 'Levotiroxina 50 mcg', dose: '1 comprimido · en ayunas', low: '', fixed: 'Rechazada · dijo que ya la tomó', kind: 'off' },
+{ id: 4, who: 'Amalia Fernández · Hab. 14', med: 'Atorvastatina 20 mg', dose: '1 comprimido · oral', low: '', fixed: '', kind: '' }
+];
+const doses = base.map((d) => {
+const given = this.state.given[d.id];
+const statusLabel = d.fixed || (given ? 'Dada · ahora' : '');
+const kind = d.fixed ? d.kind : 'ok';
+return { ...d, pending: !statusLabel, statusLabel, sBg: kind === 'ok' ? t.okBg : t.offBg, sFg: kind === 'ok' ? t.okFg : t.offFg, give: () => this.setState({ given: { ...this.state.given, [d.id]: true } }) };
+});
+const done = 6 + doses.filter((d) => !d.pending).length;
+const total = 14;
+return { t, theme, doses, doneCount: done, total, pct: Math.round(done / total * 100) };
+}
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Novedades — móvil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 14px; padding: 16px 20px 0; overflow: hidden">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <h1 style="margin: 0; font-size: 28px; font-weight: 600; letter-spacing: -0.02em">Novedades</h1>
+        <span style="font-size: 14px; color: {{t.mutedFg}}">Hoy · Turno mañana</span>
+      </div>
+      <a href="MovilNotificaciones.dc.html" aria-label="Notificaciones" style="width: 44px; height: 44px; border-radius: 12px; border: 1px solid {{t.border}}; background: {{t.card}}; color: {{t.fg}}; display: flex; align-items: center; justify-content: center"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg></a>
+    </div>
+
+    <div role="tablist" aria-label="Filtro" style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: {{t.muted}}; border-radius: 12px; padding: 4px; gap: 4px">
+      <button type="button" role="tab" aria-selected="true" style="height: 38px; border: 0; border-radius: 9px; background: {{t.card}}; color: {{t.fg}}; font: 600 14px 'Geist', sans-serif">Pendientes · 3</button>
+      <button type="button" role="tab" aria-selected="false" style="height: 38px; border: 0; border-radius: 9px; background: transparent; color: {{t.mutedFg}}; font: 500 14px 'Geist', sans-serif">Todas · 12</button>
+    </div>
+
+    <div style="display: flex; gap: 8px; overflow-x: auto">
+      <sc-for list="{{cats}}" as="c" hint-placeholder-count="5">
+        <span style="height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid {{t.border}}; display: inline-flex; align-items: center; font-size: 13px; font-weight: 500; white-space: nowrap; color: {{t.fg}}">{{c}}</span>
+      </sc-for>
+    </div>
+
+    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{items}}" as="n" hint-placeholder-count="4">
+        <li style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 14px; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+            <span style="font-size: 15px; font-weight: 600">{{n.who}}</span>
+            <span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 2px 9px; background: {{t.warnBg}}; color: {{t.warnFg}}; white-space: nowrap">◐ Seguimiento</span>
+          </div>
+          <span style="font-size: 15px; line-height: 1.4">{{n.text}}</span>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px">
+            <span style="font-size: 12px; color: {{t.mutedFg}}">{{n.meta}}</span>
+            <button type="button" style="height: 36px; padding: 0 14px; border-radius: 10px; border: 1px solid {{t.border}}; background: transparent; color: {{t.fg}}; font: 500 14px 'Geist', sans-serif">Resolver</button>
+          </div>
+        </li>
+      </sc-for>
+    </ul>
+  </div>
+  <dc-import name="TabBar" active="novedades" theme="{{theme}}" hint-size="390px,84px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', muted: '#EBF0EE', mutedFg: '#57625F', border: '#DFE6E3', warnBg: '#FEF4E6', warnFg: '#93370D' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', muted: '#1C2724', mutedFg: '#9BA8A4', border: '#26332F', warnBg: '#3A2508', warnFg: '#FDB022' }
+};
+const theme = this.props.theme === 'dark' ? 'dark' : 'light';
+return {
+t: T[theme], theme,
+cats: ['Alimentación', 'Estado general', 'Higiene', 'Visitas', 'General'],
+items: [
+{ who: 'Héctor Benítez · Hab. 7', text: 'No quiso almorzar. Avisar a la familia si repite en la cena.', meta: 'Turno noche · Marta G. · ayer 21:40' },
+{ who: 'Elena Ramos · Hab. 12', text: 'Enrojecimiento en talón derecho. Revisar en el próximo cambio postural.', meta: 'Turno mañana · Laura P. · 07:15' },
+{ who: 'General', text: 'Falta reponer guantes en el office del primer piso.', meta: 'Turno mañana · Jorge S. · 06:50' }
+]
+};
+}
+}
+</script>
+</body>
+</html>

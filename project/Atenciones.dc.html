@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Atenciones y última visita — fase 2</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px">
+    <a href="MovilFicha.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+    <div style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 16px; font-weight: 600">Atenciones</span><span style="font-size: 12px; color: {{t.mutedFg}}">Elena Ramos</span></div>
+    <span style="font-size: 12px; font-weight: 600; border-radius: 999px; padding: 4px 10px; margin-right: 6px; background: {{t.infoBg}}; color: {{t.infoFg}}">Fase 2</span>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 14px; padding: 4px 20px 12px">
+    <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: {{t.mutedFg}}; text-transform: uppercase; letter-spacing: 0.06em">Última visita por especialidad</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <sc-for list="{{visits}}" as="v" hint-placeholder-count="6">
+        <div style="background: {{t.card}}; border: 1px solid {{v.border}}; border-radius: 14px; padding: 12px; display: flex; flex-direction: column; gap: 4px">
+          <span style="font-size: 13px; color: {{t.mutedFg}}">{{v.type}}</span>
+          <span style="font-size: 17px; font-weight: 600">{{v.when}}</span>
+          <span style="font-size: 12px; color: {{t.mutedFg}}">{{v.who}}</span>
+          <sc-if value="{{v.late}}" hint-placeholder-val="{{false}}"><span style="align-self: flex-start; font-size: 12px; font-weight: 600; border-radius: 999px; padding: 1px 8px; background: {{t.warnBg}}; color: {{t.warnFg}}">Atrasada · {{v.late}}</span></sc-if>
+        </div>
+      </sc-for>
+    </div>
+
+    <section style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 6px">
+      <span style="font-size: 13px; color: {{t.mutedFg}}">Kinesiología · 16/10 · Lic. Tomás Ferrari</span>
+      <span style="font-size: 14px; line-height: 1.4">Marcha con andador, mejor equilibrio. Continuar 3 veces por semana.</span>
+      <span style="font-size: 12px; color: {{t.mutedFg}}">Próximo control: 19/10 · <b style="font-weight: 600; color: {{t.warnFg}}">no registrado</b></span>
+    </section>
+
+    <a href="#" style="margin-top: auto; height: 52px; border-radius: 12px; background: {{t.primary}}; color: {{t.primaryFg}}; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>Registrar atención</a>
+  </div>
+  <dc-import name="TabBar" active="pacientes" theme="{{theme}}" hint-size="390px,84px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', primaryFg: '#FFFFFF', infoBg: '#EFF4FF', infoFg: '#1849A9', warnBg: '#FEF4E6', warnFg: '#93370D', warnBorder: '#F7C98B' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', primaryFg: '#06201C', infoBg: '#102A56', infoFg: '#84ADFF', warnBg: '#3A2508', warnFg: '#FDB022', warnBorder: '#6B4A12' }
+};
+const theme = this.props.theme === 'dark' ? 'dark' : 'light';
+const t = T[theme];
+const v = (type, when, who, late) => ({ type, when, who, late, border: late ? t.warnBorder : t.border });
+return {
+t, theme,
+visits: [
+v('Médica de cabecera', 'Hace 3 días', 'Dra. Giménez', ''),
+v('Enfermería', 'Hoy 07:15', 'Laura P.', ''),
+v('Kinesiología', 'Hace 9 días', 'Lic. Ferrari', '3 por semana'),
+v('Nutrición', 'Hace 20 días', 'Lic. Ríos', ''),
+v('Psicología', 'Sin visitas', 'No asignada', ''),
+v('Urgencia / guardia', '02/09', 'Sanatorio Güemes', '')
+]
+};
+}
+}
+</script>
+</body>
+</html>

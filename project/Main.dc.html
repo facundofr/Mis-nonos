@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Sistema visual Mis Nonos</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;family=Geist+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#145A52}a:hover{color:#0E433D}
+</style>
+</helmet>
+<div style="width: 1280px; height: 2680px; box-sizing: border-box; background: #FFFFFF; color: #16201E; font-family: 'Geist', system-ui, sans-serif; padding: 56px 64px; display: flex; flex-direction: column; gap: 48px">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid #DFE6E3; padding-bottom: 32px">
+    <div style="display: flex; align-items: center; gap: 14px">
+      <div style="width: 44px; height: 44px; border-radius: 12px; background: #145A52; display: flex; align-items: center; justify-content: center">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z"/><path d="M12 17.5s-3.5-2-3.5-4.3a1.9 1.9 0 0 1 3.5-1 1.9 1.9 0 0 1 3.5 1c0 2.3-3.5 4.3-3.5 4.3z"/></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 2px">
+        <span style="font-size: 22px; font-weight: 600; letter-spacing: -0.02em">Mis Nonos</span>
+        <span style="font-size: 14px; color: #57625F">Sistema visual del MVP · Tailwind CSS + shadcn/ui · fuente Geist</span>
+      </div>
+    </div>
+    <span style="font-size: 12px; font-weight: 500; color: #145A52; background: #E8F1EE; border-radius: 999px; padding: 6px 12px">Calma clínica · v0.1</span>
+  </header>
+
+  <section style="display: flex; flex-direction: column; gap: 20px">
+    <h2 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">Color — tokens de shadcn/ui</h2>
+    <p style="margin: 0; font-size: 14px; color: #57625F; max-width: 720px">Verde pino como primario: transmite calma y salud sin parecer hospital. El rojo se reserva solo para emergencias y alergias; nunca se usa como decoración.</p>
+    <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 72px; border-radius: 10px; background: #145A52"></div><span style="font-size: 13px; font-weight: 500">primary</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">#145A52</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 72px; border-radius: 10px; background: #E8F1EE"></div><span style="font-size: 13px; font-weight: 500">secondary</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">#E8F1EE</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 72px; border-radius: 10px; background: #16201E"></div><span style="font-size: 13px; font-weight: 500">foreground</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">#16201E</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 72px; border-radius: 10px; background: #F3F6F5; border: 1px solid #DFE6E3; box-sizing: border-box"></div><span style="font-size: 13px; font-weight: 500">muted</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">#F3F6F5</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 72px; border-radius: 10px; background: #57625F"></div><span style="font-size: 13px; font-weight: 500">muted-foreground</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">#57625F</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 72px; border-radius: 10px; background: #DFE6E3"></div><span style="font-size: 13px; font-weight: 500">border / input</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">#DFE6E3</span></div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px">
+      <div style="display: flex; align-items: center; gap: 12px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 14px"><div style="width: 36px; height: 36px; border-radius: 8px; background: #B42318"></div><div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; font-weight: 500">destructive · emergencia</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">#B42318 / #FEF3F2</span></div></div>
+      <div style="display: flex; align-items: center; gap: 12px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 14px"><div style="width: 36px; height: 36px; border-radius: 8px; background: #B54708"></div><div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; font-weight: 500">warning · seguimiento</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">#93370D / #FEF4E6</span></div></div>
+      <div style="display: flex; align-items: center; gap: 12px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 14px"><div style="width: 36px; height: 36px; border-radius: 8px; background: #067647"></div><div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; font-weight: 500">success · resuelto</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">#067647 / #ECFDF3</span></div></div>
+      <div style="display: flex; align-items: center; gap: 12px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 14px"><div style="width: 36px; height: 36px; border-radius: 8px; background: #1849A9"></div><div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 13px; font-weight: 500">info · general</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">#1849A9 / #EFF4FF</span></div></div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px">
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">Tipografía — Geist</h2>
+      <div style="display: flex; flex-direction: column; gap: 14px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 24px">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px"><span style="font-size: 30px; font-weight: 600; letter-spacing: -0.02em">Buenos días, Laura</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">text-3xl · 600</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px"><span style="font-size: 20px; font-weight: 600; letter-spacing: -0.01em">Pendientes del turno</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">text-xl · 600</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px"><span style="font-size: 16px; font-weight: 500">Elena Ramos · Hab. 12</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">text-base · 500</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px"><span style="font-size: 14px">Durmió bien, desayunó completo.</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">text-sm · 400</span></div>
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 16px"><span style="font-size: 12px; color: #57625F">Registrado por Marta G. · 08:42</span><span style="font-size: 12px; color: #57625F; font-family: 'Geist Mono', monospace">text-xs · muted</span></div>
+      </div>
+      <p style="margin: 0; font-size: 14px; color: #57625F">En escritorio el cuerpo es 14 px (text-sm, como shadcn). En móvil sube a 16 px: lo usa personal con poco tiempo y a veces poca luz.</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 16px">
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">Forma y espacio</h2>
+      <div style="display: flex; flex-direction: column; gap: 14px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 24px; font-size: 14px">
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Radio base (--radius)</span><span style="font-family: 'Geist Mono', monospace; color: #57625F">0.625rem · 10px</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Botones e inputs</span><span style="font-family: 'Geist Mono', monospace; color: #57625F">8px · h-10 escritorio · h-12 móvil</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Área táctil mínima</span><span style="font-family: 'Geist Mono', monospace; color: #57625F">44 × 44 px</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Escala de espacio</span><span style="font-family: 'Geist Mono', monospace; color: #57625F">4 · 8 · 12 · 16 · 24 · 32 · 48</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Sombras</span><span style="font-family: 'Geist Mono', monospace; color: #57625F">solo shadow-xs en tarjetas</span></div>
+        <div style="display: flex; justify-content: space-between; gap: 16px"><span>Íconos</span><span style="font-family: 'Geist Mono', monospace; color: #57625F">lucide-react · 16–20px · stroke 2</span></div>
+      </div>
+      <p style="margin: 0; font-size: 14px; color: #57625F">Los estados nunca dependen solo del color: siempre llevan texto o ícono.</p>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 20px">
+    <h2 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">Componentes base</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px">
+
+      <div style="display: flex; flex-direction: column; gap: 14px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 24px">
+        <span style="font-size: 12px; font-weight: 500; color: #57625F; text-transform: uppercase; letter-spacing: 0.06em">Button</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px">
+          <button type="button" style="height: 40px; padding: 0 16px; border-radius: 8px; border: 0; background: #145A52; color: #FFFFFF; font: 500 14px 'Geist', sans-serif; display: inline-flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg>Nueva novedad</button>
+          <button type="button" style="height: 40px; padding: 0 16px; border-radius: 8px; border: 0; background: #E8F1EE; color: #145A52; font: 500 14px 'Geist', sans-serif">Secondary</button>
+          <button type="button" style="height: 40px; padding: 0 16px; border-radius: 8px; border: 1px solid #DFE6E3; background: #FFFFFF; color: #16201E; font: 500 14px 'Geist', sans-serif">Outline</button>
+          <button type="button" style="height: 40px; padding: 0 16px; border-radius: 8px; border: 0; background: transparent; color: #16201E; font: 500 14px 'Geist', sans-serif">Ghost</button>
+          <button type="button" style="height: 40px; padding: 0 16px; border-radius: 8px; border: 0; background: #B42318; color: #FFFFFF; font: 600 14px 'Geist', sans-serif; display: inline-flex; align-items: center; gap: 8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4M12 17h.01"/></svg>Emergencia</button>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 24px">
+        <span style="font-size: 12px; font-weight: 500; color: #57625F; text-transform: uppercase; letter-spacing: 0.06em">Badge</span>
+        <div style="display: flex; flex-wrap: wrap; gap: 8px">
+          <span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 3px 10px; background: #ECFDF3; color: #067647">● Activo</span>
+          <span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 3px 10px; background: #FEF4E6; color: #93370D">◐ Seguimiento</span>
+          <span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 3px 10px; background: #F3F6F5; color: #57625F">✓ Resuelta</span>
+          <span style="font-size: 12px; font-weight: 600; border-radius: 999px; padding: 3px 10px; background: #FEF3F2; color: #B42318">⚠ Alergia: penicilina</span>
+          <span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 3px 10px; background: #EFF4FF; color: #1849A9">Internado fuera</span>
+          <span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 3px 10px; border: 1px solid #DFE6E3; color: #16201E">Turno mañana</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 24px">
+        <span style="font-size: 12px; font-weight: 500; color: #57625F; text-transform: uppercase; letter-spacing: 0.06em">Input + Label</span>
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <label for="demo-buscar" style="font-size: 14px; font-weight: 500">Buscar residente</label>
+          <div style="position: relative">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#57625F" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="position: absolute; left: 12px; top: 12px"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="demo-buscar" type="text" placeholder="Nombre o habitación" style="width: 100%; box-sizing: border-box; height: 40px; border: 1px solid #DFE6E3; border-radius: 8px; padding: 0 12px 0 36px; font: 14px 'Geist', sans-serif; color: #16201E; background: #FFFFFF">
+          </div>
+          <span style="font-size: 12px; color: #57625F">Foco: anillo de 3px en primary al 30%.</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 24px">
+        <span style="font-size: 12px; font-weight: 500; color: #57625F; text-transform: uppercase; letter-spacing: 0.06em">Alert · alergias</span>
+        <div style="display: flex; gap: 12px; align-items: flex-start; background: #FEF3F2; border: 1px solid #FECDCA; border-radius: 10px; padding: 14px">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B42318" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></svg>
+          <div style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 600; color: #B42318">Alergias</span><span style="font-size: 14px; color: #7A271A">Penicilina · Ibuprofeno</span></div>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 24px">
+        <span style="font-size: 12px; font-weight: 500; color: #57625F; text-transform: uppercase; letter-spacing: 0.06em">Card · residente</span>
+        <div style="display: flex; align-items: center; gap: 12px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 12px; box-shadow: 0 1px 2px rgba(16,24,40,0.05)">
+          <div style="width: 40px; height: 40px; border-radius: 999px; background: #E8F1EE; color: #145A52; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600">ER</div>
+          <div style="display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0"><span style="font-size: 14px; font-weight: 500">Elena Ramos</span><span style="font-size: 12px; color: #57625F">Hab. 12 · 84 años · PAMI</span></div>
+          <span style="font-size: 12px; font-weight: 600; border-radius: 999px; padding: 3px 8px; background: #FEF3F2; color: #B42318">⚠ Alergia</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px; border: 1px solid #DFE6E3; border-radius: 10px; padding: 24px">
+        <span style="font-size: 12px; font-weight: 500; color: #57625F; text-transform: uppercase; letter-spacing: 0.06em">Tabs</span>
+        <div style="display: inline-flex; background: #F3F6F5; border-radius: 10px; padding: 4px; gap: 4px; align-self: flex-start">
+          <button type="button" style="height: 32px; padding: 0 12px; border: 0; border-radius: 7px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(16,24,40,0.08); font: 500 13px 'Geist', sans-serif; color: #16201E">Resumen</button>
+          <button type="button" style="height: 32px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; font: 500 13px 'Geist', sans-serif; color: #57625F">Contactos</button>
+          <button type="button" style="height: 32px; padding: 0 12px; border: 0; border-radius: 7px; background: transparent; font: 500 13px 'Geist', sans-serif; color: #57625F">Novedades</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 20px; background: #0E1513; color: #E8EEEC; border-radius: 14px; padding: 32px">
+    <div style="display: flex; flex-direction: column; gap: 6px">
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">Modo oscuro</h2>
+      <p style="margin: 0; font-size: 14px; color: #9BA8A4; max-width: 760px">Mismos nombres de tokens, valores para la clase <code style="font-family: 'Geist Mono', monospace">.dark</code>. El primario se aclara para mantener contraste sobre fondo oscuro; el rojo de emergencia sigue siendo inconfundible. Se elige en Más › Apariencia: Claro, Oscuro o Sistema.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 16px">
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 64px; border-radius: 10px; background: #3FB39F"></div><span style="font-size: 13px; font-weight: 500">primary</span><span style="font-size: 12px; color: #9BA8A4; font-family: 'Geist Mono', monospace">#3FB39F</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 64px; border-radius: 10px; background: #0E1513; border: 1px solid #26332F; box-sizing: border-box"></div><span style="font-size: 13px; font-weight: 500">background</span><span style="font-size: 12px; color: #9BA8A4; font-family: 'Geist Mono', monospace">#0E1513</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 64px; border-radius: 10px; background: #151E1B; border: 1px solid #26332F; box-sizing: border-box"></div><span style="font-size: 13px; font-weight: 500">card</span><span style="font-size: 12px; color: #9BA8A4; font-family: 'Geist Mono', monospace">#151E1B</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 64px; border-radius: 10px; background: #183A34"></div><span style="font-size: 13px; font-weight: 500">secondary</span><span style="font-size: 12px; color: #9BA8A4; font-family: 'Geist Mono', monospace">#183A34</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 64px; border-radius: 10px; background: #9BA8A4"></div><span style="font-size: 13px; font-weight: 500">muted-foreground</span><span style="font-size: 12px; color: #9BA8A4; font-family: 'Geist Mono', monospace">#9BA8A4</span></div>
+      <div style="display: flex; flex-direction: column; gap: 8px"><div style="height: 64px; border-radius: 10px; background: #D92D20"></div><span style="font-size: 13px; font-weight: 500">destructive</span><span style="font-size: 12px; color: #9BA8A4; font-family: 'Geist Mono', monospace">#D92D20</span></div>
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 8px">
+      <span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 3px 10px; background: #0B2E1E; color: #47CD89">● Activo</span>
+      <span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 3px 10px; background: #3A2508; color: #FDB022">◐ Seguimiento</span>
+      <span style="font-size: 12px; font-weight: 600; border-radius: 999px; padding: 3px 10px; background: #3A1512; color: #FDA29B">⚠ Alergia</span>
+      <span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 3px 10px; background: #102A56; color: #84ADFF">Internado fuera</span>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 12px">
+    <h2 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">Mobile first</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; font-size: 14px; line-height: 1.5">
+      <div style="border: 1px solid #DFE6E3; border-radius: 10px; padding: 18px"><b style="font-weight: 600">Diseñar primero a 390 px.</b> En escritorio el mismo contenido se expande con menú lateral (breakpoint lg).</div>
+      <div style="border: 1px solid #DFE6E3; border-radius: 10px; padding: 18px"><b style="font-weight: 600">Barra inferior fija</b> con 4 secciones y un botón central "+" elevado para registrar una novedad, la acción más frecuente.</div>
+      <div style="border: 1px solid #DFE6E3; border-radius: 10px; padding: 18px"><b style="font-weight: 600">Controles de 44–52 px,</b> texto base de 16 px en inputs (evita el zoom automático de iOS) y acciones principales al alcance del pulgar.</div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 16px">
+    <h2 style="margin: 0; font-size: 20px; font-weight: 600; letter-spacing: -0.01em">globals.css — tema para shadcn/ui (Tailwind v4)</h2>
+    <pre style="margin: 0; background: #16201E; color: #E8F1EE; border-radius: 10px; padding: 24px; font: 13px/1.6 'Geist Mono', monospace; white-space: pre-wrap">:root {
+  --radius: 0.625rem;
+  --background: #FFFFFF;        --foreground: #16201E;
+  --card: #FFFFFF;              --card-foreground: #16201E;
+  --primary: #145A52;           --primary-foreground: #FFFFFF;
+  --secondary: #E8F1EE;         --secondary-foreground: #145A52;
+  --muted: #F3F6F5;             --muted-foreground: #57625F;
+  --accent: #EEF5F3;            --accent-foreground: #145A52;
+  --destructive: #B42318;       --border: #DFE6E3;  --input: #DFE6E3;  --ring: #145A52;
+  --warning: #FEF4E6;           --warning-foreground: #93370D;
+  --success: #ECFDF3;           --success-foreground: #067647;
+  --sidebar: #F7FAF9;           --sidebar-primary: #145A52;
+}
+
+.dark {
+  --background: #0E1513;        --foreground: #E8EEEC;
+  --card: #151E1B;              --card-foreground: #E8EEEC;
+  --primary: #3FB39F;           --primary-foreground: #06201C;
+  --secondary: #183A34;         --secondary-foreground: #8FD9CB;
+  --muted: #1C2724;             --muted-foreground: #9BA8A4;
+  --accent: #183A34;            --accent-foreground: #8FD9CB;
+  --destructive: #D92D20;       --border: #26332F;  --input: #26332F;  --ring: #3FB39F;
+  --warning: #3A2508;           --warning-foreground: #FDB022;
+  --success: #0B2E1E;           --success-foreground: #47CD89;
+  --sidebar: #151E1B;           --sidebar-primary: #3FB39F;
+}
+/* next-themes: &lt;ThemeProvider attribute="class" defaultTheme="system" enableSystem&gt; */</pre>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":2680}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>

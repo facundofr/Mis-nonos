@@ -1,0 +1,50 @@
+# Proxy del VPS (sección 10.14, F.8): HTTPS automático, compresión y
+# límite de pedidos por IP. La app es la única que responde: la base y el
+# worker no tienen puertos publicados.
+#
+# Variables (archivo compose.env del VPS, sin secretos):
+#   APP_DOMAIN  dominio de la app, p. ej. www.mis-nonos.facundofr.com (DEPLOY.md)
+#   ACME_EMAIL  correo para los avisos de Let's Encrypt
+{
+	email {$ACME_EMAIL}
+	order rate_limit before reverse_proxy
+}
+
+{$APP_DOMAIN} {
+	encode zstd gzip
+
+	# Fotos del legajo: hasta 10 MB por archivo (lib/storage/file-types.ts).
+	request_body {
+		max_size 12MB
+	}
+
+	rate_limit {
+		# Navegación normal: una pantalla pide varios recursos.
+		zone por_ip {
+			key {remote_host}
+			events 600
+			window 1m
+		}
+		# Formularios y acciones (ingreso, recuperar contraseña, guardar):
+		# además de los límites propios de la app (docs/decisions/0003).
+		zone escrituras_por_ip {
+			match {
+				method POST
+			}
+			key {remote_host}
+			events 60
+			window 1m
+		}
+	}
+
+	# Caddy reemplaza el X-Forwarded-For que mande el cliente por su IP real
+	# (no confía en encabezados de quien no sea un proxy de confianza).
+	reverse_proxy app:3000
+
+	header -Server
+
+	# Sin registro de accesos (minimización, 12.1): las URL pueden llevar
+	# tokens (/invitacion/…, /restablecer?token=…) y la actividad de cada
+	# persona ya queda en la auditoría de la app. Los errores del proxy
+	# igual salen por la salida estándar.
+}

@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Ingreso 3 de 4 — Documentación</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; flex-direction: column; gap: 10px; padding: 8px 8px 12px; border-bottom: 1px solid {{t.border}}">
+    <div style="display: flex; align-items: center; justify-content: space-between">
+      <a href="IngresoResponsable.dc.html" aria-label="Paso anterior" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+      <div style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 16px; font-weight: 600">Nuevo ingreso</span><span style="font-size: 12px; color: {{t.mutedFg}}">Paso 3 de 4 · Documentación</span></div>
+      <span style="width: 44px"></span>
+    </div>
+    <div aria-hidden="true" style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; padding: 0 12px">
+      <span style="height: 4px; border-radius: 999px; background: {{t.primary}}"></span><span style="height: 4px; border-radius: 999px; background: {{t.primary}}"></span><span style="height: 4px; border-radius: 999px; background: {{t.primary}}"></span><span style="height: 4px; border-radius: 999px; background: {{t.muted}}"></span>
+    </div>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 14px 20px">
+    <div style="display: flex; justify-content: space-between; align-items: baseline">
+      <span style="font-size: 15px; font-weight: 600">{{done}} de {{required}} obligatorios</span>
+      <span style="font-size: 13px; color: {{t.mutedFg}}">Se firman en papel y se suben con foto</span>
+    </div>
+
+    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; overflow: hidden">
+      <sc-for list="{{docs}}" as="d" hint-placeholder-count="8">
+        <li style="border-bottom: 1px solid {{t.border}}">
+          <button type="button" onClick="{{d.toggle}}" aria-pressed="{{d.pressed}}" style="width: 100%; min-height: 58px; padding: 6px 14px; border: 0; background: transparent; color: {{t.fg}}; display: flex; align-items: center; gap: 12px; text-align: left; font-family: 'Geist', sans-serif">
+            <span style="width: 32px; height: 32px; border-radius: 10px; background: {{d.iconBg}}; color: {{d.iconFg}}; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 15px; font-weight: 700">{{d.icon}}</span>
+            <span style="flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 14px; font-weight: 500">{{d.name}}</span><span style="font-size: 12px; color: {{t.mutedFg}}">{{d.sub}}</span></span>
+            <span style="font-size: 12px; font-weight: 600; color: {{d.stateFg}}; white-space: nowrap">{{d.state}}</span>
+          </button>
+        </li>
+      </sc-for>
+    </ul>
+    <span style="font-size: 12px; color: {{t.mutedFg}}">Los formularios de PAMI se siguen firmando en el papel oficial; la app guarda la foto y avisa qué falta.</span>
+  </div>
+
+  <footer style="padding: 12px 20px 20px; border-top: 1px solid {{t.border}}">
+    <a href="IngresoConfirmar.dc.html" style="height: 52px; border-radius: 12px; background: {{t.primary}}; color: {{t.primaryFg}}; font-size: 16px; font-weight: 600; display: flex; align-items: center; justify-content: center; text-decoration: none">Siguiente: revisar</a>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { done: { ficha: true, oblig: true, cons: true, acta: false, dni: true, cred: false } };
+}
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', muted: '#EBF0EE', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', primaryFg: '#FFFFFF', okBg: '#ECFDF3', okFg: '#067647', warnBg: '#FEF4E6', warnFg: '#93370D', offBg: '#EBF0EE', offFg: '#57625F' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', muted: '#1C2724', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', primaryFg: '#06201C', okBg: '#0B2E1E', okFg: '#47CD89', warnBg: '#3A2508', warnFg: '#FDB022', offBg: '#1C2724', offFg: '#9BA8A4' }
+};
+const t = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+const list = [
+['ficha', 'Ficha de ingreso Mis Nonos', 'Firmada por el responsable', true],
+['oblig', 'Obligaciones de las partes', 'Reglamento firmado', true],
+['cons', 'Consentimiento PAMI', 'Formulario oficial firmado', true],
+['acta', 'Acta compromiso PAMI', 'Formulario oficial firmado', true],
+['dni', 'DNI original en custodia', 'Foto del frente y dorso', true],
+['cred', 'Credencial PAMI', 'Foto', true],
+['est', 'Estudios previos', 'Análisis, placas, informes', false],
+['psi', 'Documentación médica o psiquiátrica previa', 'La pide PAMI para la entrevista', false]
+];
+const done = this.state.done;
+const docs = list.map(([k, name, sub, req]) => {
+const ok = !!done[k];
+return {
+name, sub, pressed: ok ? 'true' : 'false',
+icon: ok ? '✓' : (req ? '!' : '+'),
+iconBg: ok ? t.okBg : (req ? t.warnBg : t.offBg), iconFg: ok ? t.okFg : (req ? t.warnFg : t.offFg),
+state: ok ? 'Foto cargada' : (req ? 'Falta' : 'Opcional'), stateFg: ok ? t.okFg : (req ? t.warnFg : t.mutedFg),
+toggle: () => this.setState({ done: { ...done, [k]: !ok } })
+};
+});
+const required = list.filter((x) => x[3]).length;
+const doneCount = list.filter((x) => x[3] && done[x[0]]).length;
+return { t, docs, required, done: doneCount };
+}
+}
+</script>
+</body>
+</html>

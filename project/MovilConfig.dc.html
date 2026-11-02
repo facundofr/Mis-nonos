@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Configuración</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px">
+    <a href="MovilMas.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+    <span style="font-size: 16px; font-weight: 600">Configuración</span>
+    <span style="width: 44px"></span>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 16px; padding: 4px 20px 12px">
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: {{t.mutedFg}}; text-transform: uppercase; letter-spacing: 0.06em">Residencia</h2>
+      <a href="#" style="display: flex; align-items: center; gap: 12px; background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 12px 14px; color: {{t.fg}}; text-decoration: none">
+        <span style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 600">Residencia Mis Nonos</span><span style="font-size: 13px; color: {{t.mutedFg}}">Emergencias: Medicardio · Control médico semanal · Cuota mes adelantado (vence el día de ingreso)</span></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{t.mutedFg}}" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </a>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: {{t.mutedFg}}; text-transform: uppercase; letter-spacing: 0.06em">Turnos</h2>
+      <div style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; overflow: hidden">
+        <sc-for list="{{shifts}}" as="s" hint-placeholder-count="3">
+          <div style="display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 14px; border-bottom: 1px solid {{t.border}}"><span style="font-size: 15px; font-weight: 500">{{s.name}}</span><span style="font-size: 14px; color: {{t.mutedFg}}; font-variant-numeric: tabular-nums">{{s.hours}}</span></div>
+        </sc-for>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: {{t.mutedFg}}; text-transform: uppercase; letter-spacing: 0.06em">Categorías de novedades</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <sc-for list="{{cats}}" as="c" hint-placeholder-count="6">
+          <span style="height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid {{t.border}}; background: {{t.card}}; display: inline-flex; align-items: center; font-size: 14px">{{c}}</span>
+        </sc-for>
+        <button type="button" style="height: 34px; padding: 0 12px; border-radius: 999px; border: 1px dashed {{t.border}}; background: transparent; color: {{t.primary}}; font: 500 14px 'Geist', sans-serif">+ Agregar</button>
+      </div>
+    </section>
+
+    <section style="display: flex; flex-direction: column; gap: 8px">
+      <h2 style="margin: 0; font-size: 13px; font-weight: 600; color: {{t.mutedFg}}; text-transform: uppercase; letter-spacing: 0.06em">Módulos</h2>
+      <div style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; overflow: hidden">
+        <sc-for list="{{mods}}" as="m" hint-placeholder-count="5">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 46px; padding: 0 14px; border-bottom: 1px solid {{t.border}}"><span style="font-size: 14px; font-weight: 500">{{m.name}}</span><span style="font-size: 12px; font-weight: 500; border-radius: 999px; padding: 2px 9px; background: {{m.bg}}; color: {{m.fg}}; white-space: nowrap">{{m.state}}</span></div>
+        </sc-for>
+      </div>
+    </section>
+  </div>
+  <dc-import name="TabBar" active="mas" theme="{{theme}}" hint-size="390px,84px"></dc-import>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', okBg: '#ECFDF3', okFg: '#067647', offBg: '#EBF0EE', offFg: '#57625F' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', okBg: '#0B2E1E', okFg: '#47CD89', offBg: '#1C2724', offFg: '#9BA8A4' }
+};
+const theme = this.props.theme === 'dark' ? 'dark' : 'light';
+const t = T[theme];
+const on = (name) => ({ name, state: 'Activo', bg: t.okBg, fg: t.okFg });
+const soon = (name, f) => ({ name, state: 'Próximamente · ' + f, bg: t.offBg, fg: t.offFg });
+return {
+t, theme,
+shifts: [{ name: 'Mañana', hours: '06:00 – 14:00' }, { name: 'Tarde', hours: '14:00 – 22:00' }, { name: 'Noche', hours: '22:00 – 06:00' }],
+cats: ['Alimentación', 'Estado general', 'Higiene', 'Sueño', 'Visitas', 'Caída o incidente'],
+mods: [on('Pacientes, emergencias y turnos'), soon('Seguimiento del cuidado', 'F2'), soon('Medicación y stock', 'F3'), soon('Historia clínica', 'F4'), soon('Personal y familias', 'F5–F6')]
+};
+}
+}
+</script>
+</body>
+</html>

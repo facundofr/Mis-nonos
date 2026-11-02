@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Stock por paciente — fase 3</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: {{t.bg}}; color: {{t.fg}}; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 8px 8px">
+    <a href="MovilFicha.dc.html" aria-label="Volver" style="width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; color: {{t.fg}}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m12 19-7-7 7-7M19 12H5"/></svg></a>
+    <div style="display: flex; flex-direction: column; align-items: center"><span style="font-size: 16px; font-weight: 600">Stock de medicación</span><span style="font-size: 12px; color: {{t.mutedFg}}">Héctor Benítez</span></div>
+    <span style="font-size: 12px; font-weight: 600; border-radius: 999px; padding: 4px 10px; margin-right: 6px; background: {{t.infoBg}}; color: {{t.infoFg}}">Fase 3</span>
+  </header>
+
+  <div style="flex: 1; min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: 12px; padding: 4px 20px 12px">
+    <div role="alert" style="background: {{t.warnBg}}; color: {{t.warnFg}}; border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px">
+      <span style="flex: 1; font-size: 14px"><b style="font-weight: 600">Metformina alcanza para 3 días.</b> Pedir reposición a la familia.</span>
+      <button type="button" style="height: 36px; padding: 0 12px; border-radius: 10px; border: 0; background: {{t.warnFg}}; color: {{t.warnBg}}; font: 600 13px 'Geist', sans-serif; white-space: nowrap">Pedir</button>
+    </div>
+
+    <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px">
+      <sc-for list="{{items}}" as="s" hint-placeholder-count="3">
+        <li style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px">
+          <div style="display: flex; justify-content: space-between; align-items: baseline; gap: 8px"><span style="font-size: 16px; font-weight: 600">{{s.med}}</span><span style="font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums">{{s.qty}}</span></div>
+          <div style="height: 8px; border-radius: 999px; background: {{t.muted}}; overflow: hidden"><div style="height: 100%; width: {{s.pct}}%; background: {{s.bar}}; border-radius: 999px"></div></div>
+          <div style="display: flex; justify-content: space-between; font-size: 13px; color: {{t.mutedFg}}"><span>Alcanza para {{s.days}}</span><span>Vence {{s.exp}} · {{s.src}}</span></div>
+        </li>
+      </sc-for>
+    </ul>
+
+    <section style="background: {{t.card}}; border: 1px solid {{t.border}}; border-radius: 14px; padding: 4px 14px 8px">
+      <h2 style="margin: 0; padding: 10px 0 4px; font-size: 13px; font-weight: 600; color: {{t.mutedFg}}; text-transform: uppercase; letter-spacing: 0.06em">Movimientos</h2>
+      <sc-for list="{{moves}}" as="m" hint-placeholder-count="3">
+        <div style="display: flex; justify-content: space-between; gap: 8px; padding: 8px 0; border-top: 1px solid {{t.border}}; font-size: 14px"><span>{{m.what}}</span><span style="font-weight: 600; font-variant-numeric: tabular-nums; color: {{m.c}}">{{m.q}}</span></div>
+      </sc-for>
+    </section>
+
+    <div style="margin-top: auto; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px">
+      <button type="button" style="height: 52px; border-radius: 12px; border: 1px solid {{t.border}}; background: {{t.card}}; color: {{t.fg}}; font: 500 15px 'Geist', sans-serif">Conteo físico</button>
+      <button type="button" style="height: 52px; border-radius: 12px; border: 0; background: {{t.primary}}; color: {{t.primaryFg}}; font: 600 15px 'Geist', sans-serif">+ Ingreso</button>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+renderVals() {
+const T = {
+light: { bg: '#F7FAF9', fg: '#16201E', card: '#FFFFFF', muted: '#EBF0EE', mutedFg: '#57625F', border: '#DFE6E3', primary: '#145A52', primaryFg: '#FFFFFF', infoBg: '#EFF4FF', infoFg: '#1849A9', warnBg: '#FEF4E6', warnFg: '#93370D', warnBar: '#F79009', okFg: '#067647', dangerText: '#B42318' },
+dark: { bg: '#0E1513', fg: '#E8EEEC', card: '#151E1B', muted: '#1C2724', mutedFg: '#9BA8A4', border: '#26332F', primary: '#3FB39F', primaryFg: '#06201C', infoBg: '#102A56', infoFg: '#84ADFF', warnBg: '#3A2508', warnFg: '#FDB022', warnBar: '#FDB022', okFg: '#47CD89', dangerText: '#FDA29B' }
+};
+const t = T[this.props.theme === 'dark' ? 'dark' : 'light'];
+return {
+t,
+items: [
+{ med: 'Metformina 850 mg', qty: '3 comp.', pct: 10, bar: t.warnBar, days: '3 días', exp: '03/2027', src: 'Familia' },
+{ med: 'Losartán 50 mg', qty: '42 comp.', pct: 70, bar: t.primary, days: '21 días', exp: '11/2026', src: 'PAMI' },
+{ med: 'Omeprazol 20 mg', qty: '18 cáps.', pct: 45, bar: t.primary, days: '18 días', exp: '08/2027', src: 'PAMI' }
+],
+moves: [
+{ what: 'Metformina · dosis 10:00 · Laura P.', q: '−1', c: t.dangerText },
+{ what: 'Losartán · ingreso PAMI · Ana V.', q: '+30', c: t.okFg },
+{ what: 'Omeprazol · conteo físico · ajuste', q: '−2', c: t.dangerText }
+]
+};
+}
+}
+</script>
+</body>
+</html>

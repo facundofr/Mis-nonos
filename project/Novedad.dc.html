@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Nueva novedad — móvil</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#145A52}a:hover{color:#0E433D}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #FFFFFF; color: #16201E; font-family: 'Geist', system-ui, sans-serif; display: flex; flex-direction: column; overflow: hidden">
+
+  <header style="display: flex; align-items: center; justify-content: space-between; padding: 12px 12px 12px 20px; border-bottom: 1px solid #DFE6E3">
+    <h1 style="margin: 0; font-size: 18px; font-weight: 600; letter-spacing: -0.01em">Nueva novedad</h1>
+    <button type="button" aria-label="Cerrar" style="width: 44px; height: 44px; border-radius: 10px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; color: #16201E"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button>
+  </header>
+
+  <form style="flex: 1; display: flex; flex-direction: column; gap: 22px; padding: 20px">
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <span style="font-size: 14px; font-weight: 500">Residente</span>
+      <div style="display: flex; align-items: center; gap: 12px; border: 1px solid #DFE6E3; border-radius: 12px; padding: 10px 12px">
+        <div style="width: 40px; height: 40px; border-radius: 999px; background: #E8F1EE; color: #145A52; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600">ER</div>
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 2px"><span style="font-size: 16px; font-weight: 500">Elena Ramos</span><span style="font-size: 13px; color: #57625F">Hab. 12 · <b style="font-weight: 600; color: #B42318">⚠ Alergia</b></span></div>
+        <button type="button" style="height: 36px; padding: 0 12px; border-radius: 8px; border: 1px solid #DFE6E3; background: #FFFFFF; font: 500 14px 'Geist', sans-serif; color: #16201E">Cambiar</button>
+      </div>
+    </div>
+
+    <fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px">
+      <legend style="font-size: 14px; font-weight: 500; padding: 0; margin-bottom: 8px">Categoría</legend>
+      <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px">
+        <sc-for list="{{cats}}" as="c" hint-placeholder-count="6">
+          <button type="button" aria-pressed="{{c.pressed}}" onClick="{{c.pick}}" style="{{c.style}}">{{c.label}}</button>
+        </sc-for>
+      </div>
+    </fieldset>
+
+    <div style="display: flex; flex-direction: column; gap: 8px">
+      <label for="nov-texto" style="font-size: 14px; font-weight: 500">¿Qué pasó?</label>
+      <textarea id="nov-texto" rows="4" placeholder="Ej.: Almorzó la mitad, dijo que no tenía hambre." style="border: 1px solid #DFE6E3; border-radius: 10px; padding: 12px; font: 16px/1.45 'Geist', sans-serif; color: #16201E; resize: none"></textarea>
+    </div>
+
+    <label style="display: flex; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid #DFE6E3; border-radius: 12px; padding: 12px 14px">
+      <span style="display: flex; flex-direction: column; gap: 2px"><span style="font-size: 15px; font-weight: 500">Requiere seguimiento</span><span style="font-size: 13px; color: #57625F">Aparece en pendientes y en el traspaso</span></span>
+      <input type="checkbox" role="switch" checked style="width: 44px; height: 26px; accent-color: #145A52; margin: 0">
+    </label>
+  </form>
+
+  <footer style="padding: 12px 20px 20px; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid #DFE6E3">
+    <button type="button" style="height: 52px; border-radius: 10px; border: 0; background: #145A52; color: #FFFFFF; font: 600 16px 'Geist', sans-serif">Guardar novedad</button>
+    <span style="font-size: 12px; color: #57625F; text-align: center">Se registra con tu usuario, fecha y hora.</span>
+  </footer>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) {
+super(props);
+this.state = { picked: 'Alimentación' };
+}
+renderVals() {
+const base = 'height: 48px; border-radius: 10px; font: 500 15px Geist, sans-serif; ';
+const on = base + 'border: 1.5px solid #145A52; background: #E8F1EE; color: #145A52;';
+const off = base + 'border: 1px solid #DFE6E3; background: #FFFFFF; color: #16201E;';
+const labels = ['Alimentación', 'Estado general', 'Higiene', 'Sueño', 'Visitas', 'Caída o incidente'];
+const cats = labels.map((label) => ({
+label,
+pressed: this.state.picked === label ? 'true' : 'false',
+style: this.state.picked === label ? on : off,
+pick: () => this.setState({ picked: label })
+}));
+return { cats };
+}
+}
+</script>
+</body>
+</html>
