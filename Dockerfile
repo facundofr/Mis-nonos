@@ -35,6 +35,13 @@ ENV NODE_ENV=production \
     HOSTNAME=0.0.0.0 \
     STORAGE_DIR=/data/storage
 
+# En producción no se usan npm ni corepack (la imagen ya trae las
+# dependencias): se quitan, así no quedan sus librerías con avisos de
+# seguridad (Trivy en la CI).
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack \
+    /usr/local/bin/yarn /usr/local/bin/yarnpkg /usr/local/bin/pnpm /usr/local/bin/pnpx /opt/yarn-*
+
 # El código queda de root y solo de lectura para el proceso, que corre como
 # "node" (sin privilegios). Solo puede escribir en las fotos y en la caché.
 COPY --from=build /app/.next/standalone ./

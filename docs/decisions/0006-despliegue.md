@@ -54,8 +54,15 @@
 
 4. **Copias de seguridad cifradas fuera del VPS** (10.16, DC-08). Todo en
    una imagen de PostgreSQL con WAL-G 3.0.9, restic 0.19.1 y supercronic
-   0.2.51 (`infra/postgres/Dockerfile`), cada binario verificado con su
-   SHA-256.
+   0.2.51 (`infra/postgres/Dockerfile`).
+   - Desde el 02/11/2026, WAL-G, restic y el `gosu` de la imagen oficial
+     se compilan desde su código, en un commit fijo, con Go 1.27.3 y
+     algunas dependencias actualizadas. Los binarios publicados estaban
+     hechos con un Go viejo y Trivy los marcaba. WAL-G lleva brotli y
+     libsodium, como el binario oficial. supercronic se sigue descargando
+     y verificando con su SHA-256.
+   - Caddy suma `go-jose` y `x/net` corregidos (`--replace` en xcaddy) y
+     los parches de Alpine. La imagen de la app no lleva npm ni corepack.
    - **Base:**
      - PostgreSQL sube el WAL continuo con WAL-G; `archive_timeout=300`
        da una pérdida máxima de 5 minutos;
