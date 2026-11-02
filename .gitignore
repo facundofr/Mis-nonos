@@ -20,7 +20,7 @@ test-results/
 !.env.example
 
 # Archivos subidos en desarrollo (fotos de documentos)
-storage/
+/storage/
 
 # Sistema y logs
 .DS_Store
