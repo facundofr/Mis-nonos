@@ -2,6 +2,8 @@ import { randomUUID } from "node:crypto";
 
 import { expect, type Page } from "@playwright/test";
 
+import { sql } from "drizzle-orm";
+
 import { createDb, createPool } from "@/lib/db/client";
 import { createOrganization } from "@/lib/organizations/create";
 import { totp } from "@/tests/support/totp";
@@ -157,4 +159,35 @@ export async function alignShiftsToNow(siteId: string): Promise<void> {
   } finally {
     await pool.end();
   }
+}
+
+/** Con el rol dueño: una consulta suelta para preparar o leer datos de prueba. */
+async function withOwner<T>(fn: (db: ReturnType<typeof createDb>) => Promise<T>): Promise<T> {
+  const ownerUrl = process.env.DATABASE_URL_OWNER;
+  if (!ownerUrl) throw new Error("Falta DATABASE_URL_OWNER.");
+  const pool = createPool(ownerUrl, { max: 1, application_name: "pruebas-e2e" });
+  try {
+    return await fn(createDb(pool));
+  } finally {
+    await pool.end();
+  }
+}
+
+/** El código del QR de asistencia de la sede (lo que lleva el QR impreso). */
+export function attendanceToken(siteId: string): Promise<string> {
+  return withOwner(async (db) => {
+    const result = await db.execute<{ token: string }>(
+      sql`select attendance_token as token from sites where id = ${siteId}`,
+    );
+    return result.rows[0]!.token;
+  });
+}
+
+/** Corre hacia atrás los registros de asistencia de la sede (como si hubieran pasado minutos). */
+export function backdateAttendance(siteId: string, minutes: number): Promise<void> {
+  return withOwner(async (db) => {
+    await db.execute(
+      sql`update attendance_records set occurred_at = occurred_at - make_interval(mins => ${minutes}) where site_id = ${siteId}`,
+    );
+  });
 }

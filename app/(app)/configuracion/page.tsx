@@ -65,6 +65,11 @@ export default async function SettingsPage() {
           .join(" · ") || "Sin turnos activos",
     },
     {
+      href: "/configuracion/asistencia" as Route,
+      title: "Asistencia con QR",
+      summary: "El QR de la entrada para registrar la llegada y la salida del personal",
+    },
+    {
       href: "/configuracion/categorias",
       title: "Categorías de novedades",
       summary: categories

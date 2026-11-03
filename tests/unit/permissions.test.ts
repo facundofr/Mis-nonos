@@ -11,7 +11,11 @@ import {
 } from "@/lib/auth/permissions";
 
 // La matriz está en la migración original y en las que suman permisos.
-const migration = ["0005_permissions_matrix.sql", "0035_care_grants.sql"]
+const migration = [
+  "0005_permissions_matrix.sql",
+  "0035_care_grants.sql",
+  "0037_attendance_grants.sql",
+]
   .map((file) => readFileSync(path.resolve(__dirname, "../../db/migrations", file), "utf8"))
   .join("\n");
 
@@ -37,7 +41,7 @@ describe("matriz de permisos (F.3, DC-01)", () => {
     ].map(([, permission, role]) => `${permission}:${role}`);
     const expected = rolePermissionPairs().map((pair) => `${pair.permission}:${pair.role}`);
     expect(pairs.sort()).toEqual(expected.sort());
-    expect(expected).toHaveLength(77);
+    expect(expected).toHaveLength(83);
   });
 
   it("Administración gestiona usuarios y configuración, pero no entrega turnos", () => {
@@ -46,7 +50,7 @@ describe("matriz de permisos (F.3, DC-01)", () => {
     expect(admin).toContain("settings.manage");
     expect(admin).not.toContain("handover.deliver");
     expect(admin).toContain("care.record");
-    expect(admin).toHaveLength(25);
+    expect(admin).toHaveLength(27);
   });
 
   it("Dirección hace todo menos usuarios y configuración (nota 2)", () => {
@@ -56,7 +60,7 @@ describe("matriz de permisos (F.3, DC-01)", () => {
     expect(direccion).toContain("residents.update");
     expect(direccion).toContain("handover.deliver");
     expect(direccion).toContain("care.manage");
-    expect(direccion).toHaveLength(25);
+    expect(direccion).toHaveLength(27);
   });
 
   it("Enfermería edita datos y contactos, sin montos ni fotos del legajo (nota 1)", () => {
@@ -68,13 +72,14 @@ describe("matriz de permisos (F.3, DC-01)", () => {
     expect(enfermeria).not.toContain("audit.read_all");
     expect(enfermeria).toContain("care.record");
     expect(enfermeria).not.toContain("care.manage");
-    expect(enfermeria).toHaveLength(16);
+    expect(enfermeria).toHaveLength(17);
   });
 
   it("Cuidado ve fichas y emergencias, registra novedades, turnos y emergencias, sin atenciones", () => {
     const cuidado = permissionsOfRole("cuidado");
     expect(cuidado).toEqual(
       [
+        "attendance.record",
         "audit.read_resident",
         "emergency.pdf",
         "emergency.view",

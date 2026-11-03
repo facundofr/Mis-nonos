@@ -1,0 +1,97 @@
+import { and, desc, eq, sql } from "drizzle-orm";
+
+import * as schema from "@/db/schema";
+import type { Transaction } from "@/lib/db/client";
+
+import { OPEN_ENTRY_MAX_MS, type AttendanceKind, type AttendanceMark } from "./rules";
+
+/*
+ * Consultas de la asistencia (docs/decisions/0020). RLS deja ver a cada
+ * persona lo suyo y, con attendance.read, lo de todos.
+ */
+
+export interface AttendanceRow extends AttendanceMark {
+  id: string;
+}
+
+/** Los últimos registros de una persona en la sede, del más nuevo al más viejo. */
+export async function recentRecords(
+  tx: Transaction,
+  options: { siteId: string; userId: string; limit?: number },
+): Promise<AttendanceRow[]> {
+  const rows = await tx
+    .select({
+      id: schema.attendanceRecords.id,
+      kind: schema.attendanceRecords.kind,
+      occurredAt: schema.attendanceRecords.occurredAt,
+    })
+    .from(schema.attendanceRecords)
+    .where(
+      and(
+        eq(schema.attendanceRecords.siteId, options.siteId),
+        eq(schema.attendanceRecords.userId, options.userId),
+      ),
+    )
+    .orderBy(desc(schema.attendanceRecords.occurredAt), desc(schema.attendanceRecords.id))
+    .limit(options.limit ?? 1);
+  return rows.map((row) => ({ ...row, kind: row.kind as AttendanceKind }));
+}
+
+export interface PresentRow {
+  userId: string;
+  name: string;
+  roleName: string;
+  enteredAt: Date;
+}
+
+/**
+ * Quiénes están en la residencia: su último registro es una entrada de hace
+ * menos de 16 h. Solo personas activas de la residencia.
+ */
+export async function presentNow(
+  tx: Transaction,
+  siteId: string,
+  now = new Date(),
+): Promise<PresentRow[]> {
+  const since = new Date(now.getTime() - OPEN_ENTRY_MAX_MS);
+  const last = tx
+    .selectDistinctOn([schema.attendanceRecords.userId], {
+      userId: schema.attendanceRecords.userId,
+      kind: schema.attendanceRecords.kind,
+      occurredAt: schema.attendanceRecords.occurredAt,
+    })
+    .from(schema.attendanceRecords)
+    .where(
+      and(
+        eq(schema.attendanceRecords.siteId, siteId),
+        sql`${schema.attendanceRecords.occurredAt} > ${since.toISOString()}`,
+      ),
+    )
+    .orderBy(
+      schema.attendanceRecords.userId,
+      desc(schema.attendanceRecords.occurredAt),
+      desc(schema.attendanceRecords.id),
+    )
+    .as("last");
+  const rows = await tx
+    .select({
+      userId: last.userId,
+      name: schema.users.name,
+      roleName: schema.roles.name,
+      enteredAt: last.occurredAt,
+    })
+    .from(last)
+    .innerJoin(schema.users, eq(schema.users.id, last.userId))
+    .innerJoin(
+      schema.organizationMemberships,
+      and(
+        eq(schema.organizationMemberships.userId, last.userId),
+        eq(schema.organizationMemberships.organizationId, sql`(select app.current_org_id())`),
+        eq(schema.organizationMemberships.status, "active"),
+      ),
+    )
+    .innerJoin(schema.roles, eq(schema.roles.id, schema.organizationMemberships.roleId))
+    .where(eq(last.kind, "in"))
+    .orderBy(last.occurredAt);
+  return rows.map((row) => ({ ...row, enteredAt: new Date(row.enteredAt) }));
+}

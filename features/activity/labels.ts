@@ -9,6 +9,9 @@ import { formatDateKey } from "@/lib/time/format";
  */
 
 export const ACTION_LABELS: Record<string, string> = {
+  "attendance.in": "Registró su entrada",
+  "attendance.out": "Registró su salida",
+  "attendance.token_rotated": "Cambió el código QR de asistencia",
   "invitation.created": "Invitó a una persona",
   "invitation.accepted": "Aceptó la invitación",
   "invitation.revoked": "Anuló una invitación",

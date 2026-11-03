@@ -1,14 +1,18 @@
-import { ChevronRight, Lightbulb, LogOut } from "lucide-react";
+import { ChevronRight, Lightbulb, LogOut, QrCode } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { groupNavItems, visibleNavItems } from "@/components/layout/nav-items";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { recentRecords } from "@/features/attendance/queries";
+import { isInside } from "@/features/attendance/rules";
+import { inTenant } from "@/lib/actions";
 import { Avatar } from "@/components/ui/avatar";
 import { signOutAction } from "@/lib/auth/actions";
 import { getPermissions } from "@/lib/auth/authorization";
 import { requireAppContext } from "@/lib/auth/session";
 import { getSiteContext } from "@/lib/site/server";
+import { formatWhen } from "@/lib/time/format";
 
 import { resetOnboardingAction } from "../guia/actions";
 
@@ -18,6 +22,12 @@ export const metadata: Metadata = { title: "Más" };
 export default async function MorePage() {
   const context = await requireAppContext();
   const [permissions, site] = await Promise.all([getPermissions(context), getSiteContext(context)]);
+  const [lastRecord] = permissions.has("attendance.record")
+    ? await inTenant(context, (tx) =>
+        recentRecords(tx, { siteId: site.site.id, userId: context.user.id }),
+      )
+    : [];
+  const now = new Date();
   const groups = groupNavItems(
     visibleNavItems(permissions).filter((item) => item.mobile === "more"),
   );
@@ -40,6 +50,28 @@ export default async function MorePage() {
         </span>
         <ChevronRight aria-hidden="true" className="size-5 text-muted-foreground" />
       </Link>
+
+      {permissions.has("attendance.record") ? (
+        <section
+          aria-labelledby="asistencia"
+          className="flex items-start gap-3 rounded-[14px] border bg-card p-4"
+        >
+          <span className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-secondary text-secondary-foreground">
+            <QrCode aria-hidden="true" className="size-5" />
+          </span>
+          <div className="flex min-w-0 flex-col gap-0.5">
+            <h2 id="asistencia" className="font-semibold">
+              Asistencia
+            </h2>
+            <span className="text-sm text-muted-foreground">
+              {lastRecord
+                ? `${isInside(lastRecord, now) ? "Estás adentro: entraste" : lastRecord.kind === "in" ? "Última entrada" : "Saliste"} ${formatWhen(lastRecord.occurredAt, now, site.site.timezone)}.`
+                : "Todavía no registraste tu entrada."}{" "}
+              Escaneá el QR de la entrada al llegar y al irte.
+            </span>
+          </div>
+        </section>
+      ) : null}
 
       {groups.map((group) => (
         <section key={group.section} className="flex flex-col gap-2">

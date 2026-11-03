@@ -253,6 +253,20 @@
       "when": 1793705410204,
       "tag": "0035_care_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1793740214336,
+      "tag": "0036_attendance",
+      "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1793740215640,
+      "tag": "0037_attendance_grants",
+      "breakpoints": true
     }
   ]
 }

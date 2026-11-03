@@ -88,6 +88,13 @@ export const sites = pgTable(
     publicSlug: text("public_slug"),
     // Presentación breve de la residencia en la landing (DC-19).
     publicIntro: text("public_intro"),
+    // Código del QR de asistencia (docs/decisions/0020): va en el enlace
+    // /fichar/<código>. Administración lo cambia si se filtra.
+    attendanceToken: text("attendance_token")
+      .notNull()
+      .default(
+        sql`replace(gen_random_uuid()::text, '-', '') || replace(gen_random_uuid()::text, '-', '')`,
+      ),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },

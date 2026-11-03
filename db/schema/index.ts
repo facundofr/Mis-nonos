@@ -14,4 +14,5 @@ export * from "./notifications";
 export * from "./onboarding";
 export * from "./residents";
 export * from "./sessions";
+export * from "./staffing";
 export * from "./tenancy";
