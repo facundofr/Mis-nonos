@@ -46,7 +46,7 @@ export interface PresentRow {
 
 /**
  * Quiénes están en la residencia: su último registro es una entrada de hace
- * menos de 16 h. Solo personas activas de la residencia.
+ * menos de 36 h. Solo personas activas de la residencia.
  */
 export async function presentNow(
   tx: Transaction,
@@ -100,20 +100,20 @@ export interface BoardRow {
   userId: string;
   name: string;
   roleName: string;
-  /** Último registro de las últimas 24 h (o nada). */
+  /** Último registro de los últimos días (o nada). */
   last: AttendanceMark | null;
 }
 
 /**
  * Tablero de fichaje: todo el personal activo de la residencia con su último
- * registro de las últimas 24 h. Necesita attendance.read (RLS).
+ * registro reciente. Necesita attendance.read (RLS).
  */
 export async function attendanceBoard(
   tx: Transaction,
   siteId: string,
   now = new Date(),
 ): Promise<BoardRow[]> {
-  const since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const since = new Date(now.getTime() - 2 * OPEN_ENTRY_MAX_MS);
   const last = tx
     .selectDistinctOn([schema.attendanceRecords.userId], {
       userId: schema.attendanceRecords.userId,

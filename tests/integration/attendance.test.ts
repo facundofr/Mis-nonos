@@ -162,6 +162,28 @@ describe("asistencia con QR", () => {
     ).rejects.toThrow();
   });
 
+  it("una guardia de 24 h termina con la salida", async () => {
+    const [entry] = await withTenant(app, director, (tx) =>
+      tx
+        .insert(schema.attendanceRecords)
+        .values({
+          organizationId: director.organizationId,
+          siteId,
+          userId: director.userId,
+          kind: "in",
+        })
+        .returning({ id: schema.attendanceRecords.id }),
+    );
+    await owner
+      .update(schema.attendanceRecords)
+      .set({ occurredAt: new Date(Date.now() - 24 * 60 * 60 * 1000) })
+      .where(eq(schema.attendanceRecords.id, entry!.id));
+    const exit = await withTenant(app, director, (tx) =>
+      recordAttendance(tx, director, { siteId, token }),
+    );
+    expect(exit.kind).toBe("out");
+  });
+
   it("cambiar el código deja sin efecto el QR impreso", async () => {
     await withTenant(app, admin, (tx) => rotateAttendanceToken(tx, admin, siteId));
     expect(await withTenant(app, admin, (tx) => isValidAttendanceToken(tx, siteId, token))).toBe(

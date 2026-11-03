@@ -9,13 +9,16 @@ export interface AttendanceMark {
   occurredAt: Date;
 }
 
-/** Una entrada sin salida después de este tiempo se toma como olvidada. */
-export const OPEN_ENTRY_MAX_MS = 16 * 60 * 60 * 1000;
+/**
+ * Una entrada sin salida después de este tiempo se toma como olvidada. Cubre
+ * las guardias de 24 h con margen.
+ */
+export const OPEN_ENTRY_MAX_MS = 36 * 60 * 60 * 1000;
 
 /** Dos registros iguales dentro de este tiempo son un doble toque. */
 export const DUPLICATE_WINDOW_MS = 2 * 60 * 1000;
 
-/** ¿La persona está adentro? Entró hace menos de 16 h y no salió. */
+/** ¿La persona está adentro? Entró hace menos de 36 h y no salió. */
 export function isInside(last: AttendanceMark | null, now: Date): boolean {
   return (
     last !== null &&

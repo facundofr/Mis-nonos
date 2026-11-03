@@ -26,9 +26,15 @@ describe("asistencia: entrada o salida", () => {
     expect(nextKind(last, at("2026-11-03T14:00:00Z"))).toBe("out");
   });
 
-  it("una entrada sin salida de hace más de 16 h se toma como olvidada", () => {
-    const last = { kind: "in" as const, occurredAt: at("2026-11-02T06:00:00Z") };
-    expect(isInside(last, at("2026-11-02T22:00:01Z"))).toBe(false);
+  it("una guardia de 24 h termina con la salida", () => {
+    const last = { kind: "in" as const, occurredAt: at("2026-11-02T08:00:00Z") };
+    expect(isInside(last, at("2026-11-03T08:30:00Z"))).toBe(true);
+    expect(nextKind(last, at("2026-11-03T08:30:00Z"))).toBe("out");
+  });
+
+  it("una entrada sin salida de hace más de 36 h se toma como olvidada", () => {
+    const last = { kind: "in" as const, occurredAt: at("2026-11-01T06:00:00Z") };
+    expect(isInside(last, at("2026-11-02T18:00:01Z"))).toBe(false);
     expect(nextKind(last, at("2026-11-03T06:00:00Z"))).toBe("in");
   });
 
