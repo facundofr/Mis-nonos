@@ -14,47 +14,45 @@ const HIGHLIGHTS = [
 
 /**
  * Marco de las pantallas de ingreso (diseño Login.dc.html). En escritorio,
- * la foto a la izquierda con el mensaje sobre un degradé salmón; en el
- * teléfono, una franja corta de la foto con la marca, para que el formulario
- * quede a la vista.
+ * la foto sin filtro arriba a la izquierda y el mensaje en un bloque salmón
+ * debajo; en el teléfono, una franja corta de la foto con la marca, para que
+ * el formulario quede a la vista.
  */
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-background lg:flex-row">
-      <aside className="relative hidden overflow-hidden bg-primary text-primary-foreground lg:flex lg:w-[45%] lg:max-w-[640px]">
-        <Image
-          src={HERO_PHOTO}
-          alt=""
-          fill
-          preload
-          sizes="(min-width: 1024px) 45vw, 0px"
-          className="absolute inset-0 size-full object-cover object-[40%_center]"
-        />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-t from-primary from-25% via-primary/80 via-45% to-transparent to-75%"
-        />
-        <div className="relative flex w-full flex-col justify-between gap-12 p-12">
-          <BrandName />
-          <div className="flex flex-col gap-8">
-            <div className="flex max-w-[460px] flex-col gap-4">
-              <p className="text-4xl leading-tight font-semibold tracking-tight text-balance">
-                Cada residente, cada turno, todo en un solo lugar.
-              </p>
-              <p className="text-base leading-relaxed text-primary-foreground/80">
-                Novedades, contactos y la ficha de emergencia a un toque, con registro de quién hizo
-                qué y cuándo.
-              </p>
-            </div>
-            <ul className="flex flex-col gap-2.5 text-sm text-primary-foreground/80">
-              {HIGHLIGHTS.map((item) => (
-                <li key={item} className="flex items-center gap-2.5">
-                  <Check aria-hidden="true" className="size-4 text-primary-foreground" />
-                  {item}
-                </li>
-              ))}
-            </ul>
+      <aside className="hidden flex-col bg-primary text-primary-foreground lg:flex lg:w-[45%] lg:max-w-[640px]">
+        <div className="relative min-h-64 flex-1 overflow-hidden">
+          <Image
+            src={HERO_PHOTO}
+            alt=""
+            fill
+            preload
+            sizes="(min-width: 1024px) 45vw, 0px"
+            className="absolute inset-0 size-full object-cover object-[42%_45%]"
+          />
+          <div className="relative p-12 pb-0">
+            <BrandName />
           </div>
+        </div>
+        <div className="flex flex-col gap-8 p-12">
+          <div className="flex max-w-[460px] flex-col gap-4">
+            <p className="text-4xl leading-tight font-semibold tracking-tight text-balance">
+              Cada residente, cada turno, todo en un solo lugar.
+            </p>
+            <p className="text-base leading-relaxed text-primary-foreground/80">
+              Novedades, contactos y la ficha de emergencia a un toque, con registro de quién hizo
+              qué y cuándo.
+            </p>
+          </div>
+          <ul className="flex flex-col gap-2.5 text-sm text-primary-foreground/80">
+            {HIGHLIGHTS.map((item) => (
+              <li key={item} className="flex items-center gap-2.5">
+                <Check aria-hidden="true" className="size-4 text-primary-foreground" />
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
       </aside>
 
@@ -67,10 +65,6 @@ export function AuthShell({ children }: { children: ReactNode }) {
             preload
             sizes="(min-width: 1024px) 0px, 100vw"
             className="absolute inset-0 size-full object-cover object-[45%_42%]"
-          />
-          <div
-            aria-hidden="true"
-            className="absolute inset-0 bg-gradient-to-b from-black/35 to-transparent to-60%"
           />
           <div className="relative px-6 pt-5">
             <BrandName />
