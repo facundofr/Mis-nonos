@@ -238,7 +238,7 @@ export default async function HandoverPage({ searchParams }: PageProps<"/turno">
       {requested.success ? (
         <Link
           href={"/turno" as Route}
-          className="w-fit text-sm font-medium text-primary underline-offset-4 hover:underline"
+          className="w-fit text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
         >
           Ver el traspaso actual
         </Link>

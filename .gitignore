@@ -29,3 +29,12 @@ Thumbs.db
 
 # Worker compilado (corepack pnpm worker:build)
 dist/
+
+# Impeccable (skills de diseño para agentes): el ejecutable se baja con
+# `npx impeccable install`; la caché del hook es local.
+.claude/skills/impeccable/scripts/bin/
+.impeccable/hook.cache.json
+.impeccable/config.local.json
+
+# Configuración local de Claude Code (hooks y permisos de cada máquina)
+.claude/settings.local.json

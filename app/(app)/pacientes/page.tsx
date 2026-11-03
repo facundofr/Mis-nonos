@@ -121,7 +121,8 @@ export default async function ResidentsPage({ searchParams }: PageProps<"/pacien
               aria-current={selected ? "page" : undefined}
               className={cn(
                 "flex h-10 shrink-0 items-center rounded-full border bg-card px-4 text-sm font-medium",
-                selected && "border-primary bg-secondary font-semibold text-secondary-foreground",
+                selected &&
+                  "border-primary-ink bg-secondary font-semibold text-secondary-foreground",
               )}
             >
               {item.label} {countFor[item.key]}

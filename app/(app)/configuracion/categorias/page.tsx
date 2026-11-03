@@ -39,7 +39,9 @@ export default async function CategoriesSettingsPage() {
               />
             </div>
             <details className="border-t px-4 py-3">
-              <summary className="cursor-pointer text-sm font-medium text-primary">Editar</summary>
+              <summary className="cursor-pointer text-sm font-medium text-primary-ink">
+                Editar
+              </summary>
               <div className="pt-4">
                 <CategoryForm category={category} />
               </div>

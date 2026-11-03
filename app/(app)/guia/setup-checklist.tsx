@@ -115,7 +115,7 @@ export function SetupChecklist({ progress }: { progress: SetupProgress }) {
                 <div className="flex shrink-0 flex-col items-end gap-1">
                   <Link
                     href={item.href}
-                    className="text-sm font-semibold text-primary underline-offset-4 hover:underline"
+                    className="text-sm font-semibold text-primary-ink underline-offset-4 hover:underline"
                   >
                     {item.manual ? "Revisar" : "Hacerlo"}
                   </Link>

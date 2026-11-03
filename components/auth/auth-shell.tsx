@@ -12,7 +12,7 @@ const HIGHLIGHTS = [
 
 /**
  * Marco de las pantallas de ingreso (diseño Login.dc.html). En escritorio,
- * panel verde a la izquierda; en el teléfono, solo la marca arriba, para que
+ * panel salmón a la izquierda; en el teléfono, solo la marca arriba, para que
  * el formulario quede a la vista.
  */
 export function AuthShell({ children }: { children: ReactNode }) {

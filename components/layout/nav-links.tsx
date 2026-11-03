@@ -93,6 +93,9 @@ export function TabBarLinks({
   canCreateNote: boolean;
 }) {
   const pathname = usePathname();
+  // En la ficha de emergencia el "+" queda pegado a las llamadas y se toca sin
+  // querer; ahí no se registra una novedad.
+  const showCreate = canCreateNote && !/^\/pacientes\/[^/]+\/emergencia$/.test(pathname);
   const main = items.filter((item) => item.mobile === "tab");
   const create: NavItem = {
     key: "nueva-novedad",
@@ -104,8 +107,8 @@ export function TabBarLinks({
   };
   const middle = Math.ceil((main.length + 1) / 2);
   const tabs: NavItem[] = [
-    ...main.slice(0, canCreateNote ? middle : main.length),
-    ...(canCreateNote ? [create, ...main.slice(middle)] : []),
+    ...main.slice(0, showCreate ? middle : main.length),
+    ...(showCreate ? [create, ...main.slice(middle)] : []),
     { key: "mas", label: "Más", href: "/mas", icon: "more", group: "main", mobile: "tab" },
   ];
   // "Más" queda marcado también en las secciones que se abren desde ahí.
@@ -147,7 +150,7 @@ export function TabBarLinks({
               className={cn(
                 "flex h-[60px] w-full flex-col items-center justify-center gap-1 rounded-lg text-xs font-medium text-muted-foreground",
                 "focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none",
-                active && "font-semibold text-primary",
+                active && "font-semibold text-primary-ink",
               )}
             >
               <Icon aria-hidden="true" className="size-6" />

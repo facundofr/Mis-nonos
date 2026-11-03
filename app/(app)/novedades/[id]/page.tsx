@@ -61,7 +61,7 @@ export default async function NotePage({ params, searchParams }: PageProps<"/nov
             {note.residentId ? (
               <Link
                 href={`/pacientes/${note.residentId}?tab=novedades` as Route}
-                className="font-semibold text-primary underline-offset-4 hover:underline"
+                className="font-semibold text-primary-ink underline-offset-4 hover:underline"
               >
                 {subject}
               </Link>

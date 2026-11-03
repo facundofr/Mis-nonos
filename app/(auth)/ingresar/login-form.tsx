@@ -42,7 +42,7 @@ export function LoginForm({ next }: { next: string }) {
           <Label htmlFor="password">Contraseña</Label>
           <Link
             href="/recuperar"
-            className="text-[13px] font-medium text-primary underline-offset-4 hover:underline"
+            className="text-[13px] font-medium text-primary-ink underline-offset-4 hover:underline"
           >
             ¿La olvidaste?
           </Link>
@@ -64,7 +64,7 @@ export function LoginForm({ next }: { next: string }) {
             name="remember"
             checked={remember}
             onChange={(event) => setRemember(event.target.checked)}
-            className="size-[18px] accent-primary"
+            className="size-[18px] accent-primary-ink"
           />
           Mantener sesión en este dispositivo
         </label>

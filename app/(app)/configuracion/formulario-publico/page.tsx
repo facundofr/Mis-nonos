@@ -47,7 +47,7 @@ export default async function PublicIntakeSettingsPage() {
               <Link
                 href={path as Route}
                 target="_blank"
-                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary"
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-primary-ink"
               >
                 Abrir
                 <ExternalLink aria-hidden="true" className="size-4" />

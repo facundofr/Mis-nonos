@@ -53,7 +53,7 @@ export function TwoFactorForm({ next }: { next: string }) {
       <button
         type="button"
         onClick={() => setMode((current) => (current === "totp" ? "backup" : "totp"))}
-        className="self-center text-sm font-medium text-primary underline-offset-4 hover:underline"
+        className="self-center text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
       >
         {mode === "totp"
           ? "No tengo el teléfono: usar un código de respaldo"

@@ -70,7 +70,7 @@ export function TwoFactorSetup() {
           />
         </div>
         <details className="text-sm">
-          <summary className="cursor-pointer font-medium text-primary">
+          <summary className="cursor-pointer font-medium text-primary-ink">
             No puedo escanear: escribir la clave a mano
           </summary>
           <p className="mt-2 rounded-lg bg-muted p-3 font-mono text-[13px] break-all">

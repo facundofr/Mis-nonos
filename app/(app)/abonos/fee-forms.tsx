@@ -83,7 +83,7 @@ export function FeeSetupFields({
           name="firstMonthPaid"
           checked={paid}
           onChange={(event) => setPaid(event.target.checked)}
-          className="mt-0.5 size-[18px] shrink-0 accent-primary"
+          className="mt-0.5 size-[18px] shrink-0 accent-primary-ink"
         />
         <span className="flex flex-col gap-0.5">
           <span className="text-[15px] font-medium">Primer mes cobrado al ingreso</span>

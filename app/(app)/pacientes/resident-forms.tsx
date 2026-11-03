@@ -181,7 +181,7 @@ export function ResidentDataForm({
             {Object.entries(MODALITIES).map(([key, label]) => (
               <label
                 key={key}
-                className="flex cursor-pointer items-center gap-3 rounded-xl border bg-card px-3.5 py-3 has-[:checked]:border-primary has-[:checked]:bg-secondary"
+                className="flex cursor-pointer items-center gap-3 rounded-xl border bg-card px-3.5 py-3 has-[:checked]:border-primary-ink has-[:checked]:bg-secondary"
               >
                 <input
                   type="radio"
@@ -189,7 +189,7 @@ export function ResidentDataForm({
                   value={key}
                   checked={modality === key}
                   onChange={() => setModality(key)}
-                  className="size-[18px] accent-primary"
+                  className="size-[18px] accent-primary-ink"
                 />
                 <span className="text-[15px] font-medium">{label}</span>
               </label>
@@ -395,7 +395,7 @@ export function ContactForm({
           name="isAdmissionResponsible"
           checked={responsible}
           onChange={(event) => setResponsible(event.target.checked)}
-          className="mt-0.5 size-[18px] shrink-0 accent-primary"
+          className="mt-0.5 size-[18px] shrink-0 accent-primary-ink"
         />
         <span className="flex flex-col gap-0.5">
           <span className="text-[15px] font-medium">Responsable de la internación</span>
