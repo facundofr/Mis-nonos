@@ -29,7 +29,10 @@ export const serverEnvSchema = z.object({
   // exigirse (cada persona puede activarla igual desde su perfil).
   REQUIRE_PRIVILEGED_2FA: z.preprocess(
     emptyToUndefined,
-    z.enum(["true", "false"]).default("true").transform((value) => value === "true"),
+    z
+      .enum(["true", "false"])
+      .default("true")
+      .transform((value) => value === "true"),
   ),
 
   // Email (SMTP). Sin SMTP_HOST, en desarrollo los emails van a la consola;
