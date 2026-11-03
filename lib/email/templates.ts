@@ -54,6 +54,48 @@ export function invitationEmail(input: {
   return { to: input.to, subject, text, html };
 }
 
+/**
+ * Alta con contraseña provisoria (docs/decisions/0018). La contraseña sirve
+ * para entrar una vez: al ingresar, la app pide elegir una propia.
+ */
+export function temporaryPasswordEmail(input: {
+  to: string;
+  name: string;
+  organizationName: string;
+  roleName: string | null;
+  password: string;
+  loginUrl: string;
+}): EmailMessage {
+  const subject = input.roleName
+    ? `Tu usuario de ${BRAND.appName}`
+    : `Tu contraseña provisoria de ${BRAND.appName}`;
+  const intro = input.roleName
+    ? `Te dieron acceso a ${BRAND.appName} en ${input.organizationName}, con el rol ${input.roleName}.`
+    : `Administración de ${input.organizationName} te dio una contraseña provisoria nueva.`;
+  const text = [
+    `Hola, ${input.name}:`,
+    "",
+    intro,
+    "",
+    `Entrá en ${input.loginUrl}`,
+    `Email: ${input.to}`,
+    `Contraseña provisoria: ${input.password}`,
+    "",
+    "Al entrar, la app te pide elegir una contraseña propia.",
+    "Si no esperabas este email, avisale a la residencia.",
+  ].join("\n");
+  const html = layout(
+    `<p>Hola, ${escapeHtml(input.name)}:</p>
+     <p>${escapeHtml(intro)}</p>
+     <p>Email: <strong>${escapeHtml(input.to)}</strong><br>
+        Contraseña provisoria: <strong style="font-family:ui-monospace,monospace;font-size:16px">${escapeHtml(input.password)}</strong></p>
+     ${button(input.loginUrl, "Entrar")}
+     <p>Al entrar, la app te pide elegir una contraseña propia.</p>
+     <p>Si no esperabas este email, avisale a la residencia.</p>`,
+  );
+  return { to: input.to, subject, text, html };
+}
+
 function layout(body: string): string {
   return `<!doctype html><html lang="es"><body style="margin:0;padding:24px;background:#f7faf9;font-family:system-ui,sans-serif;color:#16201e;line-height:1.5">
 <div style="max-width:480px;margin:0 auto;background:#ffffff;border:1px solid #dfe6e3;border-radius:12px;padding:24px">

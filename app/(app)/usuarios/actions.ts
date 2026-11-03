@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 
 import { listAssignableRoles } from "@/features/users/queries";
+import { suggestTemporaryPassword } from "@/features/users/temporary-password";
 import {
   createWithoutEmailSchema,
   inviteSchema,
@@ -12,6 +13,7 @@ import {
   updateMemberSchema,
 } from "@/features/users/schemas";
 import {
+  createMemberWithEmail,
   createMemberWithoutEmail,
   inviteMember,
   resendInvitation,
@@ -23,7 +25,7 @@ import {
 import { inTenant, runAction } from "@/lib/actions";
 import { hashPassword } from "@/lib/auth/server";
 import { sendEmail } from "@/lib/email";
-import { invitationEmail } from "@/lib/email/templates";
+import { invitationEmail, temporaryPasswordEmail } from "@/lib/email/templates";
 import { env } from "@/lib/env";
 import { fieldErrorsFrom, formValues, type FormState } from "@/lib/forms";
 import { logger } from "@/lib/logger/server";
@@ -97,6 +99,88 @@ export async function inviteAction(
           ? `Invitación enviada a ${parsed.data.email}. Vence en 72 horas.`
           : "La invitación quedó creada, pero no se pudo enviar el email: compartí el enlace.",
         data: { link, email: parsed.data.email, emailSent },
+      };
+    },
+    { values },
+  );
+}
+
+export interface CreatedWithEmailResult {
+  membershipId: string;
+  email: string;
+  emailSent: boolean;
+  /** Solo si el email no salió: para dársela a la persona de otra forma. */
+  temporaryPassword: string | null;
+}
+
+/** Manda la contraseña provisoria; si falla, la app la muestra una vez a Administración. */
+async function sendTemporaryPassword(input: {
+  email: string;
+  name: string;
+  organizationName: string;
+  roleName: string | null;
+  password: string;
+}): Promise<boolean> {
+  try {
+    return await sendEmail(
+      temporaryPasswordEmail({
+        to: input.email,
+        name: input.name,
+        organizationName: input.organizationName,
+        roleName: input.roleName,
+        password: input.password,
+        loginUrl: new URL("/ingresar", env.APP_URL).href,
+      }),
+    );
+  } catch (error) {
+    logger.error({ err: error }, "No se pudo enviar el email con la contraseña provisoria");
+    return false;
+  }
+}
+
+/** Agregar usuario con email: contraseña provisoria por email (docs/decisions/0018). */
+export async function createWithEmailAction(
+  _previous: FormState<CreatedWithEmailResult>,
+  formData: FormData,
+): Promise<FormState<CreatedWithEmailResult>> {
+  const values = formValues(formData);
+  const parsed = inviteSchema.safeParse(values);
+  if (!parsed.success) return { fieldErrors: fieldErrorsFrom(parsed.error), values };
+
+  return runAction<CreatedWithEmailResult>(
+    "users.manage",
+    async (context) => {
+      const password = suggestTemporaryPassword();
+      const passwordHash = await hashPassword(password);
+      const { created, roleName } = await inTenant(context, async (tx) => {
+        const member = await createMemberWithEmail(tx, context.tenant, {
+          ...parsed.data,
+          passwordHash,
+        });
+        const roles = await listAssignableRoles(tx);
+        return {
+          created: member,
+          roleName: roles.find((role) => role.key === parsed.data.roleKey)?.name ?? "",
+        };
+      });
+      const emailSent = await sendTemporaryPassword({
+        email: parsed.data.email,
+        name: parsed.data.name,
+        organizationName: context.membership.organizationName,
+        roleName,
+        password,
+      });
+      refresh();
+      return {
+        success: emailSent
+          ? `Listo: le mandamos a ${parsed.data.email} su contraseña provisoria.`
+          : "El usuario quedó creado, pero no se pudo enviar el email. Dale esta contraseña provisoria:",
+        data: {
+          membershipId: created.membershipId,
+          email: parsed.data.email,
+          emailSent,
+          temporaryPassword: emailSent ? null : password,
+        },
       };
     },
     { values },
@@ -179,10 +263,25 @@ export async function resetPasswordAction(
   if (!parsed.success) return { fieldErrors: fieldErrorsFrom(parsed.error) };
   if (!idSchema.safeParse(membershipId).success) return { error: "Persona inválida." };
   return runAction("users.manage", async (context) => {
-    const passwordHash = await hashPassword(parsed.data.temporaryPassword);
-    await inTenant(context, (tx) =>
+    const password = parsed.data.temporaryPassword;
+    const passwordHash = await hashPassword(password);
+    const member = await inTenant(context, (tx) =>
       resetTemporaryPassword(tx, context.tenant, membershipId, passwordHash),
     );
+    if (member.email) {
+      const sent = await sendTemporaryPassword({
+        email: member.email,
+        name: member.name,
+        organizationName: context.membership.organizationName,
+        roleName: null,
+        password,
+      });
+      if (sent) {
+        return {
+          success: `Contraseña provisoria guardada y enviada a ${member.email}. Al entrar va a tener que elegir una propia.`,
+        };
+      }
+    }
     return {
       success:
         "Contraseña provisoria guardada. Dásela a la persona: al entrar va a tener que elegir una propia.",

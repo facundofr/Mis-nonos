@@ -78,11 +78,15 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/u
         </div>
       </Card>
 
-      {!member.email && !isSelf ? (
+      {!isSelf ? (
         <Card>
           <CardHeader
             title="Contraseña"
-            description="No tiene email: si se la olvida, le das una provisoria nueva."
+            description={
+              member.email
+                ? "Si se la olvida, le das una provisoria nueva: se la mandamos a su email."
+                : "No tiene email: si se la olvida, le das una provisoria nueva."
+            }
           />
           <div className="p-5">
             <ResetPasswordForm

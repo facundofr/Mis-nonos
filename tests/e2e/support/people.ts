@@ -78,3 +78,16 @@ export async function mailpitMessagesTo(address: string): Promise<{ Subject: str
   const body = (await response.json()) as { messages?: { Subject: string }[] };
   return body.messages ?? [];
 }
+
+/** Texto del último email que recibió una dirección en Mailpit. */
+export async function mailpitLatestText(address: string): Promise<string> {
+  const url = new URL("http://localhost:8025/api/v1/search");
+  url.searchParams.set("query", `to:"${address}"`);
+  const response = await fetch(url);
+  if (!response.ok) return "";
+  const body = (await response.json()) as { messages?: { ID: string }[] };
+  const id = body.messages?.[0]?.ID;
+  if (!id) return "";
+  const message = await fetch(`http://localhost:8025/api/v1/message/${id}`);
+  return message.ok ? ((await message.json()) as { Text: string }).Text : "";
+}

@@ -43,9 +43,9 @@ export default async function UsersPage() {
         back={{ href: "/mas", label: "Más" }}
         actions={
           <>
-            <Link href="/usuarios/invitar" className={buttonClassName({ size: "md" })}>
+            <Link href="/usuarios/agregar" className={buttonClassName({ size: "md" })}>
               <MailPlus aria-hidden="true" className="size-4" />
-              Invitar usuario
+              Agregar usuario
             </Link>
             <Link
               href="/usuarios/nuevo"

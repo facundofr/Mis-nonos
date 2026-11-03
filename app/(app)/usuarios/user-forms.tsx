@@ -12,9 +12,12 @@ import { Notice } from "@/components/ui/notice";
 import { ROLE_DESCRIPTIONS } from "@/features/users/schemas";
 import { SYSTEM_ROLES, type SystemRoleKey } from "@/lib/auth/policy";
 import type { FormState } from "@/lib/forms";
+import Link from "next/link";
+import type { Route } from "next";
 import { cn } from "@/lib/utils";
 
 import {
+  createWithEmailAction,
   createWithoutEmailAction,
   inviteAction,
   resendInvitationAction,
@@ -22,6 +25,7 @@ import {
   revokeInvitationAction,
   setMemberActiveAction,
   updateMemberAction,
+  type CreatedWithEmailResult,
   type InvitationResult,
 } from "./actions";
 
@@ -145,6 +149,96 @@ function ProfileFields({
         </Field>
       </div>
     </>
+  );
+}
+
+/**
+ * Agregar usuario con email (docs/decisions/0018): la app genera una
+ * contraseña provisoria y se la manda; al primer ingreso elige una propia.
+ */
+export function CreateWithEmailForm() {
+  const [state, action] = useActionState<FormState<CreatedWithEmailResult>, FormData>(
+    createWithEmailAction,
+    null,
+  );
+  const [copied, setCopied] = useState(false);
+  if (state?.data) {
+    const { data } = state;
+    return (
+      <div className="flex flex-col gap-4">
+        <Notice tone={data.emailSent ? "success" : "warning"}>{state.success}</Notice>
+        {data.temporaryPassword ? (
+          <div className="flex flex-col gap-2 rounded-lg border bg-muted/50 p-3">
+            <span className="text-[13px] font-medium">Contraseña provisoria de {data.email}</span>
+            <code className="font-mono text-lg tracking-wide">{data.temporaryPassword}</code>
+            <Button
+              variant="outline"
+              size="md"
+              className="self-start"
+              onClick={async () => {
+                await navigator.clipboard.writeText(data.temporaryPassword ?? "");
+                setCopied(true);
+              }}
+            >
+              {copied ? (
+                <Check aria-hidden="true" className="size-4" />
+              ) : (
+                <Copy aria-hidden="true" className="size-4" />
+              )}
+              {copied ? "Copiada" : "Copiar contraseña"}
+            </Button>
+            <FieldMessage>
+              No se vuelve a mostrar. Si se pierde, generá otra desde su ficha.
+            </FieldMessage>
+          </div>
+        ) : null}
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          Entra en la app con su email y esa contraseña. Al primer ingreso elige una propia.
+        </p>
+        <Link
+          href={`/usuarios/${data.membershipId}` as Route}
+          className="self-start text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
+        >
+          Ver su ficha
+        </Link>
+      </div>
+    );
+  }
+  const values = state?.values;
+  return (
+    <form action={action} className="flex flex-col gap-4" noValidate>
+      <Field id="name" label="Nombre y apellido" required error={state?.fieldErrors?.name}>
+        {(control) => (
+          <Input {...control} name="name" autoComplete="off" defaultValue={values?.name ?? ""} />
+        )}
+      </Field>
+      <Field
+        id="email"
+        label="Email"
+        required
+        hint="Le llega una contraseña provisoria a este email."
+        error={state?.fieldErrors?.email}
+      >
+        {(control) => (
+          <Input
+            {...control}
+            name="email"
+            type="email"
+            inputMode="email"
+            autoCapitalize="none"
+            spellCheck={false}
+            defaultValue={values?.email ?? ""}
+          />
+        )}
+      </Field>
+      <ProfileFields state={state} />
+      <RoleChooser
+        defaultValue={values?.roleKey ?? "cuidado"}
+        error={state?.fieldErrors?.roleKey}
+      />
+      <FormMessage state={state} />
+      <SubmitButton pendingLabel="Creando…">Crear usuario y mandar contraseña</SubmitButton>
+    </form>
   );
 }
 
