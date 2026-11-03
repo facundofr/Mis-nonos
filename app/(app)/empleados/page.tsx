@@ -71,10 +71,7 @@ export default async function StaffPage({ searchParams }: PageProps<"/empleados"
 
       {list.length === 0 ? (
         <div className="rounded-[14px] border bg-card">
-          <EmptyState
-            icon={UserRound}
-            title={showOnShift ? "Nadie en este turno" : "Sin personal"}
-          >
+          <EmptyState icon={UserRound} title={showOnShift ? "Nadie en este turno" : "Sin personal"}>
             {showOnShift
               ? "Nadie tiene este turno como habitual. Administración lo carga en la ficha de cada persona."
               : "Todavía no hay personal activo."}
