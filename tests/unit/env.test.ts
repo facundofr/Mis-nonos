@@ -8,10 +8,19 @@ describe("parseServerEnv", () => {
       NODE_ENV: "development",
       APP_URL: "http://localhost:3000",
       LOG_LEVEL: "info",
+      REQUIRE_PRIVILEGED_2FA: true,
       SMTP_PORT: 587,
       SMTP_SECURITY: "starttls",
       STORAGE_DIR: "storage",
     });
+  });
+
+  it("la 2FA de Administración y Dirección se puede desactivar", () => {
+    expect(parseServerEnv({ REQUIRE_PRIVILEGED_2FA: "false" }).REQUIRE_PRIVILEGED_2FA).toBe(false);
+    expect(parseServerEnv({ REQUIRE_PRIVILEGED_2FA: "" }).REQUIRE_PRIVILEGED_2FA).toBe(true);
+    expect(() => parseServerEnv({ REQUIRE_PRIVILEGED_2FA: "no" })).toThrow(
+      /REQUIRE_PRIVILEGED_2FA/,
+    );
   });
 
   it("una variable vacía cuenta como no definida", () => {
