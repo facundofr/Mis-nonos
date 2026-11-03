@@ -7,6 +7,7 @@ import { cache } from "react";
 
 import * as schema from "@/db/schema";
 import { getDb, withUserContext, type TenantContext } from "@/lib/db";
+import { env } from "@/lib/env";
 
 import { evaluateSession, isPrivilegedRole } from "./policy";
 import { getAuth } from "./server";
@@ -166,7 +167,10 @@ const resolveAppContext = cache(async (): Promise<AppContext & AppGates> => {
     membership,
     tenant: { organizationId: membership.organizationId, userId: current.user.id },
     needsPasswordChange: current.user.passwordChangeRequired,
-    needsTwoFactorSetup: isPrivilegedRole(membership.roleKey) && !current.user.twoFactorEnabled,
+    needsTwoFactorSetup:
+      env.REQUIRE_PRIVILEGED_2FA &&
+      isPrivilegedRole(membership.roleKey) &&
+      !current.user.twoFactorEnabled,
   };
 });
 

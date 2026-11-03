@@ -25,6 +25,16 @@ export const serverEnvSchema = z.object({
   // la clave de los enlaces temporales a archivos. Se exige al primer uso.
   BETTER_AUTH_SECRET: optional(z.string().min(32, "debe tener al menos 32 caracteres")),
 
+  // 2FA obligatoria para Administración y Dirección. Con "false" deja de
+  // exigirse (cada persona puede activarla igual desde su perfil).
+  REQUIRE_PRIVILEGED_2FA: z.preprocess(
+    emptyToUndefined,
+    z
+      .enum(["true", "false"])
+      .default("true")
+      .transform((value) => value === "true"),
+  ),
+
   // Email (SMTP). Sin SMTP_HOST, en desarrollo los emails van a la consola;
   // en producción es obligatorio (lib/email/config.ts).
   SMTP_HOST: optional(z.string()),
