@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 
 import { LogoMark } from "@/components/brand/logo-mark";
+import { ThemeSwitch } from "@/components/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { BRAND } from "@/lib/brand";
 import { signOutAction } from "@/lib/auth/actions";
@@ -104,6 +105,7 @@ export function AppShell({
                   Turno {shiftLabel}
                 </span>
               ) : null}
+              <ThemeSwitch />
               <Link
                 href="/notificaciones"
                 aria-label={
