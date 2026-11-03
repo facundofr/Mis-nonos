@@ -20,9 +20,10 @@
 3. **La hora es la del servidor** y cada persona registra solo la suya (lo
    exige también RLS).
 4. **Entrada o salida según el último registro:**
-   - adentro (entró hace menos de 16 h y no salió): el próximo es la salida;
-   - si no, la entrada. Una entrada de más de 16 h sin salida se toma como
-     olvidada.
+   - adentro (entró hace menos de 36 h y no salió): el próximo es la salida;
+   - si no, la entrada. Una entrada de más de 36 h sin salida se toma como
+     olvidada. (Eran 16 h; se subió el 03/11/2026 porque hay guardias de
+     24 h y la salida se tomaba como una entrada nueva.)
    - Un segundo toque dentro de 2 minutos no registra otra cosa.
 5. **Quién la usa:** todo el personal registra la suya
    (`attendance.record`); Administración y Dirección ven quién está en la
