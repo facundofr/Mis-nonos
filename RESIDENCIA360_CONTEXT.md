@@ -3428,11 +3428,11 @@ este checklist al cerrar cada tarea.
 
 -   [ ] F2-TAR-01 Tareas con responsable, vencimiento y recurrencia.
 -   [ ] F2-INC-01 Incidencias con tipos configurables.
--   [ ] F2-INC-02 "Registrar emergencia" desde la ficha.
+-   [x] F2-INC-02 "Registrar emergencia" desde la ficha (registro de emergencias, 0017).
 -   [ ] F2-NOV-01 Conversión de novedades en tareas/incidencias.
--   [ ] F2-CT-01 Equipo tratante y profesionales externos.
--   [ ] F2-ENC-01 Atenciones y visitas profesionales.
--   [ ] F2-ENC-02 "Última visita" por tipo y visitas atrasadas.
+-   [ ] F2-CT-01 Equipo tratante y profesionales externos (profesionales y especialidades hechos, 0017; falta el equipo por paciente).
+-   [x] F2-ENC-01 Atenciones y visitas profesionales, incluida enfermería (0017).
+-   [ ] F2-ENC-02 "Última visita" por tipo y visitas atrasadas (última visita y próximos controles hechos, 0017; faltan las atrasadas por frecuencia).
 -   [ ] F2-VS-01 Signos vitales y gráficos.
 -   [ ] F2-VS-02 Controles programados.
 

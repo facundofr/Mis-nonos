@@ -49,9 +49,9 @@ export async function createOrganization(
   // Turnos, categorías de novedades y documentos del legajo iniciales.
   await seedOrganizationDefaults(tx, { organizationId: organization.id, siteId: site.id });
 
-  // Módulos del MVP: el núcleo y el abono mensual (DT-05).
+  // Módulos: el núcleo, el abono mensual (DT-05) y el seguimiento del cuidado (0017).
   await tx.insert(schema.organizationModules).values(
-    (["core", "fees"] as const).map((moduleKey) => ({
+    (["core", "fees", "care"] as const).map((moduleKey) => ({
       organizationId: organization.id,
       moduleKey,
       enabled: true,

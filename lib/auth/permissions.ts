@@ -1,9 +1,10 @@
 import type { SystemRoleKey } from "./policy";
 
 /*
- * Permisos del MVP: matriz F.3 del plan, confirmada el 01/11/2026 (DC-01).
- * La base tiene la misma matriz (migración 0005); una prueba unitaria
- * compara las dos para que no se separen.
+ * Permisos del MVP: matriz F.3 del plan, confirmada el 01/11/2026 (DC-01),
+ * más los del seguimiento del cuidado (docs/decisions/0017). La base tiene
+ * la misma matriz (migraciones 0005 y 0035); una prueba unitaria compara
+ * las dos para que no se separen.
  */
 
 /** Módulos activables (E3). Un permiso vale solo si su módulo está activo. */
@@ -134,6 +135,27 @@ export const PERMISSIONS = {
     module: "core",
     description: "Exportar los datos de la residencia (E14)",
     roles: ["admin", "direccion"],
+  },
+  // Seguimiento del cuidado (fase 2 adelantada, migración 0035, docs/decisions/0017).
+  "care.read": {
+    module: "care",
+    description: "Ver profesionales, especialidades y atenciones",
+    roles: ["admin", "direccion", "enfermeria"],
+  },
+  "care.record": {
+    module: "care",
+    description: "Registrar y anular atenciones, también las de enfermería",
+    roles: ["admin", "direccion", "enfermeria"],
+  },
+  "care.manage": {
+    module: "care",
+    description: "Agregar y editar profesionales y especialidades",
+    roles: ["admin", "direccion"],
+  },
+  "emergencies.manage": {
+    module: "care",
+    description: "Registrar, completar y cerrar emergencias",
+    roles: ALL,
   },
 } as const satisfies Record<string, PermissionDefinition>;
 

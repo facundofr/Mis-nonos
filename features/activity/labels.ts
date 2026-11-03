@@ -1,3 +1,4 @@
+import { PROFESSIONAL_KINDS } from "@/features/care/schemas";
 import { COVERAGE_TYPES, DISCHARGE_REASONS, MODALITIES } from "@/features/residents/schemas";
 import { STATUS_LABELS } from "@/features/residents/format";
 import { formatDateKey } from "@/lib/time/format";
@@ -42,6 +43,14 @@ export const ACTION_LABELS: Record<string, string> = {
   "settings.payment_method_updated": "Editó un medio de pago",
   "handover.confirmed": "Confirmó la recepción del turno",
   "site.public_intake_updated": "Cambió el formulario público",
+  "care.specialty_created": "Agregó una especialidad",
+  "care.specialty_updated": "Editó una especialidad",
+  "care.professional_created": "Agregó un profesional",
+  "care.professional_updated": "Editó un profesional",
+  "care.encounter_recorded": "Registró una atención",
+  "care.encounter_voided": "Anuló una atención",
+  "emergency.recorded": "Registró una emergencia",
+  "emergency.closed": "Cerró una emergencia",
 };
 
 const FIELD_LABELS: Record<string, string> = {
@@ -96,6 +105,12 @@ const FIELD_LABELS: Record<string, string> = {
   amount: "Monto",
   billingDay: "Día de vencimiento",
   paidOn: "Fecha del pago",
+  transferred: "Hubo traslado",
+  kind: "Tipo",
+  licenseNumber: "Matrícula",
+  institution: "Institución",
+  notes: "Notas",
+  active: "Activo",
 };
 
 const VALUE_LABELS: Record<string, Record<string, string>> = {
@@ -103,6 +118,7 @@ const VALUE_LABELS: Record<string, Record<string, string>> = {
   admissionModality: MODALITIES,
   coverageType: COVERAGE_TYPES,
   dischargeReason: DISCHARGE_REASONS,
+  kind: PROFESSIONAL_KINDS,
 };
 
 export function fieldLabel(field: string): string {

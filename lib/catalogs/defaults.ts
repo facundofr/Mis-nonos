@@ -1,9 +1,10 @@
 import * as schema from "@/db/schema";
+import { NURSING_SPECIALTY_KEY } from "@/db/schema/care";
 import type { Transaction } from "@/lib/db/client";
 
 /*
  * Valores iniciales de una residencia nueva (DC-12): turnos, categorías de
- * novedades y documentos del legajo. Salen del diseño y del legajo real de
+ * novedades, documentos del legajo, medios de pago y especialidades. Salen del diseño y del legajo real de
  * Mis Nonos (Apéndice E). Después se cambian desde Configuración.
  */
 
@@ -20,6 +21,23 @@ export const DEFAULT_NOTE_CATEGORIES = [
   "Sueño",
   "Visitas",
   "Caída o incidente",
+] as const;
+
+/**
+ * Especialidades (8.7, docs/decisions/0017). Enfermería lleva la clave fija
+ * que usa su sección; las demás se renombran o desactivan libremente.
+ */
+export const DEFAULT_SPECIALTIES = [
+  { key: null, name: "Medicina clínica" },
+  { key: NURSING_SPECIALTY_KEY, name: "Enfermería" },
+  { key: null, name: "Kinesiología" },
+  { key: null, name: "Nutrición" },
+  { key: null, name: "Psicología" },
+  { key: null, name: "Psiquiatría" },
+  { key: null, name: "Terapia ocupacional" },
+  { key: null, name: "Fonoaudiología" },
+  { key: null, name: "Odontología" },
+  { key: null, name: "Podología" },
 ] as const;
 
 /** Medios de pago del abono (DC-21), configurables por sede. */
@@ -124,6 +142,14 @@ export async function seedOrganizationDefaults(
       organizationId: input.organizationId,
       siteId: input.siteId,
       name,
+      position: index + 1,
+    })),
+  );
+  await tx.insert(schema.specialties).values(
+    DEFAULT_SPECIALTIES.map((specialty, index) => ({
+      organizationId: input.organizationId,
+      key: specialty.key,
+      name: specialty.name,
       position: index + 1,
     })),
   );

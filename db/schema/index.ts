@@ -4,6 +4,7 @@ export * from "./access";
 export * from "./admission-requests";
 export * from "./audit";
 export * from "./auth";
+export * from "./care";
 export * from "./catalogs";
 export * from "./documents";
 export * from "./fees";
