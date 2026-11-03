@@ -2,9 +2,9 @@ import type { SystemRoleKey } from "./policy";
 
 /*
  * Permisos del MVP: matriz F.3 del plan, confirmada el 01/11/2026 (DC-01),
- * más los del seguimiento del cuidado (docs/decisions/0017). La base tiene
- * la misma matriz (migraciones 0005 y 0035); una prueba unitaria compara
- * las dos para que no se separen.
+ * más los del seguimiento del cuidado (docs/decisions/0017) y la asistencia
+ * (0020). La base tiene la misma matriz (migraciones 0005, 0035 y 0037);
+ * una prueba unitaria compara las dos para que no se separen.
  */
 
 /** Módulos activables (E3). Un permiso vale solo si su módulo está activo. */
@@ -99,6 +99,17 @@ export const PERMISSIONS = {
     module: "core",
     description: "Ver empleados (nombre, rol y teléfono)",
     roles: ALL,
+  },
+  // Asistencia del personal (docs/decisions/0020).
+  "attendance.record": {
+    module: "core",
+    description: "Registrar la propia entrada y salida",
+    roles: ALL,
+  },
+  "attendance.read": {
+    module: "core",
+    description: "Ver quién está en la residencia",
+    roles: ["admin", "direccion"],
   },
   "users.manage": {
     module: "core",

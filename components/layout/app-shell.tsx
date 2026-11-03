@@ -42,8 +42,8 @@ export function AppShell({
   children,
 }: ShellProps) {
   return (
-    <div className="min-h-dvh bg-surface lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
-      <aside className="sticky top-0 hidden h-dvh flex-col border-r border-sidebar-border bg-sidebar lg:flex">
+    <div className="min-h-dvh bg-surface lg:grid lg:grid-cols-[260px_minmax(0,1fr)] print:block print:bg-white">
+      <aside className="sticky top-0 hidden h-dvh flex-col border-r border-sidebar-border bg-sidebar lg:flex print:hidden">
         <Link
           href="/inicio"
           aria-label="Ir al inicio"
@@ -86,7 +86,7 @@ export function AppShell({
 
       <div className="flex min-h-dvh min-w-0 flex-col">
         {/* Encabezado: en el teléfono, la residencia; en escritorio, el turno. */}
-        <header className="sticky top-0 z-20 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85">
+        <header className="sticky top-0 z-20 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85 print:hidden">
           <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4 lg:h-16 lg:px-8">
             <Link href="/inicio" className="flex min-w-0 items-center gap-2.5 lg:hidden">
               <span className="flex size-8 shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground">
@@ -130,7 +130,7 @@ export function AppShell({
 
         <nav
           aria-label="Navegación principal"
-          className="fixed inset-x-0 bottom-0 z-30 h-[84px] border-t bg-card pb-[env(safe-area-inset-bottom)] lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-30 h-[84px] border-t bg-card pb-[env(safe-area-inset-bottom)] lg:hidden print:hidden"
         >
           <TabBarLinks items={items} canCreateNote={canCreateNote} />
         </nav>

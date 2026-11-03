@@ -22,6 +22,7 @@ import { Notice } from "@/components/ui/notice";
 import { actionLabel } from "@/features/activity/labels";
 import { listRecentActivity } from "@/features/activity/queries";
 import { countRequests } from "@/features/admission-requests/queries";
+import { presentNow } from "@/features/attendance/queries";
 import { listEmergencies, upcomingControls } from "@/features/care/queries";
 import { feeAlerts } from "@/features/fees/queries";
 import { residentsWithMissingDocuments } from "@/features/documents/queries";
@@ -221,6 +222,7 @@ export default async function HomePage() {
         staffActive: canStaff
           ? (await listMembers(tx)).filter((member) => member.status === "active").length
           : null,
+        present: permissions.has("attendance.read") ? await presentNow(tx, site.id, now) : null,
         missing: canDocuments ? await residentsWithMissingDocuments(tx) : null,
         activity: canAllActivity ? await listRecentActivity(tx) : [],
         fees: permissions.has("fees.read")
@@ -316,6 +318,7 @@ export default async function HomePage() {
     emergencies,
     controls,
     staffActive,
+    present,
     missing,
     activity,
     requests,
@@ -450,7 +453,15 @@ export default async function HomePage() {
           }
           href="/novedades?ver=todas"
         />
-        {staffActive !== null ? (
+        {present ? (
+          <KpiCard
+            icon={UserRound}
+            label="En la residencia"
+            value={String(present.length)}
+            detail={staffActive !== null ? `de ${staffActive} en el personal` : "Ver quiénes"}
+            href={"/empleados?filtro=adentro" as Route}
+          />
+        ) : staffActive !== null ? (
           <KpiCard
             icon={UserRound}
             label="Personal activo"

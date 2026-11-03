@@ -3471,7 +3471,7 @@ este checklist al cerrar cada tarea.
 -   [ ] F5-EMP-01 Legajo completo.
 -   [ ] F5-EMP-02 Documentación y vencimientos.
 -   [ ] F5-EMP-03 Turnos y guardias.
--   [ ] F5-EMP-04 Asistencia.
+-   [~] F5-EMP-04 Asistencia: entrada y salida con QR y "quién está ahora" (adelantada, 0020). Faltan horas por mes, exportación y correcciones.
 -   [ ] F5-EMP-05 Reporte "quién estaba de guardia".
 
 ### F6 — Familias

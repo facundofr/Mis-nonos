@@ -99,15 +99,16 @@ describe("Permisos efectivos (rol + módulos activos)", () => {
 
   it("sin el módulo del abono, Administración no ve montos", async () => {
     const admin = await permissionsOf(ids.orgA, "admin");
+    expect(admin.has("attendance.read")).toBe(true);
     expect(admin.has("users.manage")).toBe(true);
     expect(admin.has("fees.read")).toBe(false);
-    expect(admin.size).toBe(19);
+    expect(admin.size).toBe(21);
   });
 
   it("con el módulo del abono activo, sí", async () => {
     const admin = await permissionsOf(ids.orgB, "admin");
     expect(admin.has("fees.read")).toBe(true);
-    expect(admin.size).toBe(21);
+    expect(admin.size).toBe(23);
   });
 
   it("Cuidado no edita datos ni ve montos aunque el módulo esté activo", async () => {
@@ -115,7 +116,7 @@ describe("Permisos efectivos (rol + módulos activos)", () => {
     expect(cuidado.has("residents.read")).toBe(true);
     expect(cuidado.has("residents.update")).toBe(false);
     expect(cuidado.has("fees.read")).toBe(false);
-    expect(cuidado.size).toBe(10);
+    expect(cuidado.size).toBe(11);
   });
 
   it("los módulos de otra residencia no cuentan", async () => {
