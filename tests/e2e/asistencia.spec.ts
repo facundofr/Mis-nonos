@@ -43,13 +43,22 @@ test("la cuidadora registra entrada y salida con el QR; Administración ve quié
   await expect(marta.getByText(/Entrada registrada a las \d{2}:\d{2}/)).toBeVisible();
   await expect(marta.getByText("¡Buen turno, Marta!")).toBeVisible();
 
-  // Administración la ve en la residencia, en Inicio y en Personal.
+  // Administración la ve con tilde en Fichaje (y en Inicio).
   await page.goto("/inicio");
-  await expect(page.getByRole("link", { name: /En la residencia\s*1/ })).toBeVisible();
-  await page.goto("/empleados?filtro=adentro");
-  const adentro = page.getByRole("list", { name: "En la residencia" });
-  await expect(adentro.getByText("Marta Gómez")).toBeVisible();
-  await expect(adentro.getByText(/Entró \d{2}:\d{2}/)).toBeVisible();
+  await expect(page.getByRole("link", { name: /Trabajando ahora\s*1/ })).toBeVisible();
+  await page.goto("/mas");
+  await page.getByRole("link", { name: "Fichaje", exact: true }).click();
+  await expect(page).toHaveURL(/\/fichaje$/);
+  const martaRow = page.getByRole("listitem").filter({ hasText: "Marta Gómez" });
+  await expect(martaRow.getByRole("img", { name: "Está trabajando" })).toBeVisible();
+  await expect(martaRow.getByText(/Entró \d{2}:\d{2}/)).toBeVisible();
+  await expect(page.getByText("1 trabajando")).toBeVisible();
+
+  // La pantalla fija muestra el QR sin sesión.
+  const screen = await newPhone(browser);
+  await screen.goto(`/pantalla/${token}`);
+  await expect(screen.getByRole("img", { name: "Código QR de fichaje" })).toBeVisible();
+  await expect(screen).toHaveURL(new RegExp(`/pantalla/${token}$`));
 
   // Un rato después (fuera de los 2 minutos del doble toque), la salida.
   await backdateAttendance(organization.siteId, 10);
@@ -58,8 +67,17 @@ test("la cuidadora registra entrada y salida con el QR; Administración ve quié
   await marta.getByRole("button", { name: "Registrar salida" }).click();
   await expect(marta.getByText(/Salida registrada a las \d{2}:\d{2}/)).toBeVisible();
 
-  await page.goto("/empleados?filtro=adentro");
-  await expect(page.getByText("Nadie registró su entrada")).toBeVisible();
+  await page.goto("/fichaje");
+  await expect(
+    page
+      .getByRole("listitem")
+      .filter({ hasText: "Marta Gómez" })
+      .getByRole("img", { name: "No está" }),
+  ).toBeVisible();
+
+  // La cuidadora no ve el fichaje ni el QR.
+  const denied = await marta.goto("/fichaje");
+  expect(denied?.url()).toMatch(/sin-permiso/);
 
   // Si Administración cambia el código, el QR viejo deja de servir.
   await page.goto("/configuracion/asistencia");

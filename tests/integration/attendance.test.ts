@@ -4,7 +4,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
 
 import * as schema from "@/db/schema";
-import { presentNow, recentRecords } from "@/features/attendance/queries";
+import { attendanceBoard, presentNow, recentRecords } from "@/features/attendance/queries";
 import {
   isValidAttendanceToken,
   recordAttendance,
@@ -96,14 +96,14 @@ describe("asistencia con QR", () => {
     );
     expect(afterTap).toHaveLength(1);
 
-    const present = await withTenant(app, director, (tx) => presentNow(tx, siteId));
+    const present = await withTenant(app, admin, (tx) => presentNow(tx, siteId));
     expect(present.map((row) => row.name)).toContain("Marta Gómez");
 
     const exit = await withTenant(app, carer, (tx) =>
       recordAttendance(tx, carer, { siteId, token }, new Date(t0.getTime() + 3 * 60_000)),
     );
     expect(exit.kind).toBe("out");
-    const presentAfter = await withTenant(app, director, (tx) => presentNow(tx, siteId));
+    const presentAfter = await withTenant(app, admin, (tx) => presentNow(tx, siteId));
     expect(presentAfter.map((row) => row.name)).not.toContain("Marta Gómez");
 
     const audit = await owner
@@ -137,13 +137,20 @@ describe("asistencia con QR", () => {
         }),
       ),
     ).rejects.toThrow();
-    // Cuidado ve solo lo suyo; Dirección ve a todos.
+    // Cuidado y Dirección ven solo lo suyo; Administración, a todos.
     const seenByCarer = await withTenant(app, carer, (tx) =>
       tx.select({ userId: schema.attendanceRecords.userId }).from(schema.attendanceRecords),
     );
     expect(new Set(seenByCarer.map((row) => row.userId))).toEqual(new Set([carer.userId]));
-    const seenByDirector = await withTenant(app, director, (tx) => presentNow(tx, siteId));
+    const seenByDirector = await withTenant(app, admin, (tx) => presentNow(tx, siteId));
     expect(seenByDirector.map((row) => row.name)).toContain("Jorge Suárez");
+    const onlyOwn = await withTenant(app, director, (tx) =>
+      tx.select({ userId: schema.attendanceRecords.userId }).from(schema.attendanceRecords),
+    );
+    expect(onlyOwn.every((row) => row.userId === director.userId)).toBe(true);
+    const board = await withTenant(app, admin, (tx) => attendanceBoard(tx, siteId));
+    expect(board.find((row) => row.name === "Jorge Suárez")?.last?.kind).toBe("in");
+    expect(board.find((row) => row.name === "Laura Pereyra")?.last).toBeNull();
     // No se corrige ni se borra.
     await expect(
       withTenant(app, nurse, (tx) =>

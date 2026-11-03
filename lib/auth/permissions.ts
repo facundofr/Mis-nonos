@@ -3,7 +3,7 @@ import type { SystemRoleKey } from "./policy";
 /*
  * Permisos del MVP: matriz F.3 del plan, confirmada el 01/11/2026 (DC-01),
  * más los del seguimiento del cuidado (docs/decisions/0017) y la asistencia
- * (0020). La base tiene la misma matriz (migraciones 0005, 0035 y 0037);
+ * (0020). La base tiene la misma matriz (migraciones 0005, 0035, 0037 y 0038);
  * una prueba unitaria compara las dos para que no se separen.
  */
 
@@ -108,8 +108,8 @@ export const PERMISSIONS = {
   },
   "attendance.read": {
     module: "core",
-    description: "Ver quién está en la residencia",
-    roles: ["admin", "direccion"],
+    description: "Ver el fichaje del personal y el QR",
+    roles: ["admin"],
   },
   "users.manage": {
     module: "core",

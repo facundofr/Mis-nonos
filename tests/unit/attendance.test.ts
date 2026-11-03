@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { isDuplicate, isInside, nextKind, sameToken } from "@/features/attendance/rules";
+import {
+  isDuplicate,
+  isFreshScan,
+  isInside,
+  nextKind,
+  sameToken,
+} from "@/features/attendance/rules";
 
 // Reglas de la asistencia (docs/decisions/0020).
 
@@ -37,5 +43,12 @@ describe("asistencia: entrada o salida", () => {
     expect(sameToken("a".repeat(64), "a".repeat(64))).toBe(true);
     expect(sameToken("a".repeat(64), `${"a".repeat(63)}b`)).toBe(false);
     expect(sameToken("a".repeat(64), "a".repeat(63))).toBe(false);
+  });
+
+  it("para registrar hay que haber escaneado hace menos de 5 minutos", () => {
+    const opened = at("2026-11-03T06:00:00Z").getTime();
+    expect(isFreshScan(opened, at("2026-11-03T06:04:59Z"))).toBe(true);
+    expect(isFreshScan(opened, at("2026-11-03T06:05:01Z"))).toBe(false);
+    expect(isFreshScan(Number.NaN, at("2026-11-03T06:00:00Z"))).toBe(false);
   });
 });

@@ -1,6 +1,9 @@
-import type { Metadata } from "next";
+import { MonitorSmartphone } from "lucide-react";
+import type { Metadata, Route } from "next";
+import Link from "next/link";
 import { renderSVG } from "uqr";
 
+import { buttonClassName } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { PageHeader } from "@/components/ui/page-header";
 import { requirePermission } from "@/lib/auth/authorization";
@@ -52,8 +55,16 @@ export default async function AttendanceQrPage() {
       </section>
 
       <div className="flex flex-col gap-4 print:hidden">
-        <div className="flex justify-center">
+        <div className="flex flex-wrap justify-center gap-2">
           <PrintButton />
+          <Link
+            href={`/pantalla/${site.attendanceToken}` as Route}
+            target="_blank"
+            className={buttonClassName({ variant: "outline" })}
+          >
+            <MonitorSmartphone aria-hidden="true" className="size-5" />
+            Mostrar en una pantalla
+          </Link>
         </div>
         <Card>
           <CardHeader

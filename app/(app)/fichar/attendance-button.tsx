@@ -9,9 +9,18 @@ import type { FormState } from "@/lib/forms";
 import { recordAttendanceAction } from "./actions";
 
 /** El botón grande de la pantalla del QR: entrada o salida. */
-export function AttendanceButton({ token, kind }: { token: string; kind: "in" | "out" }) {
+export function AttendanceButton({
+  token,
+  kind,
+  openedAt,
+}: {
+  token: string;
+  kind: "in" | "out";
+  /** Cuándo se abrió la pantalla (al escanear el QR). */
+  openedAt: number;
+}) {
   const [state, action] = useActionState<FormState, FormData>(
-    recordAttendanceAction.bind(null, token),
+    recordAttendanceAction.bind(null, token, openedAt),
     null,
   );
   const Icon = kind === "in" ? LogIn : LogOut;

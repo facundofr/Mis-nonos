@@ -22,7 +22,8 @@ export const metadata: Metadata = { title: "Asistencia" };
 /**
  * Lo que abre el QR de la entrada (docs/decisions/0020). Abrir el enlace no
  * registra nada: hace falta tocar el botón, así una vista previa o una
- * recarga no marcan una entrada.
+ * recarga no marcan una entrada. El botón vale 5 minutos: para la salida
+ * hay que volver a escanear el QR.
  */
 export default async function AttendancePage({
   params,
@@ -104,7 +105,7 @@ export default async function AttendancePage({
               ? `Entraste a las ${formatTime(last.occurredAt, site.timezone)}. Ahora son las ${formatTime(now, site.timezone)}.`
               : `Son las ${formatTime(now, site.timezone)}. Se registra la hora de este momento.`}
           </p>
-          <AttendanceButton token={token} kind={inside ? "out" : "in"} />
+          <AttendanceButton token={token} kind={inside ? "out" : "in"} openedAt={now.getTime()} />
           <form action={signOutAction} className="text-center text-sm text-muted-foreground">
             ¿No sos {firstName}?{" "}
             <button
@@ -139,9 +140,16 @@ export default async function AttendancePage({
       ) : null}
 
       {done ? (
-        <Link href="/inicio" className={buttonClassName({ variant: "outline" })}>
-          Ir al inicio
-        </Link>
+        <>
+          <p className="text-center text-sm text-muted-foreground">
+            {done === "entrada"
+              ? "Para registrar la salida, al irte volvé a escanear el QR de la entrada."
+              : "La próxima vez, escaneá el QR al llegar."}
+          </p>
+          <Link href="/inicio" className={buttonClassName({ variant: "outline" })}>
+            Ir al inicio
+          </Link>
+        </>
       ) : null}
     </div>
   );
