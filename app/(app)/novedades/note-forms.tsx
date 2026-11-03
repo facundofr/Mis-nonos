@@ -48,7 +48,7 @@ function NoteFields({
               key={category.id}
               className={cn(
                 "relative flex h-12 cursor-pointer items-center justify-center rounded-[10px] border bg-card px-2 text-center text-[15px] font-medium",
-                "has-checked:border-[1.5px] has-checked:border-primary has-checked:bg-secondary has-checked:text-secondary-foreground",
+                "has-checked:border-[1.5px] has-checked:border-primary-ink has-checked:bg-secondary has-checked:text-secondary-foreground",
                 "has-focus-visible:ring-3 has-focus-visible:ring-ring/30",
               )}
             >

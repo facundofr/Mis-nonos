@@ -36,14 +36,14 @@ function RoleChooser({ defaultValue, error }: { defaultValue?: string; error?: s
       {ROLE_ORDER.map((key) => (
         <label
           key={key}
-          className="flex cursor-pointer items-start gap-3 rounded-xl border bg-card px-3.5 py-3 has-[:checked]:border-primary has-[:checked]:bg-secondary"
+          className="flex cursor-pointer items-start gap-3 rounded-xl border bg-card px-3.5 py-3 has-[:checked]:border-primary-ink has-[:checked]:bg-secondary"
         >
           <input
             type="radio"
             name="roleKey"
             value={key}
             defaultChecked={defaultValue === key}
-            className="mt-1 size-[18px] shrink-0 accent-primary"
+            className="mt-1 size-[18px] shrink-0 accent-primary-ink"
           />
           <span className="flex flex-col gap-0.5">
             <span className="text-[15px] font-semibold">{names[key]}</span>

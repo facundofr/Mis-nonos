@@ -80,7 +80,7 @@ export default async function LegajoDocumentPage({
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-lg bg-muted p-4 font-medium text-primary"
+                    className="flex items-center gap-2 rounded-lg bg-muted p-4 font-medium text-primary-ink"
                   >
                     <FileText aria-hidden="true" className="size-5" />
                     Abrir el PDF

@@ -55,13 +55,14 @@ test("Cuidador/a abre la ficha de emergencia; Dirección recibe el aviso y todo 
   await firstLoginWithTemporaryPassword(marta, cuidadoCredentials);
   await marta.goto("/pacientes");
   await marta.getByRole("link", { name: "Emergencia de Elena Ramírez" }).click();
-  await expect(marta.getByText("Ficha de emergencia")).toBeVisible();
-  await expect(marta.getByText(/Alergia a penicilina \(Ronchas\)/)).toBeVisible();
+  await expect(marta.getByText("Ficha de emergencia", { exact: true })).toBeVisible();
+  await expect(marta.getByRole("heading", { name: "Alergia a penicilina" })).toBeVisible();
+  await expect(marta.getByText("Reacción: ronchas")).toBeVisible();
   const calls = marta.getByRole("link", { name: /Llamar/ });
   await expect(calls.first()).toContainText("Emergencias · Medicardio");
   await expect(calls.first()).toHaveAttribute("href", "tel:08105550000");
   await expect(calls.nth(1)).toContainText("Silvia Ramírez");
-  await expect(marta.getByText(/Apertura registrada · Marta Gómez/)).toBeVisible();
+  await expect(marta.getByText(/Se avisa a Dirección que abriste esta ficha/)).toBeVisible();
 
   // Hoja de derivación: un PDF real.
   const pdf = await marta.request.get(

@@ -10,3 +10,7 @@ dist/
 out/
 coverage/
 node_modules/
+
+# Skills, agentes y registros de Impeccable (herramienta de diseño para agentes)
+.claude/
+.impeccable/

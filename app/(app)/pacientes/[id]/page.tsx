@@ -99,7 +99,7 @@ function ContactCard({
         {canManage ? (
           <Link
             href={`/pacientes/${residentId}/contactos/${contact.id}` as Route}
-            className="w-fit text-sm font-medium text-primary underline-offset-4 hover:underline"
+            className="w-fit text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
           >
             Editar
           </Link>
@@ -180,7 +180,7 @@ export default async function ResidentPage({ params, searchParams }: PageProps<"
     <div className="flex flex-col gap-4">
       <Link
         href="/pacientes"
-        className="w-fit text-sm font-medium text-primary underline-offset-4 hover:underline"
+        className="w-fit text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
       >
         ‹ Pacientes
       </Link>
@@ -294,7 +294,7 @@ export default async function ResidentPage({ params, searchParams }: PageProps<"
             aria-current={tab === item.key ? "page" : undefined}
             className={cn(
               "-mb-px flex h-11 shrink-0 items-center border-b-2 border-transparent px-3 text-sm font-medium text-muted-foreground",
-              tab === item.key && "border-primary font-semibold text-foreground",
+              tab === item.key && "border-primary-ink font-semibold text-foreground",
             )}
           >
             {item.label}

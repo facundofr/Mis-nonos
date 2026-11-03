@@ -24,5 +24,7 @@ export default defineConfig([
     "next-env.d.ts",
     // Diseño de referencia (canvas): no es código de la app.
     "project/**",
+    // Skills y scripts de herramientas de agentes (Impeccable): no es código de la app.
+    ".claude/**",
   ]),
 ]);

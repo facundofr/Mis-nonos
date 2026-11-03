@@ -21,11 +21,11 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    borderBottom: "2pt solid #145A52",
+    borderBottom: "2pt solid #863A2A",
     paddingBottom: 10,
     marginBottom: 14,
   },
-  kicker: { fontSize: 9, color: "#145A52", textTransform: "uppercase", letterSpacing: 1 },
+  kicker: { fontSize: 9, color: "#863A2A", textTransform: "uppercase", letterSpacing: 1 },
   name: { fontSize: 18, fontFamily: "Helvetica-Bold", marginTop: 2 },
   muted: { color: "#57625F" },
   right: { alignItems: "flex-end", maxWidth: 220 },

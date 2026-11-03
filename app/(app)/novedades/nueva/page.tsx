@@ -167,7 +167,7 @@ export default async function NewNotePage({ searchParams }: PageProps<"/novedade
           </span>
           <Link
             href={keep(query ? `q=${encodeURIComponent(query)}` : "")}
-            className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+            className="text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
           >
             Cambiar
           </Link>

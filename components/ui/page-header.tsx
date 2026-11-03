@@ -26,7 +26,7 @@ export function PageHeader({
         <Link
           href={back.href}
           className={cn(
-            "inline-flex w-fit items-center gap-1 rounded-md text-sm font-medium text-primary underline-offset-4 hover:underline",
+            "inline-flex w-fit items-center gap-1 rounded-md text-sm font-medium text-primary-ink underline-offset-4 hover:underline",
             // "Más" es la pestaña del teléfono; en escritorio está el menú lateral.
             back.href === "/mas" && "lg:hidden",
           )}

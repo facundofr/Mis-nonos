@@ -8,7 +8,8 @@
 
 /*
  * Tokens del sistema visual "Calma clínica" (canvas, Main.dc.html).
- * Verde pino como primario. El rojo se reserva para emergencias y alergias.
+ * Salmón como primario (rellenos) y salmón oscuro (--primary-ink) para texto,
+ * bordes y foco. El rojo se reserva para emergencias y alergias.
  * Los estados nunca dependen solo del color: siempre llevan texto o ícono.
  */
 :root {
@@ -20,19 +21,21 @@
   --card-foreground: #16201e;
   --popover: #ffffff;
   --popover-foreground: #16201e;
-  --primary: #145a52;
-  --primary-foreground: #ffffff;
-  --secondary: #e8f1ee;
-  --secondary-foreground: #145a52;
+  --primary: #fa8072;
+  --primary-foreground: #1f0f0b;
+  /* Salmón oscuro para texto, bordes y foco: el salmón claro no da contraste sobre blanco. */
+  --primary-ink: #863a2a;
+  --secondary: #fde8de;
+  --secondary-foreground: #863a2a;
   --muted: #f3f6f5;
   --muted-foreground: #57625f;
-  --accent: #eef5f3;
-  --accent-foreground: #145a52;
+  --accent: #fef1eb;
+  --accent-foreground: #863a2a;
   --destructive: #b42318;
   --destructive-foreground: #ffffff;
   --border: #dfe6e3;
   --input: #dfe6e3;
-  --ring: #145a52;
+  --ring: #863a2a;
 
   /* Estados */
   --warning: #fef4e6;
@@ -49,12 +52,12 @@
   --surface: #f7faf9;
   --sidebar: #f7faf9;
   --sidebar-foreground: #16201e;
-  --sidebar-primary: #145a52;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e8f1ee;
-  --sidebar-accent-foreground: #145a52;
+  --sidebar-primary: #fa8072;
+  --sidebar-primary-foreground: #1f0f0b;
+  --sidebar-accent: #fde8de;
+  --sidebar-accent-foreground: #863a2a;
   --sidebar-border: #dfe6e3;
-  --sidebar-ring: #145a52;
+  --sidebar-ring: #863a2a;
 }
 
 .dark {
@@ -64,19 +67,20 @@
   --card-foreground: #e8eeec;
   --popover: #151e1b;
   --popover-foreground: #e8eeec;
-  --primary: #3fb39f;
-  --primary-foreground: #06201c;
-  --secondary: #183a34;
-  --secondary-foreground: #8fd9cb;
+  --primary: #f28b78;
+  --primary-foreground: #2a110c;
+  --primary-ink: #f7a796;
+  --secondary: #3b211b;
+  --secondary-foreground: #f7a796;
   --muted: #1c2724;
   --muted-foreground: #9ba8a4;
-  --accent: #183a34;
-  --accent-foreground: #8fd9cb;
+  --accent: #3b211b;
+  --accent-foreground: #f7a796;
   --destructive: #d92d20;
   --destructive-foreground: #ffffff;
   --border: #26332f;
   --input: #26332f;
-  --ring: #3fb39f;
+  --ring: #f7a796;
 
   --warning: #3a2508;
   --warning-foreground: #fdb022;
@@ -91,12 +95,12 @@
   --surface: #0e1513;
   --sidebar: #151e1b;
   --sidebar-foreground: #e8eeec;
-  --sidebar-primary: #3fb39f;
-  --sidebar-primary-foreground: #06201c;
-  --sidebar-accent: #183a34;
-  --sidebar-accent-foreground: #8fd9cb;
+  --sidebar-primary: #f28b78;
+  --sidebar-primary-foreground: #2a110c;
+  --sidebar-accent: #3b211b;
+  --sidebar-accent-foreground: #f7a796;
   --sidebar-border: #26332f;
-  --sidebar-ring: #3fb39f;
+  --sidebar-ring: #f7a796;
 }
 
 @theme inline {
@@ -116,6 +120,7 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-primary-ink: var(--primary-ink);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-muted: var(--muted);

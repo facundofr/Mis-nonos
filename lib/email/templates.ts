@@ -57,13 +57,13 @@ export function invitationEmail(input: {
 function layout(body: string): string {
   return `<!doctype html><html lang="es"><body style="margin:0;padding:24px;background:#f7faf9;font-family:system-ui,sans-serif;color:#16201e;line-height:1.5">
 <div style="max-width:480px;margin:0 auto;background:#ffffff;border:1px solid #dfe6e3;border-radius:12px;padding:24px">
-<p style="margin:0 0 16px;font-weight:600;color:#145a52">${escapeHtml(BRAND.appName)}</p>
+<p style="margin:0 0 16px;font-weight:600;color:#863a2a">${escapeHtml(BRAND.appName)}</p>
 ${body}
 </div></body></html>`;
 }
 
 function button(url: string, label: string): string {
-  return `<p><a href="${escapeHtml(url)}" style="display:inline-block;background:#145a52;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600">${escapeHtml(label)}</a></p>
+  return `<p><a href="${escapeHtml(url)}" style="display:inline-block;background:#fa8072;color:#1f0f0b;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600">${escapeHtml(label)}</a></p>
 <p style="font-size:13px;color:#57625f">Si el botón no funciona, copiá este enlace: ${escapeHtml(url)}</p>`;
 }
 

@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
+import { Notice } from "@/components/ui/notice";
 import { actionLabel } from "@/features/activity/labels";
 import { listRecentActivity } from "@/features/activity/queries";
 import { countRequests } from "@/features/admission-requests/queries";
@@ -119,6 +120,31 @@ export default async function HomePage() {
     : null;
 
   const setupCard = setup ? <SetupChecklist progress={setup} /> : null;
+  // Sin servicio de emergencias, la ficha de emergencia no tiene botón rojo:
+  // Administración y Dirección lo ven acá hasta que se cargue (si está la
+  // lista de puesta en marcha, ya lo muestra ella).
+  const missingEmergencyService =
+    !site.emergencyServicePhone &&
+    !setup &&
+    (permissions.has("settings.manage") || permissions.has("audit.read_all"));
+  const emergencyServiceNotice = missingEmergencyService ? (
+    <Notice tone="warning">
+      <p className="font-semibold">Falta cargar el servicio de emergencias.</p>
+      <p>
+        Sin él, las fichas de emergencia no tienen el botón para llamar a la ambulancia.{" "}
+        {permissions.has("settings.manage") ? (
+          <Link
+            href={"/configuracion/residencia" as Route}
+            className="font-medium underline underline-offset-4"
+          >
+            Cargarlo ahora
+          </Link>
+        ) : (
+          "Pedíselo a la administración."
+        )}
+      </p>
+    </Notice>
+  ) : null;
   const header = (
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div className="flex flex-col gap-1">
@@ -141,6 +167,7 @@ export default async function HomePage() {
     return (
       <div className="flex flex-col gap-6">
         {header}
+        {emergencyServiceNotice}
         {setupCard}
         <p className="text-muted-foreground">
           {context.membership.organizationName} · {context.membership.roleName}
@@ -164,6 +191,7 @@ export default async function HomePage() {
   return (
     <div className="flex flex-col gap-6">
       {header}
+      {emergencyServiceNotice}
       {setupCard}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
@@ -210,7 +238,7 @@ export default async function HomePage() {
             {pending.length > 0 ? (
               <Link
                 href="/novedades?ver=pendientes"
-                className="text-sm font-medium text-primary underline-offset-4 hover:underline"
+                className="text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
               >
                 Ver todos
               </Link>
@@ -372,7 +400,7 @@ export default async function HomePage() {
                             {" · "}
                             <Link
                               href={`/pacientes/${item.residentId}` as Route}
-                              className="text-primary underline-offset-4 hover:underline"
+                              className="text-primary-ink underline-offset-4 hover:underline"
                             >
                               {item.residentName}
                             </Link>

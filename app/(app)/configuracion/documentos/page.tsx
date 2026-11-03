@@ -49,7 +49,9 @@ export default async function DocumentTypesSettingsPage() {
               />
             </div>
             <details className="border-t px-4 py-3">
-              <summary className="cursor-pointer text-sm font-medium text-primary">Editar</summary>
+              <summary className="cursor-pointer text-sm font-medium text-primary-ink">
+                Editar
+              </summary>
               <div className="pt-4">
                 <DocumentTypeForm documentType={document} />
               </div>

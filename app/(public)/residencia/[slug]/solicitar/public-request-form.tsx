@@ -223,7 +223,7 @@ export function PublicRequestForm({
           <Link
             href={privacyHref as Route}
             target="_blank"
-            className="self-start text-sm font-medium text-primary underline underline-offset-4"
+            className="self-start text-sm font-medium text-primary-ink underline underline-offset-4"
           >
             Leer el aviso de privacidad
           </Link>

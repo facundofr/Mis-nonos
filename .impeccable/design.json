@@ -1,0 +1,385 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-03T01:40:00-03:00",
+  "title": "Design System: Mis Nonos",
+  "extensions": {
+    "colorMeta": {
+      "salmon": {
+        "role": "primary",
+        "displayName": "Salmón",
+        "canonical": "#fa8072",
+        "tonalRamp": [
+          "#3b1610",
+          "#5e2419",
+          "#863a2a",
+          "#b85440",
+          "#e06a57",
+          "#fa8072",
+          "#fcb3a7",
+          "#fde8de"
+        ]
+      },
+      "salmon-on": {
+        "role": "primary",
+        "displayName": "Salmón noche",
+        "canonical": "#1f0f0b"
+      },
+      "salmon-ink": {
+        "role": "primary",
+        "displayName": "Tinta salmón",
+        "canonical": "#863a2a"
+      },
+      "salmon-tint": {
+        "role": "primary",
+        "displayName": "Durazno",
+        "canonical": "#fde8de"
+      },
+      "salmon-wash": {
+        "role": "primary",
+        "displayName": "Durazno claro",
+        "canonical": "#fef1eb"
+      },
+      "emergency-red": {
+        "role": "secondary",
+        "displayName": "Rojo de emergencia",
+        "canonical": "#b42318",
+        "tonalRamp": [
+          "#3a1512",
+          "#5c211c",
+          "#912018",
+          "#b42318",
+          "#d92d20",
+          "#fda29b",
+          "#fecdca",
+          "#fef3f2"
+        ]
+      },
+      "danger-surface": {
+        "role": "secondary",
+        "displayName": "Superficie de peligro",
+        "canonical": "#fef3f2"
+      },
+      "danger-border": {
+        "role": "secondary",
+        "displayName": "Borde de peligro",
+        "canonical": "#fecdca"
+      },
+      "warning-surface": {
+        "role": "tertiary",
+        "displayName": "Advertencia",
+        "canonical": "#fef4e6"
+      },
+      "warning-text": {
+        "role": "tertiary",
+        "displayName": "Texto de advertencia",
+        "canonical": "#93370d"
+      },
+      "success-surface": {
+        "role": "tertiary",
+        "displayName": "Éxito",
+        "canonical": "#ecfdf3"
+      },
+      "success-text": {
+        "role": "tertiary",
+        "displayName": "Texto de éxito",
+        "canonical": "#067647"
+      },
+      "info-surface": {
+        "role": "tertiary",
+        "displayName": "Información",
+        "canonical": "#eff4ff"
+      },
+      "info-text": {
+        "role": "tertiary",
+        "displayName": "Texto de información",
+        "canonical": "#1849a9"
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#16201e",
+        "tonalRamp": [
+          "#0e1513",
+          "#16201e",
+          "#26332f",
+          "#57625f",
+          "#9ba8a4",
+          "#dfe6e3",
+          "#f3f6f5",
+          "#f7faf9"
+        ]
+      },
+      "ink-muted": {
+        "role": "neutral",
+        "displayName": "Tinta suave",
+        "canonical": "#57625f"
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Papel",
+        "canonical": "#ffffff"
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "Superficie",
+        "canonical": "#f7faf9"
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Gris suave",
+        "canonical": "#f3f6f5"
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Línea",
+        "canonical": "#dfe6e3"
+      },
+      "dark-salmon": {
+        "role": "primary",
+        "displayName": "Salmón (oscuro)",
+        "canonical": "#f28b78"
+      },
+      "dark-salmon-on": {
+        "role": "primary",
+        "displayName": "Salmón noche (oscuro)",
+        "canonical": "#2a110c"
+      },
+      "dark-salmon-ink": {
+        "role": "primary",
+        "displayName": "Tinta salmón (oscuro)",
+        "canonical": "#f7a796"
+      },
+      "dark-salmon-tint": {
+        "role": "primary",
+        "displayName": "Durazno (oscuro)",
+        "canonical": "#3b211b"
+      },
+      "dark-background": {
+        "role": "neutral",
+        "displayName": "Superficie (oscuro)",
+        "canonical": "#0e1513"
+      },
+      "dark-card": {
+        "role": "neutral",
+        "displayName": "Papel (oscuro)",
+        "canonical": "#151e1b"
+      },
+      "dark-muted": {
+        "role": "neutral",
+        "displayName": "Gris suave (oscuro)",
+        "canonical": "#1c2724"
+      },
+      "dark-line": {
+        "role": "neutral",
+        "displayName": "Línea (oscuro)",
+        "canonical": "#26332f"
+      },
+      "dark-ink": {
+        "role": "neutral",
+        "displayName": "Tinta (oscuro)",
+        "canonical": "#e8eeec"
+      },
+      "dark-ink-muted": {
+        "role": "neutral",
+        "displayName": "Tinta suave (oscuro)",
+        "canonical": "#9ba8a4"
+      },
+      "dark-emergency-red": {
+        "role": "secondary",
+        "displayName": "Rojo de emergencia (oscuro)",
+        "canonical": "#d92d20"
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Titular de la landing pública (36px desde sm)."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Título de cada pantalla; 26px en ingreso y landing."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Títulos de tarjeta y de estados vacíos."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Botones medianos, ítems de menú, contenido de listas."
+      },
+      "body-sm": {
+        "displayName": "Body small",
+        "purpose": "Descripciones y texto secundario."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Etiquetas de campos."
+      },
+      "hint": {
+        "displayName": "Hint",
+        "purpose": "Ayuda y errores debajo de los campos."
+      },
+      "input": {
+        "displayName": "Input",
+        "purpose": "Todo campo de texto: 16px para que el teléfono no haga zoom."
+      }
+    },
+    "shadows": [
+      {
+        "name": "field",
+        "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+        "purpose": "Campos de texto y selects (shadow-xs)."
+      },
+      {
+        "name": "floating",
+        "value": "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+        "purpose": "Botón \"+\" elevado de la barra inferior (shadow-lg)."
+      },
+      {
+        "name": "dialog",
+        "value": "0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)",
+        "purpose": "Diálogo de bienvenida (shadow-xl)."
+      }
+    ],
+    "motion": [
+      {
+        "name": "colors",
+        "value": "150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Cambios de color en hover y foco (transition-colors). Sin animaciones de entrada."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "La acción principal de cada pantalla: salmón claro con texto oscuro.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Guardar cambios</button>",
+      "css": ".ds-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 48px; padding: 0 20px; border-radius: 10px; font: 500 16px/1.5 var(--font-geist-sans), system-ui, sans-serif; border: none; cursor: pointer; transition: background-color 150ms cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary { background: var(--primary, #fa8072); color: var(--primary-foreground, #1f0f0b); } .ds-btn-primary:hover { background: color-mix(in srgb, var(--primary, #fa8072) 90%, transparent); } .ds-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #863a2a) 40%, transparent); }"
+    },
+    {
+      "name": "Botón contorno",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Acción secundaria junto a la principal.",
+      "html": "<button class=\"ds-btn-outline\">Cancelar</button>",
+      "css": ".ds-btn-outline { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 20px; border-radius: 10px; font: 500 16px/1.5 var(--font-geist-sans), system-ui, sans-serif; background: var(--card, #fff); color: var(--foreground, #16201e); border: 1px solid var(--border, #dfe6e3); cursor: pointer; transition: background-color 150ms; } .ds-btn-outline:hover { background: var(--muted, #f3f6f5); } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #863a2a) 40%, transparent); }"
+    },
+    {
+      "name": "Botón de emergencia",
+      "kind": "button",
+      "refersTo": "button-emergency",
+      "description": "Solo para emergencias y acciones destructivas.",
+      "html": "<button class=\"ds-btn-danger\">Emergencia</button>",
+      "css": ".ds-btn-danger { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 20px; border-radius: 10px; font: 500 16px/1.5 var(--font-geist-sans), system-ui, sans-serif; background: var(--destructive, #b42318); color: var(--destructive-foreground, #fff); border: none; cursor: pointer; } .ds-btn-danger:hover { background: color-mix(in srgb, var(--destructive, #b42318) 90%, transparent); } .ds-btn-danger:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #863a2a) 40%, transparent); }"
+    },
+    {
+      "name": "Campo de texto",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Campo con etiqueta y ayuda; 16px para evitar el zoom del teléfono.",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">Nombre del residente</span><input class=\"ds-input\" placeholder=\"Ej.: Elena Ramos\"><span class=\"ds-field-hint\">Como figura en el DNI.</span></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font-family: var(--font-geist-sans), system-ui, sans-serif; color: var(--foreground, #16201e); } .ds-field-label { font-size: 14px; font-weight: 500; } .ds-field-hint { font-size: 13px; line-height: 1.375; color: var(--muted-foreground, #57625f); } .ds-input { height: 48px; padding: 0 14px; border-radius: 10px; border: 1px solid var(--input, #dfe6e3); background: var(--card, #fff); color: inherit; font-size: 16px; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); transition: border-color 150ms, box-shadow 150ms; } .ds-input::placeholder { color: var(--muted-foreground, #57625f); } .ds-input:focus-visible { outline: none; border-color: var(--ring, #863a2a); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #863a2a) 25%, transparent); }"
+    },
+    {
+      "name": "Insignias de estado",
+      "kind": "chip",
+      "refersTo": "badge-primary",
+      "description": "Píldoras de estado: siempre con texto, nunca solo color.",
+      "html": "<div class=\"ds-badges\"><span class=\"ds-badge ds-badge-primary\">Personal de la residencia</span><span class=\"ds-badge ds-badge-success\">Activo</span><span class=\"ds-badge ds-badge-warning\">Seguimiento</span><span class=\"ds-badge ds-badge-danger\">Alergia: penicilina</span></div>",
+      "css": ".ds-badges { display: flex; flex-wrap: wrap; gap: 8px; } .ds-badge { display: inline-flex; align-items: center; height: 24px; padding: 0 10px; border-radius: 9999px; font: 500 12px/1 var(--font-geist-sans), system-ui, sans-serif; white-space: nowrap; } .ds-badge-primary { background: var(--secondary, #fde8de); color: var(--secondary-foreground, #863a2a); } .ds-badge-success { background: var(--success, #ecfdf3); color: var(--success-foreground, #067647); } .ds-badge-warning { background: var(--warning, #fef4e6); color: var(--warning-foreground, #93370d); } .ds-badge-danger { background: var(--danger-surface, #fef3f2); color: var(--danger-surface-foreground, #b42318); font-weight: 600; }"
+    },
+    {
+      "name": "Tarjeta",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Contenedor plano: borde y tono, sin sombra.",
+      "html": "<section class=\"ds-card\"><div class=\"ds-card-head\"><h2>Novedades del turno</h2><p>3 con seguimiento</p></div><div class=\"ds-card-body\">Elena Ramos durmió bien y desayunó completo.</div></section>",
+      "css": ".ds-card { border: 1px solid var(--border, #dfe6e3); border-radius: 14px; background: var(--card, #fff); color: var(--card-foreground, #16201e); font-family: var(--font-geist-sans), system-ui, sans-serif; max-width: 420px; } .ds-card-head { padding: 16px 20px; border-bottom: 1px solid var(--border, #dfe6e3); } .ds-card-head h2 { margin: 0; font-size: 16px; font-weight: 600; } .ds-card-head p { margin: 2px 0 0; font-size: 14px; color: var(--muted-foreground, #57625f); } .ds-card-body { padding: 16px 20px; font-size: 15px; line-height: 1.5; }"
+    },
+    {
+      "name": "Menú lateral",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Navegación de escritorio; el ítem activo en durazno con tinta salmón.",
+      "html": "<nav class=\"ds-side\"><a class=\"ds-side-item\" aria-current=\"page\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2\"/><circle cx=\"9\" cy=\"7\" r=\"4\"/><path d=\"M22 21v-2a4 4 0 0 0-3-3.87\"/><path d=\"M16 3.13a4 4 0 0 1 0 7.75\"/></svg>Pacientes</a><a class=\"ds-side-item\" href=\"#\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"8\" y=\"2\" width=\"8\" height=\"4\" rx=\"1\"/><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"/><path d=\"M12 11h4\"/><path d=\"M12 16h4\"/><path d=\"M8 11h.01\"/><path d=\"M8 16h.01\"/></svg>Novedades</a></nav>",
+      "css": ".ds-side { display: flex; flex-direction: column; gap: 4px; width: 228px; padding: 16px; background: var(--sidebar, #f7faf9); font-family: var(--font-geist-sans), system-ui, sans-serif; } .ds-side-item { display: flex; align-items: center; gap: 12px; height: 44px; padding: 0 12px; border-radius: 10px; font-size: 15px; font-weight: 500; color: var(--sidebar-foreground, #16201e); text-decoration: none; transition: background-color 150ms; } .ds-side-item:hover { background: var(--sidebar-accent, #fde8de); } .ds-side-item[aria-current=page] { background: var(--sidebar-accent, #fde8de); color: var(--sidebar-accent-foreground, #863a2a); font-weight: 600; } .ds-side-item:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--sidebar-ring, #863a2a) 40%, transparent); }"
+    },
+    {
+      "name": "Botón de llamada de emergencia",
+      "kind": "custom",
+      "refersTo": "emergency-call",
+      "description": "Fila de llamada de la ficha de emergencia: servicio en rojo, familia en papel numerada.",
+      "html": "<div class=\"ds-calls\"><a class=\"ds-call ds-call-prominent\" href=\"#\"><span class=\"ds-call-badge\"><svg viewBox=\"0 0 24 24\" width=\"20\" height=\"20\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M22 12h-4l-3 9L9 3l-3 9H2\"/></svg></span><span class=\"ds-call-text\"><strong>Servicio de emergencia</strong><span>Medicardio</span></span><span class=\"ds-call-action\">Llamar</span></a><a class=\"ds-call\" href=\"#\"><span class=\"ds-call-badge ds-call-num\">1</span><span class=\"ds-call-text\"><strong>Marta Ramos</strong><span>Hija · responsable</span></span><span class=\"ds-call-action\">Llamar</span></a></div>",
+      "css": ".ds-calls { display: flex; flex-direction: column; gap: 8px; max-width: 420px; font-family: var(--font-geist-sans), system-ui, sans-serif; } .ds-call { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 12px 16px; border-radius: 14px; border: 1px solid var(--border, #dfe6e3); background: var(--card, #fff); color: var(--foreground, #16201e); text-decoration: none; } .ds-call-prominent { background: var(--destructive, #b42318); color: var(--destructive-foreground, #fff); border-color: transparent; } .ds-call-badge { display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; flex-shrink: 0; border-radius: 9999px; background: rgb(255 255 255 / 0.2); } .ds-call-num { background: var(--secondary, #fde8de); color: var(--secondary-foreground, #863a2a); font-weight: 600; } .ds-call-text { display: flex; flex-direction: column; flex: 1; min-width: 0; } .ds-call-text span { font-size: 14px; opacity: 0.85; } .ds-call-action { font-size: 14px; font-weight: 600; } .ds-call:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring, #863a2a) 40%, transparent); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Calma clínica",
+    "overview": "Ordenado como un consultorio, tranquilo como una casa. La app la usa personal de la residencia, muchas veces mayor o poco técnico: cada pantalla tiene que entenderse de un vistazo, con áreas táctiles grandes y sin adornos. La calidez la pone el salmón de la marca; la claridad, superficies planas, bordes finos y una sola familia tipográfica.\n\nEl sistema es denso solo donde hace falta (listas de residentes, novedades) y generoso en todo lo demás. Es mobile first: la misma pantalla funciona en un celular con barra inferior y en escritorio con menú lateral. Tiene modo claro y oscuro con los mismos roles de color.\n\nEl rojo no es parte de la marca: es la señal de emergencia. Por eso el salmón se usa claro, con texto oscuro encima, y nunca se oscurece hasta parecerse al rojo.",
+    "keyCharacteristics": [
+      "Salmón claro como relleno de acción; salmón oscuro (tinta) para texto, bordes de selección y foco.",
+      "Rojo reservado para emergencias, alergias y errores.",
+      "Plano por defecto: bordes y tonos separan, la sombra solo para lo que flota.",
+      "Áreas táctiles de 44 a 64 px; texto de campos a 16 px.",
+      "Ningún estado depende solo del color: siempre lleva texto o ícono."
+    ],
+    "rules": [
+      {
+        "name": "The Red Is Emergency Rule",
+        "body": "El rojo saturado se usa solo para emergencias, alergias, errores y acciones destructivas. Ningún color de marca puede acercarse a él: si un salmón nuevo con texto blanco necesita oscurecerse para dar contraste, se descarta.",
+        "section": "colors"
+      },
+      {
+        "name": "The Light Fill, Dark Ink Rule",
+        "body": "El salmón claro se usa solo como relleno, con texto oscuro. Cuando el color de marca va como texto, borde o foco sobre fondo claro, se usa la tinta salmón (`text-primary-ink`, `border-primary-ink`, `accent-primary-ink`), nunca `text-primary`.",
+        "section": "colors"
+      },
+      {
+        "name": "The Never Color Alone Rule",
+        "body": "Cada estado lleva texto o ícono además del color (insignias, avisos, alergias).",
+        "section": "colors"
+      },
+      {
+        "name": "The 16px Field Rule",
+        "body": "Ningún campo de texto baja de 16px.",
+        "section": "typography"
+      },
+      {
+        "name": "The Weight Ladder Rule",
+        "body": "El énfasis se logra con peso (medium y semibold) y tamaño. Nada de mayúsculas decorativas ni etiquetas sobre los títulos: el título se sostiene solo.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Una tarjeta nunca lleva sombra: si necesita separarse, usa borde y tono. La sombra queda para lo que flota.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do usar Salmón (#fa8072) solo como relleno, con texto Salmón noche (#1f0f0b).",
+      "Do usar la tinta salmón (#863a2a) para todo texto, borde de selección, casilla o anillo de foco del color de marca.",
+      "Do mantener áreas táctiles de al menos 44px y los campos en 48px con texto de 16px.",
+      "Do acompañar cada estado con texto o ícono.",
+      "Do separar superficies con borde de 1px y tono antes que con sombra."
+    ],
+    "donts": [
+      "Don't usar `text-primary`, `border-primary` ni `accent-primary` sobre fondo claro: el salmón claro no llega a 3:1.",
+      "Don't oscurecer el salmón para ponerle texto blanco: se confunde con el rojo de emergencia.",
+      "Don't usar el rojo para nada que no sea emergencia, alergia, error o acción destructiva.",
+      "Don't poner sombra en tarjetas.",
+      "Don't mostrar módulos, métricas o adornos que no ayuden a la tarea."
+    ]
+  }
+}

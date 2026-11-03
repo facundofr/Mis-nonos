@@ -112,7 +112,7 @@ export function CheckboxField({
         name={name}
         value={value}
         defaultChecked={defaultChecked}
-        className="mt-0.5 size-[18px] shrink-0 accent-primary"
+        className="mt-0.5 size-[18px] shrink-0 accent-primary-ink"
       />
       <span className="flex flex-col gap-0.5">
         <span className="text-[15px] font-medium">{label}</span>

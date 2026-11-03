@@ -17,7 +17,7 @@ export async function PageTip({ context, tip }: { context: AppContext; tip: TipK
   return (
     <aside
       aria-label="Consejo"
-      className="flex items-start gap-3 rounded-[14px] border border-primary/25 bg-secondary px-4 py-3.5 text-secondary-foreground"
+      className="flex items-start gap-3 rounded-[14px] border border-primary-ink/25 bg-secondary px-4 py-3.5 text-secondary-foreground"
     >
       <Lightbulb aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">

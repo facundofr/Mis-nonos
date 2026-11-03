@@ -224,7 +224,7 @@ export default async function RequestPage({
             <dd>
               <a
                 href={telHref(request.responsiblePhone)}
-                className="text-[15px] font-medium text-primary underline-offset-4 hover:underline"
+                className="text-[15px] font-medium text-primary-ink underline-offset-4 hover:underline"
               >
                 {request.responsiblePhone}
               </a>

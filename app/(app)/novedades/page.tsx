@@ -29,7 +29,7 @@ const PAGE_SIZE = 30;
 function chipClass(selected: boolean) {
   return cn(
     "flex h-10 shrink-0 items-center rounded-full border bg-card px-4 text-sm font-medium",
-    selected && "border-primary bg-secondary font-semibold text-secondary-foreground",
+    selected && "border-primary-ink bg-secondary font-semibold text-secondary-foreground",
   );
 }
 

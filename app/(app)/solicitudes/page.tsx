@@ -78,7 +78,7 @@ export default async function RequestsPage({ searchParams }: PageProps<"/solicit
             className={cn(
               "flex h-10 shrink-0 items-center rounded-full border bg-card px-4 text-sm font-medium",
               view === item.key &&
-                "border-primary bg-secondary font-semibold text-secondary-foreground",
+                "border-primary-ink bg-secondary font-semibold text-secondary-foreground",
             )}
           >
             {item.label} · {counts[item.key]}

@@ -38,7 +38,7 @@ export default async function ShiftsSettingsPage() {
                 action={shift.active ? undefined : <Badge>Inactivo</Badge>}
               />
               <details className="group px-5 py-3">
-                <summary className="cursor-pointer text-sm font-medium text-primary">
+                <summary className="cursor-pointer text-sm font-medium text-primary-ink">
                   Editar
                 </summary>
                 <div className="pt-4">

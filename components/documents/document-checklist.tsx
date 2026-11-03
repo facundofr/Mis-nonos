@@ -68,7 +68,7 @@ export function DocumentChecklist({
                   {count > 0 ? (
                     <Link
                       href={`/pacientes/${residentId}/legajo/${type.id}` as Route}
-                      className="inline-flex h-11 items-center gap-1 rounded-lg px-3 text-[15px] font-medium text-primary hover:bg-muted"
+                      className="inline-flex h-11 items-center gap-1 rounded-lg px-3 text-[15px] font-medium text-primary-ink hover:bg-muted"
                     >
                       Ver
                       <ChevronRight aria-hidden="true" className="size-4" />

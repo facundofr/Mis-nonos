@@ -61,7 +61,7 @@ export default async function PublicLandingPage({ params }: PageProps<"/residenc
             href={`/residencia/${slug}/solicitar` as Route}
             className={buttonClassName({
               variant: "outline",
-              className: "border-transparent bg-white text-primary hover:bg-white/90",
+              className: "border-transparent bg-white text-primary-ink hover:bg-white/90",
             })}
           >
             Solicitar un lugar
