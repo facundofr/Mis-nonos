@@ -267,6 +267,13 @@
       "when": 1793740215640,
       "tag": "0037_attendance_grants",
       "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1793742972841,
+      "tag": "0038_attendance_admin_only",
+      "breakpoints": true
     }
   ]
 }

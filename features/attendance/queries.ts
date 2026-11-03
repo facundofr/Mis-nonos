@@ -95,3 +95,70 @@ export async function presentNow(
     .orderBy(last.occurredAt);
   return rows.map((row) => ({ ...row, enteredAt: new Date(row.enteredAt) }));
 }
+
+export interface BoardRow {
+  userId: string;
+  name: string;
+  roleName: string;
+  /** Último registro de las últimas 24 h (o nada). */
+  last: AttendanceMark | null;
+}
+
+/**
+ * Tablero de fichaje: todo el personal activo de la residencia con su último
+ * registro de las últimas 24 h. Necesita attendance.read (RLS).
+ */
+export async function attendanceBoard(
+  tx: Transaction,
+  siteId: string,
+  now = new Date(),
+): Promise<BoardRow[]> {
+  const since = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+  const last = tx
+    .selectDistinctOn([schema.attendanceRecords.userId], {
+      userId: schema.attendanceRecords.userId,
+      kind: schema.attendanceRecords.kind,
+      occurredAt: schema.attendanceRecords.occurredAt,
+    })
+    .from(schema.attendanceRecords)
+    .where(
+      and(
+        eq(schema.attendanceRecords.siteId, siteId),
+        sql`${schema.attendanceRecords.occurredAt} > ${since.toISOString()}`,
+      ),
+    )
+    .orderBy(
+      schema.attendanceRecords.userId,
+      desc(schema.attendanceRecords.occurredAt),
+      desc(schema.attendanceRecords.id),
+    )
+    .as("last");
+  const rows = await tx
+    .select({
+      userId: schema.users.id,
+      name: schema.users.name,
+      roleName: schema.roles.name,
+      kind: last.kind,
+      occurredAt: last.occurredAt,
+    })
+    .from(schema.organizationMemberships)
+    .innerJoin(schema.users, eq(schema.users.id, schema.organizationMemberships.userId))
+    .innerJoin(schema.roles, eq(schema.roles.id, schema.organizationMemberships.roleId))
+    .leftJoin(last, eq(last.userId, schema.organizationMemberships.userId))
+    .where(
+      and(
+        eq(schema.organizationMemberships.organizationId, sql`(select app.current_org_id())`),
+        eq(schema.organizationMemberships.status, "active"),
+      ),
+    )
+    .orderBy(schema.users.name);
+  return rows.map((row) => ({
+    userId: row.userId,
+    name: row.name,
+    roleName: row.roleName,
+    last:
+      row.kind && row.occurredAt
+        ? { kind: row.kind as AttendanceKind, occurredAt: new Date(row.occurredAt) }
+        : null,
+  }));
+}

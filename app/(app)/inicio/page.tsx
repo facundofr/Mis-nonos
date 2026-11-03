@@ -456,10 +456,10 @@ export default async function HomePage() {
         {present ? (
           <KpiCard
             icon={UserRound}
-            label="En la residencia"
+            label="Trabajando ahora"
             value={String(present.length)}
-            detail={staffActive !== null ? `de ${staffActive} en el personal` : "Ver quiénes"}
-            href={"/empleados?filtro=adentro" as Route}
+            detail={staffActive !== null ? `de ${staffActive} · ver fichaje` : "Ver fichaje"}
+            href="/fichaje"
           />
         ) : staffActive !== null ? (
           <KpiCard

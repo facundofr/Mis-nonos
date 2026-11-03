@@ -48,3 +48,15 @@ export function sameToken(a: string, b: string): boolean {
 
 /** Formato del código del QR: 64 caracteres hexadecimales. */
 export const TOKEN_PATTERN = /^[0-9a-f]{64}$/;
+
+/**
+ * El botón vale este tiempo desde que se escaneó el QR: para la salida hay
+ * que volver a escanearlo (no sirve dejar la pantalla abierta desde la entrada).
+ */
+export const SCAN_VALID_MS = 5 * 60 * 1000;
+
+/** ¿La pantalla abierta con el QR sigue sirviendo para registrar? */
+export function isFreshScan(openedAt: number, now: Date): boolean {
+  const age = now.getTime() - openedAt;
+  return Number.isFinite(openedAt) && age >= -60_000 && age <= SCAN_VALID_MS;
+}

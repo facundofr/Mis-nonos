@@ -10,11 +10,12 @@ import {
   rolePermissionPairs,
 } from "@/lib/auth/permissions";
 
-// La matriz está en la migración original y en las que suman permisos.
+// La matriz está en la migración original y en las que suman o quitan permisos.
 const migration = [
   "0005_permissions_matrix.sql",
   "0035_care_grants.sql",
   "0037_attendance_grants.sql",
+  "0038_attendance_admin_only.sql",
 ]
   .map((file) => readFileSync(path.resolve(__dirname, "../../db/migrations", file), "utf8"))
   .join("\n");
@@ -36,12 +37,22 @@ describe("matriz de permisos (F.3, DC-01)", () => {
   });
 
   it("la migración tiene los mismos pares (permiso, rol) que el código", () => {
-    const pairs = [
-      ...migration.matchAll(/\('([a-z_.]+)', '(admin|direccion|enfermeria|cuidado)'\)/g),
-    ].map(([, permission, role]) => `${permission}:${role}`);
+    // Los pares de un DELETE son bajas; los demás, altas.
+    const pairsIn = (text: string) =>
+      [...text.matchAll(/\('([a-z_.]+)', '(admin|direccion|enfermeria|cuidado)'\)/g)].map(
+        ([, permission, role]) => `${permission}:${role}`,
+      );
+    const statements = migration.split("--> statement-breakpoint");
+    const removed = new Set(
+      statements.filter((part) => /DELETE FROM role_permissions/.test(part)).flatMap(pairsIn),
+    );
+    const pairs = statements
+      .filter((part) => !/DELETE FROM role_permissions/.test(part))
+      .flatMap(pairsIn)
+      .filter((pair) => !removed.has(pair));
     const expected = rolePermissionPairs().map((pair) => `${pair.permission}:${pair.role}`);
     expect(pairs.sort()).toEqual(expected.sort());
-    expect(expected).toHaveLength(83);
+    expect(expected).toHaveLength(82);
   });
 
   it("Administración gestiona usuarios y configuración, pero no entrega turnos", () => {
@@ -60,7 +71,7 @@ describe("matriz de permisos (F.3, DC-01)", () => {
     expect(direccion).toContain("residents.update");
     expect(direccion).toContain("handover.deliver");
     expect(direccion).toContain("care.manage");
-    expect(direccion).toHaveLength(27);
+    expect(direccion).toHaveLength(26);
   });
 
   it("Enfermería edita datos y contactos, sin montos ni fotos del legajo (nota 1)", () => {

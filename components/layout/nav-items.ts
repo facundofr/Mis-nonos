@@ -15,6 +15,7 @@ export type NavIcon =
   | "residents"
   | "notes"
   | "handover"
+  | "attendance"
   | "specialties"
   | "professionals"
   | "nursing"
@@ -89,6 +90,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
     section: "diario",
     anyOf: ["residents.read"],
     mobile: "tab",
+  },
+  // Asistencia con QR (docs/decisions/0020): solo Administración.
+  {
+    key: "fichaje",
+    label: "Fichaje",
+    href: "/fichaje",
+    icon: "attendance",
+    section: "diario",
+    anyOf: ["attendance.read"],
+    mobile: "more",
   },
   // Seguimiento del cuidado (docs/decisions/0017). En el teléfono, desde "Más".
   {

@@ -22,6 +22,8 @@ const PUBLIC_PATHS = [
   "/invitacion",
   "/sistema-visual",
   "/residencia",
+  // Pantalla fija con el QR de fichaje (docs/decisions/0020).
+  "/pantalla",
 ];
 
 function isPublic(pathname: string): boolean {
