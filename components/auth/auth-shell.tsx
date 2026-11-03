@@ -1,6 +1,8 @@
 import { Check } from "lucide-react";
+import Image from "next/image";
 import type { ReactNode } from "react";
 
+import { HERO_PHOTO } from "@/components/brand/hero-photo";
 import { LogoMark } from "@/components/brand/logo-mark";
 import { BRAND } from "@/lib/brand";
 
@@ -12,38 +14,69 @@ const HIGHLIGHTS = [
 
 /**
  * Marco de las pantallas de ingreso (diseño Login.dc.html). En escritorio,
- * panel salmón a la izquierda; en el teléfono, solo la marca arriba, para que
- * el formulario quede a la vista.
+ * la foto a la izquierda con el mensaje sobre un degradé salmón; en el
+ * teléfono, una franja corta de la foto con la marca, para que el formulario
+ * quede a la vista.
  */
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-background lg:flex-row">
-      <aside className="hidden flex-col justify-between gap-12 bg-primary p-12 text-primary-foreground lg:flex lg:w-[45%] lg:max-w-[640px]">
-        <BrandName inverted />
-        <div className="flex max-w-[460px] flex-col gap-4">
-          <p className="text-4xl leading-tight font-semibold tracking-tight">
-            Cada residente, cada turno, todo en un solo lugar.
-          </p>
-          <p className="text-base leading-relaxed text-primary-foreground/80">
-            Novedades, contactos y la ficha de emergencia a un toque, con registro de quién hizo qué
-            y cuándo.
-          </p>
+      <aside className="relative hidden overflow-hidden bg-primary text-primary-foreground lg:flex lg:w-[45%] lg:max-w-[640px]">
+        <Image
+          src={HERO_PHOTO}
+          alt=""
+          fill
+          preload
+          sizes="(min-width: 1024px) 45vw, 0px"
+          className="absolute inset-0 size-full object-cover object-[40%_center]"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-t from-primary from-25% via-primary/80 via-45% to-transparent to-75%"
+        />
+        <div className="relative flex w-full flex-col justify-between gap-12 p-12">
+          <BrandName />
+          <div className="flex flex-col gap-8">
+            <div className="flex max-w-[460px] flex-col gap-4">
+              <p className="text-4xl leading-tight font-semibold tracking-tight text-balance">
+                Cada residente, cada turno, todo en un solo lugar.
+              </p>
+              <p className="text-base leading-relaxed text-primary-foreground/80">
+                Novedades, contactos y la ficha de emergencia a un toque, con registro de quién hizo
+                qué y cuándo.
+              </p>
+            </div>
+            <ul className="flex flex-col gap-2.5 text-sm text-primary-foreground/80">
+              {HIGHLIGHTS.map((item) => (
+                <li key={item} className="flex items-center gap-2.5">
+                  <Check aria-hidden="true" className="size-4 text-primary-foreground" />
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
-        <ul className="flex flex-col gap-2.5 text-sm text-primary-foreground/80">
-          {HIGHLIGHTS.map((item) => (
-            <li key={item} className="flex items-center gap-2.5">
-              <Check aria-hidden="true" className="size-4 text-primary-foreground" />
-              {item}
-            </li>
-          ))}
-        </ul>
       </aside>
 
       <div className="flex flex-1 flex-col">
-        <header className="px-6 pt-6 lg:hidden">
-          <BrandName />
+        <header className="relative h-40 overflow-hidden bg-primary sm:h-48 lg:hidden">
+          <Image
+            src={HERO_PHOTO}
+            alt=""
+            fill
+            preload
+            sizes="(min-width: 1024px) 0px, 100vw"
+            className="absolute inset-0 size-full object-cover object-[45%_42%]"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-b from-black/35 to-transparent to-60%"
+          />
+          <div className="relative px-6 pt-5">
+            <BrandName />
+          </div>
         </header>
-        <main className="flex flex-1 justify-center px-6 py-10 lg:items-center lg:py-12">
+        <main className="flex flex-1 justify-center px-6 py-8 lg:items-center lg:py-12">
           <div className="flex w-full max-w-[380px] flex-col gap-7">{children}</div>
         </main>
       </div>
@@ -51,19 +84,14 @@ export function AuthShell({ children }: { children: ReactNode }) {
   );
 }
 
-function BrandName({ inverted = false }: { inverted?: boolean }) {
+/** Marca sobre la foto: una pastilla clara para que se lea sobre cualquier zona. */
+function BrandName() {
   return (
-    <div className="flex items-center gap-3">
-      <span
-        className={
-          inverted
-            ? "flex size-10 items-center justify-center rounded-[11px] bg-white/15"
-            : "flex size-10 items-center justify-center rounded-[11px] bg-primary text-primary-foreground"
-        }
-      >
-        <LogoMark className="size-[22px]" />
+    <div className="inline-flex items-center gap-2.5 self-start rounded-[14px] bg-white/90 py-1.5 pr-3.5 pl-1.5 text-[#16201e] shadow-sm backdrop-blur-sm">
+      <span className="flex size-9 items-center justify-center rounded-[10px] bg-primary text-primary-foreground">
+        <LogoMark className="size-5" />
       </span>
-      <span className="text-xl font-semibold tracking-tight">{BRAND.appName}</span>
+      <span className="text-lg font-semibold tracking-tight">{BRAND.appName}</span>
     </div>
   );
 }

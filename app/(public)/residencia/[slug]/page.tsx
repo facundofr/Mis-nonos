@@ -1,8 +1,10 @@
 import { ClipboardList, MapPin, PhoneCall, Phone, UserRound } from "lucide-react";
 import type { Metadata, Route } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { HERO_PHOTO, HERO_PHOTO_ALT } from "@/components/brand/hero-photo";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { loadPublicSite } from "@/features/public-intake/server";
@@ -46,38 +48,54 @@ export default async function PublicLandingPage({ params }: PageProps<"/residenc
 
   return (
     <>
-      <section className="flex flex-col gap-4 rounded-[18px] bg-primary px-6 py-8 text-primary-foreground sm:px-8 sm:py-10">
-        <span className="self-start rounded-full bg-white/15 px-2.5 py-1 text-xs font-medium">
-          Residencia para adultos mayores
-        </span>
-        <h1 className="text-[30px] leading-tight font-semibold tracking-tight sm:text-4xl">
-          {site.name}
-        </h1>
-        <p className="max-w-[560px] text-base leading-relaxed whitespace-pre-line text-primary-foreground/85">
-          {site.intro ?? DEFAULT_INTRO}
-        </p>
-        <div className="flex flex-col gap-2.5 pt-2 sm:flex-row">
-          <Link
-            href={`/residencia/${slug}/solicitar` as Route}
-            className={buttonClassName({
-              variant: "outline",
-              className: "border-transparent bg-white text-primary-ink hover:bg-white/90",
-            })}
-          >
-            Solicitar un lugar
-          </Link>
-          {site.phone ? (
-            <a
-              href={`tel:${site.phone.replace(/[^0-9+]/g, "")}`}
+      <section className="overflow-hidden rounded-[18px] bg-primary text-primary-foreground">
+        <div className="relative aspect-[16/10] sm:aspect-[21/9]">
+          <Image
+            src={HERO_PHOTO}
+            alt={HERO_PHOTO_ALT}
+            fill
+            preload
+            sizes="(min-width: 768px) 768px, 100vw"
+            className="absolute inset-0 size-full object-cover object-[45%_45%]"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-primary to-transparent"
+          />
+        </div>
+        <div className="flex flex-col gap-4 px-6 pt-2 pb-8 sm:px-8 sm:pb-10">
+          <span className="self-start rounded-full bg-white/15 px-2.5 py-1 text-xs font-medium">
+            Residencia para adultos mayores
+          </span>
+          <h1 className="text-[30px] leading-tight font-semibold tracking-tight sm:text-4xl">
+            {site.name}
+          </h1>
+          <p className="max-w-[560px] text-base leading-relaxed whitespace-pre-line text-primary-foreground/85">
+            {site.intro ?? DEFAULT_INTRO}
+          </p>
+          <div className="flex flex-col gap-2.5 pt-2 sm:flex-row">
+            <Link
+              href={`/residencia/${slug}/solicitar` as Route}
               className={buttonClassName({
-                variant: "ghost",
-                className: "text-primary-foreground hover:bg-white/10",
+                variant: "outline",
+                className: "border-transparent bg-white text-primary-ink hover:bg-white/90",
               })}
             >
-              <Phone aria-hidden="true" className="size-4" />
-              Llamar a la residencia
-            </a>
-          ) : null}
+              Solicitar un lugar
+            </Link>
+            {site.phone ? (
+              <a
+                href={`tel:${site.phone.replace(/[^0-9+]/g, "")}`}
+                className={buttonClassName({
+                  variant: "ghost",
+                  className: "text-primary-foreground hover:bg-white/10",
+                })}
+              >
+                <Phone aria-hidden="true" className="size-4" />
+                Llamar a la residencia
+              </a>
+            ) : null}
+          </div>
         </div>
       </section>
 
