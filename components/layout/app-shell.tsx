@@ -8,7 +8,7 @@ import { BRAND } from "@/lib/brand";
 import { signOutAction } from "@/lib/auth/actions";
 
 import type { NavItem } from "./nav-items";
-import { SidebarLinks, TabBarLinks } from "./nav-links";
+import { SectionTrail, SidebarLinks, TabBarLinks } from "./nav-links";
 
 export interface ShellProps {
   organizationName: string;
@@ -43,13 +43,13 @@ export function AppShell({
 }: ShellProps) {
   return (
     <div className="min-h-dvh bg-surface lg:grid lg:grid-cols-[260px_minmax(0,1fr)]">
-      <aside className="sticky top-0 hidden h-dvh flex-col gap-6 border-r border-sidebar-border bg-sidebar p-4 lg:flex">
+      <aside className="sticky top-0 hidden h-dvh flex-col border-r border-sidebar-border bg-sidebar lg:flex">
         <Link
           href="/inicio"
           aria-label="Ir al inicio"
-          className="flex items-center gap-3 rounded-lg p-1 focus-visible:ring-3 focus-visible:ring-sidebar-ring/40 focus-visible:outline-none"
+          className="mx-3 mt-4 mb-2 flex items-center gap-3 rounded-lg p-2 focus-visible:ring-3 focus-visible:ring-sidebar-ring/40 focus-visible:outline-none"
         >
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-[10px] bg-primary text-primary-foreground">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-primary text-primary-foreground">
             <LogoMark className="size-5" />
           </span>
           <span className="flex min-w-0 flex-col">
@@ -57,11 +57,14 @@ export function AppShell({
             <span className="truncate text-xs text-muted-foreground">{organizationName}</span>
           </span>
         </Link>
-        <nav aria-label="Principal" className="flex flex-1 flex-col">
+        <nav aria-label="Principal" className="flex-1 overflow-y-auto px-3 py-3">
           <SidebarLinks items={items} />
         </nav>
-        <div className="flex items-center gap-3 border-t border-sidebar-border pt-4">
-          <Link href="/perfil" className="flex min-w-0 flex-1 items-center gap-3 rounded-lg">
+        <div className="flex items-center gap-2 border-t border-sidebar-border p-3">
+          <Link
+            href="/perfil"
+            className="flex min-w-0 flex-1 items-center gap-3 rounded-lg p-2 hover:bg-sidebar-accent/70 focus-visible:ring-3 focus-visible:ring-sidebar-ring/40 focus-visible:outline-none"
+          >
             <Avatar name={userName} size="sm" />
             <span className="flex min-w-0 flex-col">
               <span className="truncate text-sm font-semibold">{userName}</span>
@@ -72,9 +75,10 @@ export function AppShell({
             <button
               type="submit"
               aria-label="Cerrar sesión"
-              className="flex size-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-sidebar-accent focus-visible:ring-3 focus-visible:ring-sidebar-ring/40 focus-visible:outline-none"
+              title="Cerrar sesión"
+              className="flex size-10 items-center justify-center rounded-lg text-muted-foreground hover:bg-sidebar-accent/70 hover:text-foreground focus-visible:ring-3 focus-visible:ring-sidebar-ring/40 focus-visible:outline-none"
             >
-              <LogOut aria-hidden="true" className="size-5" />
+              <LogOut aria-hidden="true" className="size-[18px]" />
             </button>
           </form>
         </div>
@@ -90,15 +94,16 @@ export function AppShell({
               </span>
               <span className="truncate text-[15px] font-semibold">{organizationName}</span>
             </Link>
-            <div className="ml-auto flex shrink-0 items-center gap-2 lg:ml-0 lg:flex-1 lg:justify-between">
+            <div className="hidden min-w-0 flex-1 lg:flex">
+              <SectionTrail items={items} />
+            </div>
+            <div className="ml-auto flex shrink-0 items-center gap-2">
               {shiftLabel ? (
                 <span className="hidden items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground sm:inline-flex">
                   <Clock aria-hidden="true" className="size-3.5" />
                   Turno {shiftLabel}
                 </span>
-              ) : (
-                <span />
-              )}
+              ) : null}
               <Link
                 href="/notificaciones"
                 aria-label={

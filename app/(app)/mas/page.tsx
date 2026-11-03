@@ -2,7 +2,7 @@ import { ChevronRight, Lightbulb, LogOut } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { visibleNavItems } from "@/components/layout/nav-items";
+import { groupNavItems, visibleNavItems } from "@/components/layout/nav-items";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Avatar } from "@/components/ui/avatar";
 import { signOutAction } from "@/lib/auth/actions";
@@ -18,7 +18,9 @@ export const metadata: Metadata = { title: "Más" };
 export default async function MorePage() {
   const context = await requireAppContext();
   const [permissions, site] = await Promise.all([getPermissions(context), getSiteContext(context)]);
-  const sections = visibleNavItems(permissions).filter((item) => item.mobile === "more");
+  const groups = groupNavItems(
+    visibleNavItems(permissions).filter((item) => item.mobile === "more"),
+  );
 
   return (
     <div className="flex flex-col gap-5">
@@ -39,21 +41,28 @@ export default async function MorePage() {
         <ChevronRight aria-hidden="true" className="size-5 text-muted-foreground" />
       </Link>
 
-      {sections.length > 0 ? (
-        <ul className="overflow-hidden rounded-[14px] border bg-card">
-          {sections.map((item) => (
-            <li key={item.key} className="border-b last:border-b-0">
-              <Link
-                href={item.href}
-                className="flex h-14 items-center justify-between gap-3 px-4 text-[15px] font-medium hover:bg-muted/60"
-              >
-                {item.label}
-                <ChevronRight aria-hidden="true" className="size-5 text-muted-foreground" />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : null}
+      {groups.map((group) => (
+        <section key={group.section} className="flex flex-col gap-2">
+          {group.title ? (
+            <h2 className="px-1 text-[11px] font-semibold tracking-[0.08em] text-muted-foreground uppercase">
+              {group.title}
+            </h2>
+          ) : null}
+          <ul className="overflow-hidden rounded-[14px] border bg-card">
+            {group.items.map((item) => (
+              <li key={item.key} className="border-b last:border-b-0">
+                <Link
+                  href={item.href}
+                  className="flex h-14 items-center justify-between gap-3 px-4 text-[15px] font-medium hover:bg-muted/60"
+                >
+                  {item.label}
+                  <ChevronRight aria-hidden="true" className="size-5 text-muted-foreground" />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ))}
 
       <fieldset className="flex flex-col gap-2 rounded-[14px] border bg-card p-4">
         <legend className="float-left mb-1 text-sm font-semibold">Apariencia</legend>

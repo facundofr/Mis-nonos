@@ -53,7 +53,7 @@ test("Administración invita por email; la persona acepta y entra con su rol", a
 
   // Sin permiso de usuarios: ni el menú ni la pantalla.
   await marta.goto("/mas");
-  await expect(marta.getByRole("link", { name: "Empleados" })).toBeVisible();
+  await expect(marta.getByRole("link", { name: "Personal" })).toBeVisible();
   await expect(marta.getByRole("link", { name: "Usuarios y roles" })).toHaveCount(0);
   await marta.goto("/usuarios");
   await expect(marta).toHaveURL(/\/sin-permiso/);

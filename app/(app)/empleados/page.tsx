@@ -11,7 +11,7 @@ import { requirePermission } from "@/lib/auth/authorization";
 import { getSiteContext } from "@/lib/site/server";
 import { cn } from "@/lib/utils";
 
-export const metadata: Metadata = { title: "Empleados" };
+export const metadata: Metadata = { title: "Personal" };
 
 function detailOf(member: MemberRow): string {
   const parts = [member.profession ?? member.roleName];
@@ -48,7 +48,7 @@ export default async function StaffPage({ searchParams }: PageProps<"/empleados"
 
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title="Empleados" back={{ href: "/mas", label: "Más" }} />
+      <PageHeader title="Personal" back={{ href: "/mas", label: "Más" }} />
 
       {currentShiftId ? (
         <nav aria-label="Filtro" className="flex w-fit gap-1 rounded-xl bg-muted p-1">
@@ -71,10 +71,7 @@ export default async function StaffPage({ searchParams }: PageProps<"/empleados"
 
       {list.length === 0 ? (
         <div className="rounded-[14px] border bg-card">
-          <EmptyState
-            icon={UserRound}
-            title={showOnShift ? "Nadie en este turno" : "Sin empleados"}
-          >
+          <EmptyState icon={UserRound} title={showOnShift ? "Nadie en este turno" : "Sin personal"}>
             {showOnShift
               ? "Nadie tiene este turno como habitual. Administración lo carga en la ficha de cada persona."
               : "Todavía no hay personal activo."}

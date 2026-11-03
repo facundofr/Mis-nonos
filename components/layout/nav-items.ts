@@ -11,6 +11,7 @@ import type { PermissionKey } from "@/lib/auth/permissions";
 
 export type NavIcon =
   | "home"
+  | "requests"
   | "residents"
   | "notes"
   | "handover"
@@ -24,6 +25,18 @@ export type NavIcon =
   | "settings"
   | "more";
 
+/**
+ * Bloques del menú, como en un CRM de residencias: el día a día arriba, después
+ * el cuidado, la gestión y los ajustes.
+ */
+export const NAV_SECTIONS = {
+  diario: null,
+  cuidado: "Cuidado",
+  gestion: "Administración",
+  ajustes: "Configuración",
+} as const satisfies Record<string, string | null>;
+export type NavSection = keyof typeof NAV_SECTIONS;
+
 export interface NavItem {
   key: string;
   label: string;
@@ -31,8 +44,8 @@ export interface NavItem {
   tabLabel?: string;
   href: Route;
   icon: NavIcon;
-  /** Escritorio: "main" arriba; "admin" abajo, separado. */
-  group: "main" | "admin";
+  /** Bloque del menú lateral (con su título) y del menú "Más". */
+  section: NavSection;
   /** Hace falta alguno de estos permisos. Sin lista, lo ve cualquiera. */
   anyOf?: readonly PermissionKey[];
   /** Teléfono: pestaña de la barra inferior o entrada de "Más". */
@@ -40,12 +53,21 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: readonly NavItem[] = [
+  // En el teléfono, el inicio se abre desde el logo y desde "Más" (13.2).
+  {
+    key: "inicio",
+    label: "Inicio",
+    href: "/inicio",
+    icon: "home",
+    section: "diario",
+    mobile: "more",
+  },
   {
     key: "pacientes",
     label: "Pacientes",
     href: "/pacientes",
     icon: "residents",
-    group: "main",
+    section: "diario",
     anyOf: ["residents.read"],
     mobile: "tab",
   },
@@ -54,7 +76,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Novedades",
     href: "/novedades",
     icon: "notes",
-    group: "main",
+    section: "diario",
     anyOf: ["residents.read"],
     mobile: "tab",
   },
@@ -64,17 +86,26 @@ export const NAV_ITEMS: readonly NavItem[] = [
     tabLabel: "Turno",
     href: "/turno",
     icon: "handover",
-    group: "main",
+    section: "diario",
     anyOf: ["residents.read"],
     mobile: "tab",
   },
   // Seguimiento del cuidado (docs/decisions/0017). En el teléfono, desde "Más".
   {
+    key: "enfermeria",
+    label: "Enfermería",
+    href: "/enfermeria",
+    icon: "nursing",
+    section: "cuidado",
+    anyOf: ["care.read"],
+    mobile: "more",
+  },
+  {
     key: "especialidades",
     label: "Especialidades",
     href: "/especialidades",
     icon: "specialties",
-    group: "main",
+    section: "cuidado",
     anyOf: ["care.read"],
     mobile: "more",
   },
@@ -83,16 +114,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Profesionales",
     href: "/profesionales",
     icon: "professionals",
-    group: "main",
-    anyOf: ["care.read"],
-    mobile: "more",
-  },
-  {
-    key: "enfermeria",
-    label: "Enfermería",
-    href: "/enfermeria",
-    icon: "nursing",
-    group: "main",
+    section: "cuidado",
     anyOf: ["care.read"],
     mobile: "more",
   },
@@ -101,18 +123,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Emergencias",
     href: "/emergencias",
     icon: "emergencies",
-    group: "main",
+    section: "cuidado",
     anyOf: ["emergencies.manage"],
     mobile: "more",
   },
-  // En el teléfono, el inicio se abre desde el logo y desde "Más" (13.2).
-  { key: "inicio", label: "Inicio", href: "/inicio", icon: "home", group: "main", mobile: "more" },
   {
     key: "empleados",
-    label: "Empleados",
+    label: "Personal",
     href: "/empleados",
     icon: "staff",
-    group: "main",
+    section: "gestion",
     anyOf: ["staff.read"],
     mobile: "more",
   },
@@ -121,8 +141,17 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Abonos",
     href: "/abonos",
     icon: "fees",
-    group: "main",
+    section: "gestion",
     anyOf: ["fees.read"],
+    mobile: "more",
+  },
+  {
+    key: "solicitudes",
+    label: "Solicitudes de ingreso",
+    href: "/solicitudes",
+    icon: "requests",
+    section: "gestion",
+    anyOf: ["admission_requests.manage"],
     mobile: "more",
   },
   {
@@ -130,7 +159,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Usuarios y roles",
     href: "/usuarios",
     icon: "users",
-    group: "admin",
+    section: "ajustes",
     anyOf: ["users.manage"],
     mobile: "more",
   },
@@ -139,7 +168,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     label: "Configuración",
     href: "/configuracion",
     icon: "settings",
-    group: "admin",
+    section: "ajustes",
     anyOf: ["settings.manage"],
     mobile: "more",
   },
@@ -150,4 +179,17 @@ export function visibleNavItems(permissions: ReadonlySet<PermissionKey>): NavIte
   return NAV_ITEMS.filter(
     (item) => !item.anyOf || item.anyOf.some((permission) => permissions.has(permission)),
   );
+}
+
+/** Las secciones agrupadas por bloque, en el orden del menú (los vacíos no van). */
+export function groupNavItems(
+  items: readonly NavItem[],
+): { section: NavSection; title: string | null; items: NavItem[] }[] {
+  return (Object.keys(NAV_SECTIONS) as NavSection[])
+    .map((section) => ({
+      section,
+      title: NAV_SECTIONS[section],
+      items: items.filter((item) => item.section === section),
+    }))
+    .filter((group) => group.items.length > 0);
 }
