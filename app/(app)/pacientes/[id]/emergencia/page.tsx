@@ -1,4 +1,5 @@
 import {
+  ClipboardPen,
   FileDown,
   MapPin,
   Phone,
@@ -113,9 +114,10 @@ export default async function EmergencyPage({ params }: PageProps<"/pacientes/[i
   const context = await requirePermission("emergency.view");
   const { id } = await params;
   if (!z.uuid().safeParse(id).success) notFound();
-  const [{ site, today }, canConfigure] = await Promise.all([
+  const [{ site, today }, canConfigure, canRecord] = await Promise.all([
     getSiteContext(context),
     can(context, "settings.manage"),
+    can(context, "emergencies.manage"),
   ]);
 
   const sheet = await inTenant(context, async (tx) => {
@@ -437,6 +439,24 @@ export default async function EmergencyPage({ params }: PageProps<"/pacientes/[i
           </span>
         </span>
       </a>
+      {/* Después de llamar: deja asentado qué pasó (6.9, paso 5). */}
+      {canRecord ? (
+        <Link
+          href={`/emergencias/nueva?paciente=${id}` as Route}
+          className={buttonClassName({
+            variant: "outline",
+            className: "h-auto min-h-12 py-2.5 whitespace-normal",
+          })}
+        >
+          <ClipboardPen aria-hidden="true" className="size-5 shrink-0" />
+          <span className="flex flex-col items-start text-left leading-tight">
+            <span>Registrar la emergencia</span>
+            <span className="text-[13px] font-normal text-muted-foreground">
+              Qué pasó, a quién se llamó y si hubo traslado
+            </span>
+          </span>
+        </Link>
+      ) : null}
       <p className="flex items-center justify-center gap-1.5 text-center text-[13px] text-balance text-muted-foreground">
         <ShieldCheck aria-hidden="true" className="size-4 shrink-0" />
         Se avisa a Dirección que abriste esta ficha · {formatTime(new Date(), site.timezone)}

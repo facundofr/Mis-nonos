@@ -10,7 +10,19 @@ import type { PermissionKey } from "@/lib/auth/permissions";
  */
 
 export type NavIcon =
-  "home" | "residents" | "notes" | "handover" | "staff" | "fees" | "users" | "settings" | "more";
+  | "home"
+  | "residents"
+  | "notes"
+  | "handover"
+  | "specialties"
+  | "professionals"
+  | "nursing"
+  | "emergencies"
+  | "staff"
+  | "fees"
+  | "users"
+  | "settings"
+  | "more";
 
 export interface NavItem {
   key: string;
@@ -55,6 +67,43 @@ export const NAV_ITEMS: readonly NavItem[] = [
     group: "main",
     anyOf: ["residents.read"],
     mobile: "tab",
+  },
+  // Seguimiento del cuidado (docs/decisions/0017). En el teléfono, desde "Más".
+  {
+    key: "especialidades",
+    label: "Especialidades",
+    href: "/especialidades",
+    icon: "specialties",
+    group: "main",
+    anyOf: ["care.read"],
+    mobile: "more",
+  },
+  {
+    key: "profesionales",
+    label: "Profesionales",
+    href: "/profesionales",
+    icon: "professionals",
+    group: "main",
+    anyOf: ["care.read"],
+    mobile: "more",
+  },
+  {
+    key: "enfermeria",
+    label: "Enfermería",
+    href: "/enfermeria",
+    icon: "nursing",
+    group: "main",
+    anyOf: ["care.read"],
+    mobile: "more",
+  },
+  {
+    key: "emergencias",
+    label: "Emergencias",
+    href: "/emergencias",
+    icon: "emergencies",
+    group: "main",
+    anyOf: ["emergencies.manage"],
+    mobile: "more",
   },
   // En el teléfono, el inicio se abre desde el logo y desde "Más" (13.2).
   { key: "inicio", label: "Inicio", href: "/inicio", icon: "home", group: "main", mobile: "more" },

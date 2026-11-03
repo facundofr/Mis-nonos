@@ -55,6 +55,13 @@ export async function listEntityActivity(
                 ),
               )
             : undefined,
+          // Y sus atenciones y emergencias (qué se hizo y quién, sin el texto: 0017).
+          entity.type === "resident"
+            ? and(
+                inArray(schema.auditEvents.entityType, ["care_encounter", "emergency"]),
+                sql`${schema.auditEvents.metadata} ->> 'residentId' = ${entity.id}`,
+              )
+            : undefined,
         ),
         options.before ? lt(schema.auditEvents.occurredAt, options.before) : undefined,
       ),
