@@ -1,6 +1,20 @@
-import { ArrowRight, FileWarning, Plus, Siren } from "lucide-react";
+import {
+  ArrowRight,
+  CalendarDays,
+  ChevronRight,
+  ClipboardList,
+  FileWarning,
+  ListChecks,
+  NotebookPen,
+  Plus,
+  Siren,
+  UserRound,
+  Users,
+  type LucideIcon,
+} from "lucide-react";
 import type { Metadata, Route } from "next";
 import Link from "next/link";
+import type { ReactNode } from "react";
 
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
@@ -8,6 +22,7 @@ import { Notice } from "@/components/ui/notice";
 import { actionLabel } from "@/features/activity/labels";
 import { listRecentActivity } from "@/features/activity/queries";
 import { countRequests } from "@/features/admission-requests/queries";
+import { listEmergencies, upcomingControls } from "@/features/care/queries";
 import { feeAlerts } from "@/features/fees/queries";
 import { residentsWithMissingDocuments } from "@/features/documents/queries";
 import { canDeliverAt } from "@/features/handover/rules";
@@ -17,15 +32,16 @@ import { SETUP_CATALOGS_KEY, SETUP_HIDDEN_KEY } from "@/features/onboarding/cont
 import { getSeenOnboarding } from "@/features/onboarding/server";
 import { setupProgress } from "@/features/onboarding/service";
 import { countResidents } from "@/features/residents/queries";
+import { listMembers } from "@/features/users/queries";
 import { inTenant } from "@/lib/actions";
 import { getPermissions } from "@/lib/auth/authorization";
 import { requireAppContext } from "@/lib/auth/session";
 import { getSiteContext } from "@/lib/site/server";
 import { formatLongDate, formatWhen } from "@/lib/time/format";
+import { shiftLabel } from "@/lib/time/shifts";
 import { toLocal } from "@/lib/time/zoned";
 
 import { SetupChecklist } from "../guia/setup-checklist";
-import { NoteList } from "../novedades/note-list";
 
 export const metadata: Metadata = { title: "Inicio" };
 
@@ -42,42 +58,128 @@ function duration(ms: number): string {
   return minutes % 60 === 0 ? `${hours} h` : `${hours} h ${minutes % 60} min`;
 }
 
-function Tile({
+const MONTHS = ["ene", "feb", "mar", "abr", "may", "jun", "jul", "ago", "sep", "oct", "nov", "dic"];
+
+/** Tarjeta de indicador (KPI): ícono, número y un enlace corto. */
+function KpiCard({
+  icon: Icon,
   label,
   value,
   detail,
   href,
+  tone = "default",
 }: {
+  icon: LucideIcon;
   label: string;
   value: string;
-  detail?: string;
-  href?: Route;
+  detail: string;
+  href: Route;
+  tone?: "default" | "attention";
 }) {
-  const body = (
-    <>
-      <span className="text-[13px] font-medium text-muted-foreground">{label}</span>
-      <span className="text-2xl font-semibold tracking-tight tabular-nums">{value}</span>
-      {detail ? (
-        <span className="flex items-center gap-1 text-[13px] text-muted-foreground">
-          {detail}
-          {href ? <ArrowRight aria-hidden="true" className="size-3.5" /> : null}
+  return (
+    <Link
+      href={href}
+      className="group flex flex-col gap-3 rounded-[14px] border bg-card p-4 transition-colors hover:border-primary/60 focus-visible:ring-3 focus-visible:ring-ring/30 focus-visible:outline-none sm:p-5"
+    >
+      <span className="flex items-center justify-between gap-2">
+        <span className="text-[13px] font-medium text-muted-foreground">{label}</span>
+        <span
+          className={
+            tone === "attention"
+              ? "flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-warning text-warning-foreground"
+              : "flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-secondary text-secondary-foreground"
+          }
+        >
+          <Icon aria-hidden="true" className="size-[18px]" />
         </span>
-      ) : null}
-    </>
-  );
-  const className = "flex flex-col gap-1 rounded-[14px] border bg-card p-4";
-  return href ? (
-    <Link href={href} className={`${className} hover:bg-muted/60`}>
-      {body}
+      </span>
+      <span className="text-[28px] leading-none font-semibold tracking-tight tabular-nums">
+        {value}
+      </span>
+      <span className="flex items-center gap-1 text-[13px] text-muted-foreground group-hover:text-primary-ink">
+        {detail}
+        <ArrowRight aria-hidden="true" className="size-3.5" />
+      </span>
     </Link>
-  ) : (
-    <div className={className}>{body}</div>
+  );
+}
+
+interface TaskItem {
+  key: string;
+  href: Route;
+  title: ReactNode;
+  meta: string;
+  urgent?: boolean;
+}
+
+/** Una franja de "Tareas del turno": título, cantidad y la lista (o "nada por ahora"). */
+function TaskBand({ title, hint, items }: { title: string; hint: string; items: TaskItem[] }) {
+  return (
+    <div className="flex flex-col">
+      <div className="flex items-center justify-between gap-2 bg-muted/50 px-5 py-2.5">
+        <span className="flex items-baseline gap-2">
+          <span className="text-sm font-semibold">{title}</span>
+          <span className="text-xs text-muted-foreground">{hint}</span>
+        </span>
+        <span className="min-w-6 rounded-full bg-card px-2 py-0.5 text-center text-xs font-semibold tabular-nums ring-1 ring-border">
+          {items.length}
+        </span>
+      </div>
+      {items.length === 0 ? (
+        <p className="px-5 py-3.5 text-sm text-muted-foreground">Nada por ahora.</p>
+      ) : (
+        <ul className="divide-y">
+          {items.map((item) => (
+            <li key={item.key}>
+              <Link
+                href={item.href}
+                className="flex items-start gap-3 px-5 py-3 hover:bg-muted/60 focus-visible:bg-muted/60 focus-visible:outline-none"
+              >
+                <span
+                  aria-hidden="true"
+                  className={
+                    item.urgent
+                      ? "mt-1.5 size-2 shrink-0 rounded-full bg-destructive"
+                      : "mt-1.5 size-2 shrink-0 rounded-full bg-primary"
+                  }
+                />
+                <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                  <span className="line-clamp-2 text-[15px]">{item.title}</span>
+                  <span className="text-[13px] text-muted-foreground">{item.meta}</span>
+                </span>
+                <ChevronRight
+                  aria-hidden="true"
+                  className="mt-0.5 size-4 shrink-0 text-muted-foreground"
+                />
+              </Link>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+/** Tarjeta de enlace con título y resumen (abonos, solicitudes). */
+function SummaryLink({ href, title, text }: { href: Route; title: string; text: string }) {
+  return (
+    <Link
+      href={href}
+      className="flex items-center justify-between gap-3 rounded-[14px] border bg-card p-5 hover:bg-muted/60"
+    >
+      <span className="flex flex-col gap-0.5">
+        <span className="text-base font-semibold">{title}</span>
+        <span className="text-sm text-muted-foreground">{text}</span>
+      </span>
+      <ArrowRight aria-hidden="true" className="size-5 text-muted-foreground" />
+    </Link>
   );
 }
 
 /**
- * Inicio (diseño Inicio, 7.3-H): para el personal, pendientes, novedades
- * recientes y acceso a Emergencia; Administración y Dirección suman
+ * Inicio (7.3-H), con la estructura de un CRM de residencias: saludo con el
+ * turno, indicadores, las tareas del turno por urgencia y la agenda de
+ * controles. Administración y Dirección suman abonos, solicitudes,
  * documentos faltantes y actividad reciente.
  */
 export default async function HomePage() {
@@ -99,6 +201,8 @@ export default async function HomePage() {
   const canRead = permissions.has("residents.read");
   const canAllActivity = permissions.has("audit.read_all");
   const canDocuments = permissions.has("documents.files") || permissions.has("admissions.manage");
+  const canCare = permissions.has("care.read");
+  const canStaff = permissions.has("staff.read");
 
   const data = canRead
     ? await inTenant(context, async (tx) => ({
@@ -108,6 +212,15 @@ export default async function HomePage() {
           : [],
         recent: await listNotes(tx, { siteId: site.id, limit: 5 }),
         counts: await countResidents(tx),
+        emergencies: permissions.has("emergencies.manage")
+          ? (await listEmergencies(tx, { siteId: site.id, limit: 10 })).filter(
+              (item) => item.status === "open",
+            )
+          : [],
+        controls: canCare ? await upcomingControls(tx, { siteId: site.id, today }) : null,
+        staffActive: canStaff
+          ? (await listMembers(tx)).filter((member) => member.status === "active").length
+          : null,
         missing: canDocuments ? await residentsWithMissingDocuments(tx) : null,
         activity: canAllActivity ? await listRecentActivity(tx) : [],
         fees: permissions.has("fees.read")
@@ -145,24 +258,43 @@ export default async function HomePage() {
       </p>
     </Notice>
   ) : null;
+
   const header = (
-    <div className="flex flex-wrap items-end justify-between gap-3">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">
+    <div className="flex flex-wrap items-end justify-between gap-4">
+      <div className="flex min-w-0 flex-col gap-1.5">
+        <h1 className="text-[26px] leading-tight font-semibold tracking-tight">
           {greeting(toLocal(now, site.timezone).hour)}, {firstName}
         </h1>
-        <p className="text-sm text-muted-foreground first-letter:uppercase">
-          {formatLongDate(now, site.timezone)} · Esto es lo que necesita tu atención hoy.
+        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
+          {current ? (
+            <span className="font-medium text-primary-ink">
+              Turno {shiftLabel(current.shift).toLocaleLowerCase("es-AR")}
+            </span>
+          ) : null}
+          {current ? <span aria-hidden="true">·</span> : null}
+          <span className="first-letter:uppercase">{formatLongDate(now, site.timezone)}</span>
         </p>
       </div>
-      {permissions.has("notes.create") ? (
-        <Link href="/novedades/nueva" className={buttonClassName({ size: "md" })}>
-          <Plus aria-hidden="true" className="size-4" />
-          Nueva novedad
-        </Link>
+      {canRead ? (
+        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          {permissions.has("notes.create") ? (
+            <Link href="/novedades/nueva" className={buttonClassName({ size: "md" })}>
+              <Plus aria-hidden="true" className="size-4" />
+              Nueva novedad
+            </Link>
+          ) : null}
+          <Link
+            href="/novedades?ver=pendientes"
+            className={buttonClassName({ size: "md", variant: "outline" })}
+          >
+            <ListChecks aria-hidden="true" className="size-4" />
+            Ver pendientes
+          </Link>
+        </div>
       ) : null}
     </div>
   );
+
   if (!data) {
     return (
       <div className="flex flex-col gap-6">
@@ -176,42 +308,116 @@ export default async function HomePage() {
     );
   }
 
-  const { pending, shiftNotes, recent, counts, missing, activity, requests, fees } = data;
-  const earlier = current ? pending.filter((note) => note.createdAt < current.startsAt).length : 0;
+  const {
+    pending,
+    shiftNotes,
+    recent,
+    counts,
+    emergencies,
+    controls,
+    staffActive,
+    missing,
+    activity,
+    requests,
+    fees,
+  } = data;
+  const earlier = current ? pending.filter((note) => note.createdAt < current.startsAt) : pending;
+  const thisShift = current ? pending.filter((note) => note.createdAt >= current.startsAt) : [];
   const lastNote = shiftNotes[0];
-  const handoverTile = !current
-    ? { value: "—", detail: "Sin turno en curso" }
-    : canDeliverAt(current, now)
-      ? { value: "Ahora", detail: "Entregar el turno" }
-      : {
-          value: `En ${duration(current.endsAt.getTime() - now.getTime())}`,
-          detail: "Preparar resumen",
-        };
+
+  const noteTask = (note: (typeof pending)[number]): TaskItem => ({
+    key: note.id,
+    href: `/novedades/${note.id}` as Route,
+    title: (
+      <>
+        {note.residentFirstName && note.residentLastName ? (
+          <b className="font-semibold">
+            {fullName({ firstName: note.residentFirstName, lastName: note.residentLastName })}:{" "}
+          </b>
+        ) : null}
+        {note.content}
+      </>
+    ),
+    meta: `${note.categoryName} · ${formatWhen(note.createdAt, now, site.timezone)}`,
+  });
+  const nowTasks: TaskItem[] = [
+    ...emergencies.map((item) => ({
+      key: item.id,
+      href: `/emergencias/${item.id}` as Route,
+      title: (
+        <>
+          <b className="font-semibold">
+            Emergencia en curso ·{" "}
+            {fullName({ firstName: item.residentFirstName, lastName: item.residentLastName })}
+          </b>
+        </>
+      ),
+      meta: `Desde ${formatWhen(item.startedAt, now, site.timezone)}`,
+      urgent: true,
+    })),
+    ...(current && canDeliverAt(current, now)
+      ? [
+          {
+            key: "traspaso",
+            href: "/turno" as Route,
+            title: <b className="font-semibold">Entregar el turno</b>,
+            meta: "Revisá el resumen y entregáselo al turno que entra.",
+          },
+        ]
+      : []),
+  ];
+  const handoverAction = current ? (
+    <Link
+      href="/turno"
+      className="shrink-0 text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
+    >
+      {canDeliverAt(current, now)
+        ? "Entregar turno"
+        : `Entrega en ${duration(current.endsAt.getTime() - now.getTime())}`}
+    </Link>
+  ) : null;
+
+  const agendaUntil = shiftDays(today, 30);
+  const agenda = (controls ?? []).filter((item) => item.nextControlOn <= agendaUntil);
+
+  const adminCards = [
+    fees && (fees.dueSoon > 0 || fees.overdue > 0) ? (
+      <SummaryLink
+        key="abonos"
+        href="/abonos"
+        title="Abonos"
+        text={[
+          fees.dueSoon > 0
+            ? `${fees.dueSoon} vence${fees.dueSoon === 1 ? "" : "n"} en los próximos ${site.feeReminderDaysBefore} días`
+            : null,
+          fees.overdue > 0 ? `${fees.overdue} vencida${fees.overdue === 1 ? "" : "s"}` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ")}
+      />
+    ) : null,
+    requests && requests.abiertas > 0 ? (
+      <SummaryLink
+        key="solicitudes"
+        href="/solicitudes"
+        title="Solicitudes de ingreso"
+        text={`${
+          requests.nuevas > 0
+            ? `${requests.nuevas} nueva${requests.nuevas === 1 ? "" : "s"} sin revisar · `
+            : ""
+        }${requests.abiertas} abierta${requests.abiertas === 1 ? "" : "s"}`}
+      />
+    ) : null,
+  ].filter(Boolean);
 
   return (
     <div className="flex flex-col gap-6">
       {header}
       {emergencyServiceNotice}
-      {setupCard}
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Tile
-          label="Pendientes abiertos"
-          value={String(pending.length)}
-          detail={earlier > 0 ? `${earlier} de turnos anteriores` : "Ver pendientes"}
-          href="/novedades?ver=pendientes"
-        />
-        <Tile
-          label="Novedades del turno"
-          value={String(shiftNotes.length)}
-          detail={
-            lastNote
-              ? `Última ${formatWhen(lastNote.createdAt, now, site.timezone)}`
-              : "Ninguna todavía"
-          }
-          href="/novedades?ver=todas"
-        />
-        <Tile
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
+        <KpiCard
+          icon={Users}
           label="Pacientes activos"
           value={String(counts.active + counts.hospitalized)}
           detail={
@@ -221,37 +427,90 @@ export default async function HomePage() {
           }
           href="/pacientes"
         />
-        <Tile
-          label="Traspaso de turno"
-          value={handoverTile.value}
-          detail={handoverTile.detail}
-          href="/turno"
+        <KpiCard
+          icon={ClipboardList}
+          label="En seguimiento"
+          value={String(pending.length)}
+          detail={
+            earlier.length > 0 && current
+              ? `${earlier.length} de turnos anteriores`
+              : "Ver pendientes"
+          }
+          href="/novedades?ver=pendientes"
+          tone={pending.length > 0 ? "attention" : "default"}
         />
+        <KpiCard
+          icon={NotebookPen}
+          label="Novedades del turno"
+          value={String(shiftNotes.length)}
+          detail={
+            lastNote
+              ? `Última ${formatWhen(lastNote.createdAt, now, site.timezone)}`
+              : "Ninguna todavía"
+          }
+          href="/novedades?ver=todas"
+        />
+        {staffActive !== null ? (
+          <KpiCard
+            icon={UserRound}
+            label="Personal activo"
+            value={String(staffActive)}
+            detail="Ver personal"
+            href="/empleados"
+          />
+        ) : (
+          <KpiCard
+            icon={ListChecks}
+            label="Traspaso de turno"
+            value={
+              !current
+                ? "—"
+                : canDeliverAt(current, now)
+                  ? "Ahora"
+                  : `${duration(current.endsAt.getTime() - now.getTime())}`
+            }
+            detail={!current ? "Sin turno en curso" : "Ir al traspaso"}
+            href="/turno"
+          />
+        )}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <section aria-labelledby="seguimientos" className="flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-2">
-            <h2 id="seguimientos" className="text-lg font-semibold">
-              Requieren seguimiento
-            </h2>
-            {pending.length > 0 ? (
+      {setupCard}
+
+      <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <Card aria-labelledby="tareas" className="overflow-hidden">
+          <CardHeader
+            id="tareas"
+            title="Tareas del turno"
+            description="Ordenadas por urgencia. Tocá una para abrirla."
+            action={handoverAction}
+          />
+          <div className="divide-y">
+            <TaskBand title="Ahora" hint="emergencias y entrega" items={nowTasks} />
+            {current ? (
+              <TaskBand
+                title="De este turno"
+                hint="pendientes abiertos"
+                items={thisShift.slice(0, 6).map(noteTask)}
+              />
+            ) : null}
+            <TaskBand
+              title={current ? "De turnos anteriores" : "Pendientes"}
+              hint="siguen abiertos"
+              items={earlier.slice(0, 6).map(noteTask)}
+            />
+          </div>
+          {pending.length > 12 ? (
+            <div className="border-t px-5 py-3">
               <Link
                 href="/novedades?ver=pendientes"
                 className="text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
               >
-                Ver todos
+                Ver los {pending.length} pendientes
               </Link>
-            ) : null}
-          </div>
-          <NoteList
-            notes={pending.slice(0, 5)}
-            now={now}
-            timeZone={site.timezone}
-            canResolve={permissions.has("notes.resolve")}
-            empty={{ title: "Sin pendientes", body: "No hay seguimientos abiertos." }}
-          />
-        </section>
+            </div>
+          ) : null}
+        </Card>
 
         <div className="flex flex-col gap-4">
           {permissions.has("emergency.view") ? (
@@ -276,6 +535,72 @@ export default async function HomePage() {
             </section>
           ) : null}
 
+          {controls ? (
+            <Card aria-labelledby="agenda">
+              <CardHeader
+                id="agenda"
+                title="Agenda de la residencia"
+                description="Controles de los próximos 30 días."
+              />
+              {agenda.length === 0 ? (
+                <div className="flex flex-col gap-2 px-5 py-4 text-sm text-muted-foreground">
+                  <p className="flex items-center gap-2">
+                    <CalendarDays aria-hidden="true" className="size-4" />
+                    No hay nada agendado para los próximos 30 días.
+                  </p>
+                  <Link
+                    href="/especialidades"
+                    className="font-medium text-primary-ink underline-offset-4 hover:underline"
+                  >
+                    Gestionar en Especialidades
+                  </Link>
+                </div>
+              ) : (
+                <ul className="divide-y">
+                  {agenda.slice(0, 6).map((item) => {
+                    const [, month, day] = item.nextControlOn.split("-").map(Number);
+                    const overdue = item.nextControlOn < today;
+                    return (
+                      <li key={item.encounterId}>
+                        <Link
+                          href={`/pacientes/${item.residentId}` as Route}
+                          className="flex items-center gap-3 px-5 py-3 hover:bg-muted/60"
+                        >
+                          <span
+                            className={
+                              overdue
+                                ? "flex size-11 shrink-0 flex-col items-center justify-center rounded-[10px] bg-warning text-warning-foreground"
+                                : "flex size-11 shrink-0 flex-col items-center justify-center rounded-[10px] bg-secondary text-secondary-foreground"
+                            }
+                          >
+                            <span className="text-[15px] leading-none font-semibold tabular-nums">
+                              {day}
+                            </span>
+                            <span className="text-[10px] font-medium uppercase">
+                              {MONTHS[(month ?? 1) - 1]}
+                            </span>
+                          </span>
+                          <span className="flex min-w-0 flex-col gap-0.5">
+                            <span className="truncate text-[15px] font-medium">
+                              {fullName({
+                                firstName: item.residentFirstName,
+                                lastName: item.residentLastName,
+                              })}
+                            </span>
+                            <span className="truncate text-[13px] text-muted-foreground">
+                              {overdue ? "Vencido · " : ""}
+                              {item.specialtyName} · {item.reason}
+                            </span>
+                          </span>
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </Card>
+          ) : null}
+
           <Card aria-labelledby="recientes">
             <CardHeader id="recientes" title="Novedades recientes" />
             {recent.length === 0 ? (
@@ -290,7 +615,7 @@ export default async function HomePage() {
                     >
                       <span className="line-clamp-2 text-[15px]">
                         {note.residentFirstName && note.residentLastName ? (
-                          <b>
+                          <b className="font-semibold">
                             {fullName({
                               firstName: note.residentFirstName,
                               lastName: note.residentLastName,
@@ -309,115 +634,95 @@ export default async function HomePage() {
               </ul>
             )}
           </Card>
+        </div>
+      </div>
 
-          {fees && (fees.dueSoon > 0 || fees.overdue > 0) ? (
-            <Link
-              href="/abonos"
-              className="flex items-center justify-between gap-3 rounded-[14px] border bg-card p-5 hover:bg-muted/60"
-            >
-              <span className="flex flex-col gap-0.5">
-                <span className="text-base font-semibold">Abonos</span>
-                <span className="text-sm text-muted-foreground">
-                  {[
-                    fees.dueSoon > 0
-                      ? `${fees.dueSoon} vence${fees.dueSoon === 1 ? "" : "n"} en los próximos ${site.feeReminderDaysBefore} días`
-                      : null,
-                    fees.overdue > 0
-                      ? `${fees.overdue} vencida${fees.overdue === 1 ? "" : "s"}`
-                      : null,
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </span>
-              </span>
-              <ArrowRight aria-hidden="true" className="size-5 text-muted-foreground" />
-            </Link>
+      {adminCards.length > 0 || (missing && missing.total > 0) || canAllActivity ? (
+        <section aria-labelledby="administracion" className="flex flex-col gap-3">
+          <h2
+            id="administracion"
+            className="text-[11px] font-semibold tracking-[0.08em] text-muted-foreground uppercase"
+          >
+            Administración
+          </h2>
+          {adminCards.length > 0 ? (
+            <div className="grid gap-3 sm:grid-cols-2">{adminCards}</div>
           ) : null}
-
-          {requests && requests.abiertas > 0 ? (
-            <Link
-              href="/solicitudes"
-              className="flex items-center justify-between gap-3 rounded-[14px] border bg-card p-5 hover:bg-muted/60"
-            >
-              <span className="flex flex-col gap-0.5">
-                <span className="text-base font-semibold">Solicitudes de ingreso</span>
-                <span className="text-sm text-muted-foreground">
-                  {requests.nuevas > 0
-                    ? `${requests.nuevas} nueva${requests.nuevas === 1 ? "" : "s"} sin revisar · `
-                    : ""}
-                  {requests.abiertas} abierta{requests.abiertas === 1 ? "" : "s"}
-                </span>
-              </span>
-              <ArrowRight aria-hidden="true" className="size-5 text-muted-foreground" />
-            </Link>
-          ) : null}
-
-          {missing && missing.total > 0 ? (
-            <Card aria-labelledby="faltantes">
-              <CardHeader
-                id="faltantes"
-                title="Documentos faltantes"
-                description={`${missing.total} paciente${missing.total === 1 ? "" : "s"} con el legajo incompleto.`}
-              />
-              <ul className="divide-y">
-                {missing.items.map((item) => (
-                  <li key={item.residentId}>
-                    <Link
-                      href={`/pacientes/${item.residentId}?tab=legajo` as Route}
-                      className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-muted/60"
-                    >
-                      <span className="flex items-center gap-2 text-[15px]">
-                        <FileWarning
-                          aria-hidden="true"
-                          className="size-4 text-warning-foreground"
-                        />
-                        {fullName(item)}
-                      </span>
-                      <span className="text-[13px] text-muted-foreground">
-                        Faltan {item.missing}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          ) : null}
-
-          {canAllActivity ? (
-            <Card aria-labelledby="actividad">
-              <CardHeader id="actividad" title="Actividad reciente" />
-              {activity.length === 0 ? (
-                <p className="px-5 py-4 text-sm text-muted-foreground">Sin actividad todavía.</p>
-              ) : (
+          <div className="grid items-start gap-4 lg:grid-cols-2">
+            {missing && missing.total > 0 ? (
+              <Card aria-labelledby="faltantes">
+                <CardHeader
+                  id="faltantes"
+                  title="Documentos faltantes"
+                  description={`${missing.total} paciente${missing.total === 1 ? "" : "s"} con el legajo incompleto.`}
+                />
                 <ul className="divide-y">
-                  {activity.map((item) => (
-                    <li key={item.id} className="flex flex-col gap-0.5 px-5 py-3">
-                      <span className="text-[15px]">
-                        <b>{item.actorName ?? "Sistema"}</b> ·{" "}
-                        {actionLabel(item.action).toLocaleLowerCase("es-AR")}
-                        {item.residentId && item.residentName ? (
-                          <>
-                            {" · "}
-                            <Link
-                              href={`/pacientes/${item.residentId}` as Route}
-                              className="text-primary-ink underline-offset-4 hover:underline"
-                            >
-                              {item.residentName}
-                            </Link>
-                          </>
-                        ) : null}
-                      </span>
-                      <span className="text-[13px] text-muted-foreground">
-                        {formatWhen(item.occurredAt, now, site.timezone)}
-                      </span>
+                  {missing.items.map((item) => (
+                    <li key={item.residentId}>
+                      <Link
+                        href={`/pacientes/${item.residentId}?tab=legajo` as Route}
+                        className="flex items-center justify-between gap-3 px-5 py-3 hover:bg-muted/60"
+                      >
+                        <span className="flex items-center gap-2 text-[15px]">
+                          <FileWarning
+                            aria-hidden="true"
+                            className="size-4 text-warning-foreground"
+                          />
+                          {fullName(item)}
+                        </span>
+                        <span className="text-[13px] text-muted-foreground">
+                          Faltan {item.missing}
+                        </span>
+                      </Link>
                     </li>
                   ))}
                 </ul>
-              )}
-            </Card>
-          ) : null}
-        </div>
-      </div>
+              </Card>
+            ) : null}
+
+            {canAllActivity ? (
+              <Card aria-labelledby="actividad">
+                <CardHeader id="actividad" title="Actividad reciente" />
+                {activity.length === 0 ? (
+                  <p className="px-5 py-4 text-sm text-muted-foreground">Sin actividad todavía.</p>
+                ) : (
+                  <ul className="divide-y">
+                    {activity.map((item) => (
+                      <li key={item.id} className="flex flex-col gap-0.5 px-5 py-3">
+                        <span className="text-[15px]">
+                          <b className="font-semibold">{item.actorName ?? "Sistema"}</b> ·{" "}
+                          {actionLabel(item.action).toLocaleLowerCase("es-AR")}
+                          {item.residentId && item.residentName ? (
+                            <>
+                              {" · "}
+                              <Link
+                                href={`/pacientes/${item.residentId}` as Route}
+                                className="text-primary-ink underline-offset-4 hover:underline"
+                              >
+                                {item.residentName}
+                              </Link>
+                            </>
+                          ) : null}
+                        </span>
+                        <span className="text-[13px] text-muted-foreground">
+                          {formatWhen(item.occurredAt, now, site.timezone)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Card>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
     </div>
   );
+}
+
+/** Suma días a una fecha "AAAA-MM-DD". */
+function shiftDays(key: string, days: number): string {
+  const [year, month, day] = key.split("-").map(Number);
+  const date = new Date(Date.UTC(year ?? 2000, (month ?? 1) - 1, (day ?? 1) + days));
+  return date.toISOString().slice(0, 10);
 }

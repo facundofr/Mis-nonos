@@ -9,6 +9,21 @@ import { formatDateKey } from "@/lib/time/format";
  */
 
 export const ACTION_LABELS: Record<string, string> = {
+  "invitation.created": "Invitó a una persona",
+  "invitation.accepted": "Aceptó la invitación",
+  "invitation.revoked": "Anuló una invitación",
+  "user.created": "Creó un usuario",
+  "user.password_changed": "Cambió su contraseña",
+  "user.password_reset": "Dio una contraseña provisoria",
+  "profile.updated": "Editó su perfil",
+  "organization.created": "Creó la residencia",
+  "site.updated": "Editó los datos de la residencia",
+  "shift.created": "Creó un turno",
+  "shift.updated": "Editó un turno",
+  "note_category.created": "Creó una categoría de novedades",
+  "note_category.updated": "Editó una categoría de novedades",
+  "document_type.created": "Creó un tipo de documento",
+  "document_type.updated": "Editó un tipo de documento",
   "admission.started": "Empezó el ingreso",
   "admission.confirmed": "Confirmó el ingreso",
   "admission.cancelled": "Canceló el ingreso",

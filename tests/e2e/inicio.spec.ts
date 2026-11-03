@@ -37,8 +37,8 @@ test("Inicio: el personal ve sus pendientes; Administración, además, legajos y
   await expect(marta.getByText("Novedad registrada.")).toBeVisible();
 
   await marta.goto("/inicio");
-  const seguimientos = marta.getByRole("region", { name: "Requieren seguimiento" });
-  await expect(seguimientos.getByText("Falta reponer guantes en el office.")).toBeVisible();
+  const tareas = marta.getByRole("region", { name: "Tareas del turno" });
+  await expect(tareas.getByText("Falta reponer guantes en el office.")).toBeVisible();
   await expect(marta.getByRole("link", { name: /Pacientes activos\s*1/ })).toBeVisible();
   await expect(marta.getByRole("heading", { name: "Actividad reciente" })).toHaveCount(0);
   await expect(marta.getByRole("heading", { name: "Documentos faltantes" })).toHaveCount(0);
