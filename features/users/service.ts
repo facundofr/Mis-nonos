@@ -154,6 +154,81 @@ export async function createMemberWithoutEmail(
   return { userId: user.id, membershipId: membership.id };
 }
 
+/**
+ * Alta con email y contraseña provisoria (docs/decisions/0018): la app la
+ * genera, se la manda por email y al primer ingreso la persona elige una
+ * propia. Si el email ya tiene cuenta (por ejemplo, en otra residencia), se
+ * usa la invitación por enlace.
+ */
+export async function createMemberWithEmail(
+  tx: Transaction,
+  actor: TenantContext,
+  input: InviteInput & { passwordHash: string },
+): Promise<{ userId: string; membershipId: string }> {
+  const [existing] = await tx
+    .select({ status: schema.organizationMemberships.status })
+    .from(schema.organizationMemberships)
+    .innerJoin(schema.users, eq(schema.users.id, schema.organizationMemberships.userId))
+    .where(
+      and(
+        eq(schema.users.email, input.email),
+        eq(schema.organizationMemberships.organizationId, actor.organizationId),
+      ),
+    );
+  if (existing?.status === "active") {
+    throw new DomainError("Esa persona ya trabaja en la residencia.", "email");
+  }
+  if (existing?.status === "disabled") {
+    throw new DomainError(
+      "Esa persona está desactivada en la residencia: reactivala desde su ficha.",
+      "email",
+    );
+  }
+
+  const roleId = await roleIdFor(tx, input.roleKey);
+  const [user] = await tx
+    .insert(schema.users)
+    .values({ name: input.name, email: input.email, passwordChangeRequired: true })
+    .onConflictDoNothing()
+    .returning({ id: schema.users.id });
+  if (!user) {
+    throw new DomainError(
+      "Ese email ya tiene una cuenta en Mis Nonos: sumala con “Invitar con enlace”.",
+      "email",
+    );
+  }
+
+  await tx.insert(schema.accounts).values({
+    userId: user.id,
+    accountId: user.id,
+    providerId: "credential",
+    password: input.passwordHash,
+  });
+
+  const [membership] = await tx
+    .insert(schema.organizationMemberships)
+    .values({
+      organizationId: actor.organizationId,
+      userId: user.id,
+      roleId,
+      status: "active",
+      phone: input.phone,
+      profession: input.profession,
+      licenseNumber: input.licenseNumber,
+    })
+    .returning({ id: schema.organizationMemberships.id });
+  if (!membership) throw new Error("No se pudo crear la membresía.");
+
+  await recordAudit(tx, actor, {
+    action: "user.created",
+    entityType: "membership",
+    entityId: membership.id,
+    changes: diffChanges(null, { name: input.name, email: input.email, roleKey: input.roleKey }),
+    metadata: { contrasenaProvisoria: true },
+  });
+  return { userId: user.id, membershipId: membership.id };
+}
+
 export async function updateMember(
   tx: Transaction,
   actor: TenantContext,
@@ -258,22 +333,17 @@ export async function setMemberActive(
 }
 
 /**
- * Contraseña provisoria nueva para quien entra con usuario (DC-11: la
- * restablece Administración). Cierra sus sesiones y le pide cambiarla.
- * Quien tiene email usa "¿La olvidaste?" en el ingreso.
+ * Contraseña provisoria nueva (DC-11, docs/decisions/0018): la da
+ * Administración, con o sin email. Cierra las sesiones de la persona y le
+ * pide cambiarla al entrar. Devuelve el email real, si tiene, para mandarla.
  */
 export async function resetTemporaryPassword(
   tx: Transaction,
   actor: TenantContext,
   membershipId: string,
   passwordHash: string,
-): Promise<void> {
+): Promise<{ name: string; email: string | null }> {
   const member = await requireMember(tx, membershipId);
-  if (member.email && canReceiveEmail(member.email)) {
-    throw new DomainError(
-      'Esta persona tiene email: puede crear una contraseña nueva con "¿La olvidaste?" en el ingreso.',
-    );
-  }
   if (member.userId === actor.userId) {
     throw new DomainError("Tu contraseña la cambiás desde tu perfil.");
   }
@@ -298,6 +368,10 @@ export async function resetTemporaryPassword(
     entityType: "membership",
     entityId: membershipId,
   });
+  return {
+    name: member.name,
+    email: member.email && canReceiveEmail(member.email) ? member.email : null,
+  };
 }
 
 /** Reenviar: una invitación nueva con los mismos datos (anula la anterior). */

@@ -8,8 +8,10 @@ import { listDocumentTypes, listNoteCategories } from "@/features/settings/queri
 import { saveShift } from "@/features/settings/service";
 import { listMembers } from "@/features/users/queries";
 import {
+  createMemberWithEmail,
   createMemberWithoutEmail,
   inviteMember,
+  resetTemporaryPassword,
   setMemberActive,
   updateMember,
 } from "@/features/users/service";
@@ -242,5 +244,63 @@ describe("Turnos", () => {
       .where(eq(schema.shifts.siteId, orgB.siteId))
       .orderBy(schema.shifts.position);
     expect(names.map((row) => row.name)).toEqual(["Mañana", "Mediodía", "Tarde", "Noche"]);
+  });
+});
+
+describe("Alta con email y contraseña provisoria (0018)", () => {
+  const input = (email: string, roleKey: "admin" | "direccion" | "enfermeria" | "cuidado") => ({
+    name: "Elena Ruiz",
+    email,
+    roleKey,
+    phone: null,
+    profession: null,
+    licenseNumber: null,
+    passwordHash: "hash-ficticio",
+  });
+
+  it("crea la cuenta con cualquier rol, pidiendo cambiar la contraseña al entrar", async () => {
+    for (const roleKey of ["admin", "direccion", "enfermeria", "cuidado"] as const) {
+      const email = `${roleKey}-${randomUUID().slice(0, 8)}@prueba.test`;
+      const created = await withTenant(app, orgA.admin, (tx) =>
+        createMemberWithEmail(tx, orgA.admin, input(email, roleKey)),
+      );
+      const [user] = await owner
+        .select({ change: schema.users.passwordChangeRequired })
+        .from(schema.users)
+        .where(eq(schema.users.id, created.userId));
+      expect(user?.change).toBe(true);
+    }
+  });
+
+  it("no repite a alguien de la residencia ni un email con cuenta", async () => {
+    const email = `repetida-${randomUUID().slice(0, 8)}@prueba.test`;
+    await withTenant(app, orgA.admin, (tx) =>
+      createMemberWithEmail(tx, orgA.admin, input(email, "cuidado")),
+    );
+    expect(
+      await domainError(
+        withTenant(app, orgA.admin, (tx) =>
+          createMemberWithEmail(tx, orgA.admin, input(email, "cuidado")),
+        ),
+      ),
+    ).toBe("Esa persona ya trabaja en la residencia.");
+    expect(
+      await domainError(
+        withTenant(app, orgB.admin, (tx) =>
+          createMemberWithEmail(tx, orgB.admin, input(email, "cuidado")),
+        ),
+      ),
+    ).toBe("Ese email ya tiene una cuenta en Mis Nonos: sumala con “Invitar con enlace”.");
+  });
+
+  it("Administración le da una provisoria nueva a quien tiene email, y devuelve el email", async () => {
+    const email = `olvido-${randomUUID().slice(0, 8)}@prueba.test`;
+    const created = await withTenant(app, orgA.admin, (tx) =>
+      createMemberWithEmail(tx, orgA.admin, input(email, "enfermeria")),
+    );
+    const result = await withTenant(app, orgA.admin, (tx) =>
+      resetTemporaryPassword(tx, orgA.admin, created.membershipId, "otro-hash"),
+    );
+    expect(result.email).toBe(email);
   });
 });

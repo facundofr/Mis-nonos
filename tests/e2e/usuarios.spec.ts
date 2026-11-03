@@ -9,6 +9,7 @@ import {
 import {
   createUserWithoutEmail,
   firstLoginWithTemporaryPassword,
+  mailpitLatestText,
   mailpitMessagesTo,
   newPhone,
   suffix,
@@ -25,8 +26,9 @@ test("Administración invita por email; la persona acepta y entra con su rol", a
   await onboardAdmin(page, organization);
 
   const email = `marta-${suffix()}@prueba.test`;
-  await page.goto("/usuarios");
-  await page.getByRole("link", { name: "Invitar usuario" }).click();
+  await page.goto("/usuarios/agregar");
+  await page.getByRole("link", { name: "Invitar con enlace" }).click();
+  await expect(page.getByRole("heading", { name: "Invitar usuario" })).toBeVisible();
   await page.getByLabel("Nombre y apellido").fill("Marta Gómez");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Teléfono").fill("11 4011 2234");
@@ -58,6 +60,47 @@ test("Administración invita por email; la persona acepta y entra con su rol", a
 
   await page.goto("/usuarios");
   await expect(page.getByRole("link", { name: /Marta Gómez/ })).toContainText("Activo");
+});
+
+test("Administración agrega un usuario con email; le llega la contraseña provisoria y elige la suya", async ({
+  page,
+  browser,
+}) => {
+  const organization = await createTestOrganization();
+  await onboardAdmin(page, organization);
+
+  const email = `elena-${suffix()}@prueba.test`;
+  await page.goto("/usuarios");
+  await page.getByRole("link", { name: "Agregar usuario" }).click();
+  await expect(page.getByRole("heading", { name: "Agregar usuario" })).toBeVisible();
+  await page.getByLabel("Nombre y apellido").fill("Elena Ruiz");
+  await page.getByLabel("Email").fill(email);
+  await page.getByRole("radio", { name: /^Enfermería/ }).check();
+  await page.getByRole("button", { name: "Crear usuario y mandar contraseña" }).click();
+  await expect(
+    page.getByText(`Listo: le mandamos a ${email} su contraseña provisoria.`),
+  ).toBeVisible();
+
+  let text = "";
+  await expect
+    .poll(async () => (text = await mailpitLatestText(email)))
+    .toContain("Contraseña provisoria:");
+  const temporaryPassword = /Contraseña provisoria: (\S+)/.exec(text)?.[1] ?? "";
+  expect(temporaryPassword).toMatch(/^[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}$/);
+
+  const elena = await newPhone(browser);
+  await elena.goto("/ingresar");
+  await elena.getByLabel("Email o usuario").fill(email);
+  await elena.getByLabel("Contraseña", { exact: true }).fill(temporaryPassword);
+  await elena.getByRole("button", { name: "Ingresar" }).click();
+  await expect(elena).toHaveURL(/\/cambiar-contrasena/);
+  await elena.getByLabel("Contraseña que te dieron").fill(temporaryPassword);
+  await elena.getByLabel(/^Contraseña nueva/).fill(PASSWORD);
+  await elena.getByLabel("Repetí la contraseña nueva").fill(PASSWORD);
+  await elena.getByRole("button", { name: "Cambiar contraseña" }).click();
+  await expect(elena).not.toHaveURL(/cambiar-contrasena/);
+  // Entró con su rol: la recibe la guía de bienvenida.
+  await expect(elena.getByRole("heading", { name: "Te damos la bienvenida, Elena" })).toBeVisible();
 });
 
 test("alguien sin email entra con usuario y elige su contraseña al primer ingreso", async ({
