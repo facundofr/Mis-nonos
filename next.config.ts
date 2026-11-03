@@ -30,6 +30,14 @@ const nextConfig: NextConfig = {
     serverActions: { bodySizeLimit: "12mb" },
     proxyClientMaxBodySize: "12mb",
   },
+  // Direcciones que la gente escribe de memoria: llevan al ingreso.
+  async redirects() {
+    return ["/ingresa", "/ingreso", "/login", "/entrar"].map((source) => ({
+      source,
+      destination: "/ingresar",
+      permanent: false,
+    }));
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
