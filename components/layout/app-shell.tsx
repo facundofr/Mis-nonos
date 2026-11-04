@@ -1,4 +1,4 @@
-import { Bell, Clock, LogOut } from "lucide-react";
+import { Bell, LogOut } from "lucide-react";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
@@ -17,8 +17,6 @@ export interface ShellProps {
   roleName: string;
   /** Para el saludo: "Kinesiólogo", "Asistente", "Administración"… */
   roleTitle: string;
-  /** "Mañana · 06–14 h", o null si a esta hora no hay turno configurado. */
-  shiftLabel: string | null;
   items: NavItem[];
   /** Avisos sin leer (campana). */
   unreadNotifications: number;
@@ -28,7 +26,7 @@ export interface ShellProps {
 /**
  * Marco de la app con sesión (13.2, diseños Inicio y TabBar):
  * - escritorio: menú lateral con la residencia y la persona, y una barra
- *   superior con el turno actual;
+ *   superior con la sección actual;
  * - teléfono: encabezado con la residencia y barra inferior fija.
  * La navegación solo trae lo que la persona puede usar.
  */
@@ -37,7 +35,6 @@ export function AppShell({
   userName,
   roleName,
   roleTitle,
-  shiftLabel,
   items,
   unreadNotifications,
   children,
@@ -86,7 +83,7 @@ export function AppShell({
       </aside>
 
       <div className="flex min-h-dvh min-w-0 flex-col">
-        {/* Encabezado: en el teléfono, la residencia; en escritorio, el turno. */}
+        {/* Encabezado: en el teléfono, el saludo; en escritorio, dónde estás. */}
         <header className="sticky top-0 z-20 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85 print:hidden">
           <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4 lg:h-16 lg:px-8">
             <Link href="/inicio" className="flex min-w-0 items-center gap-2.5 lg:hidden">
@@ -102,12 +99,6 @@ export function AppShell({
               <SectionTrail items={items} />
             </div>
             <div className="ml-auto flex shrink-0 items-center gap-2">
-              {shiftLabel ? (
-                <span className="hidden items-center gap-1.5 rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground sm:inline-flex">
-                  <Clock aria-hidden="true" className="size-3.5" />
-                  Turno {shiftLabel}
-                </span>
-              ) : null}
               <ThemeSwitch />
               <Link
                 href="/notificaciones"

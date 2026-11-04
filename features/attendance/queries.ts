@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, lt, sql } from "drizzle-orm";
 
 import * as schema from "@/db/schema";
 import { roleLabel } from "@/lib/auth/role-label";
@@ -162,4 +162,78 @@ export async function attendanceBoard(
         ? { kind: row.kind as AttendanceKind, occurredAt: new Date(row.occurredAt) }
         : null,
   }));
+}
+
+export interface AttendanceRecordRow {
+  id: string;
+  userId: string;
+  name: string;
+  kind: AttendanceKind;
+  occurredAt: Date;
+}
+
+/**
+ * Registros de la sede en un período (historial), del más viejo al más
+ * nuevo. Con userId, solo los de esa persona. Necesita attendance.read para
+ * ver los de otros (RLS).
+ */
+export async function recordsBetween(
+  tx: Transaction,
+  options: { siteId: string; from: Date; to: Date; userId?: string },
+): Promise<AttendanceRecordRow[]> {
+  const rows = await tx
+    .select({
+      id: schema.attendanceRecords.id,
+      userId: schema.attendanceRecords.userId,
+      name: schema.users.name,
+      kind: schema.attendanceRecords.kind,
+      occurredAt: schema.attendanceRecords.occurredAt,
+    })
+    .from(schema.attendanceRecords)
+    .innerJoin(schema.users, eq(schema.users.id, schema.attendanceRecords.userId))
+    .where(
+      and(
+        eq(schema.attendanceRecords.siteId, options.siteId),
+        gte(schema.attendanceRecords.occurredAt, options.from),
+        lt(schema.attendanceRecords.occurredAt, options.to),
+        options.userId ? eq(schema.attendanceRecords.userId, options.userId) : undefined,
+      ),
+    )
+    .orderBy(asc(schema.attendanceRecords.occurredAt), asc(schema.attendanceRecords.id));
+  return rows.map((row) => ({ ...row, kind: row.kind as AttendanceKind }));
+}
+
+export interface StaffMember {
+  userId: string;
+  name: string;
+  roleName: string;
+  active: boolean;
+}
+
+/** Una persona de la residencia (también si está desactivada), para su historial. */
+export async function getStaffMember(tx: Transaction, userId: string): Promise<StaffMember | null> {
+  const [row] = await tx
+    .select({
+      userId: schema.users.id,
+      name: schema.users.name,
+      roleName: roleLabel,
+      status: schema.organizationMemberships.status,
+    })
+    .from(schema.organizationMemberships)
+    .innerJoin(schema.users, eq(schema.users.id, schema.organizationMemberships.userId))
+    .innerJoin(schema.roles, eq(schema.roles.id, schema.organizationMemberships.roleId))
+    .where(
+      and(
+        eq(schema.organizationMemberships.organizationId, sql`(select app.current_org_id())`),
+        eq(schema.organizationMemberships.userId, userId),
+      ),
+    );
+  return row
+    ? {
+        userId: row.userId,
+        name: row.name,
+        roleName: row.roleName,
+        active: row.status === "active",
+      }
+    : null;
 }

@@ -1,4 +1,12 @@
-import { CircleCheck, CircleX, MonitorSmartphone, Printer, Radio } from "lucide-react";
+import {
+  CalendarDays,
+  ChevronRight,
+  CircleCheck,
+  CircleX,
+  MonitorSmartphone,
+  Printer,
+  Radio,
+} from "lucide-react";
 import type { Metadata, Route } from "next";
 import Link from "next/link";
 
@@ -44,9 +52,16 @@ export default async function AttendanceBoardPage() {
     <div className="flex flex-col gap-5">
       <PageHeader
         title="Fichaje"
-        description="Quién está trabajando ahora. Cada persona escanea el QR de la entrada al llegar y al irse."
+        description="Quién está trabajando ahora. Tocá un nombre para ver su historial de entradas y salidas."
         actions={
           <>
+            <Link
+              href="/fichaje/historial"
+              className={buttonClassName({ size: "md", variant: "outline" })}
+            >
+              <CalendarDays aria-hidden="true" className="size-4" />
+              Historial del mes
+            </Link>
             <Link
               href={`/pantalla/${site.attendanceToken}` as Route}
               target="_blank"
@@ -92,50 +107,57 @@ export default async function AttendanceBoardPage() {
       ) : (
         <ul aria-label="Personal" className="overflow-hidden rounded-[14px] border bg-card">
           {rows.map((row) => (
-            <li
-              key={row.userId}
-              className="flex items-center gap-3 border-b px-4 py-3.5 last:border-b-0 sm:px-5"
-            >
-              <span
-                role="img"
-                aria-label={row.inside ? "Está trabajando" : "No está"}
-                className={cn(
-                  "flex size-10 shrink-0 items-center justify-center rounded-full",
-                  row.inside
-                    ? "bg-success text-success-foreground"
-                    : "bg-danger-surface text-destructive",
-                )}
+            <li key={row.userId} className="border-b last:border-b-0">
+              <Link
+                href={`/fichaje/personal/${row.userId}` as Route}
+                aria-label={`${row.name}: ver su historial`}
+                className="flex items-center gap-3 px-4 py-3.5 hover:bg-muted/60 sm:px-5"
               >
-                {row.inside ? (
-                  <CircleCheck aria-hidden="true" className="size-6" />
-                ) : (
-                  <CircleX aria-hidden="true" className="size-6" />
-                )}
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col">
-                <span className="truncate font-semibold">{row.name}</span>
-                <span className="truncate text-sm text-muted-foreground">{row.roleName}</span>
-              </span>
-              <span className="shrink-0 text-right text-sm">
-                {row.inside && row.last ? (
-                  <>
-                    <span className="block font-medium">
-                      Entró {formatTime(row.last.occurredAt, site.timezone)}
+                <span
+                  role="img"
+                  aria-label={row.inside ? "Está trabajando" : "No está"}
+                  className={cn(
+                    "flex size-10 shrink-0 items-center justify-center rounded-full",
+                    row.inside
+                      ? "bg-success text-success-foreground"
+                      : "bg-danger-surface text-destructive",
+                  )}
+                >
+                  {row.inside ? (
+                    <CircleCheck aria-hidden="true" className="size-6" />
+                  ) : (
+                    <CircleX aria-hidden="true" className="size-6" />
+                  )}
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate font-semibold">{row.name}</span>
+                  <span className="truncate text-sm text-muted-foreground">{row.roleName}</span>
+                </span>
+                <span className="shrink-0 text-right text-sm">
+                  {row.inside && row.last ? (
+                    <>
+                      <span className="block font-medium">
+                        Entró {formatTime(row.last.occurredAt, site.timezone)}
+                      </span>
+                      <span className="block text-muted-foreground">
+                        {now.getTime() - row.last.occurredAt.getTime() < 60_000
+                          ? "recién"
+                          : `hace ${sinceLabel(now.getTime() - row.last.occurredAt.getTime())}`}
+                      </span>
+                    </>
+                  ) : row.last && row.last.kind === "out" ? (
+                    <span className="text-muted-foreground">
+                      Salió {formatTime(row.last.occurredAt, site.timezone)}
                     </span>
-                    <span className="block text-muted-foreground">
-                      {now.getTime() - row.last.occurredAt.getTime() < 60_000
-                        ? "recién"
-                        : `hace ${sinceLabel(now.getTime() - row.last.occurredAt.getTime())}`}
-                    </span>
-                  </>
-                ) : row.last && row.last.kind === "out" ? (
-                  <span className="text-muted-foreground">
-                    Salió {formatTime(row.last.occurredAt, site.timezone)}
-                  </span>
-                ) : (
-                  <span className="text-muted-foreground">Sin fichar</span>
-                )}
-              </span>
+                  ) : (
+                    <span className="text-muted-foreground">Sin fichar</span>
+                  )}
+                </span>
+                <ChevronRight
+                  aria-hidden="true"
+                  className="size-5 shrink-0 text-muted-foreground"
+                />
+              </Link>
             </li>
           ))}
         </ul>
