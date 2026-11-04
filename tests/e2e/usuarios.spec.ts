@@ -185,6 +185,19 @@ test("el Master no se elige ni se modifica desde la app", async ({ page }) => {
   await expect(page.getByRole("button", { name: /Desactivar/ })).toHaveCount(0);
 });
 
+test("la profesión y la matrícula aparecen solo con Profesional", async ({ page }) => {
+  const organization = await createTestOrganization();
+  await onboardAdmin(page, organization);
+  await page.goto("/usuarios/nuevo");
+  await expect(page.getByLabel("Profesión")).toHaveCount(0);
+  await expect(page.getByLabel("Matrícula")).toHaveCount(0);
+  await page.getByRole("radio", { name: /^Profesional/ }).check();
+  await expect(page.getByLabel("Profesión")).toBeVisible();
+  await expect(page.getByLabel("Matrícula")).toBeVisible();
+  await page.getByRole("radio", { name: /^Administración/ }).check();
+  await expect(page.getByLabel("Profesión")).toHaveCount(0);
+});
+
 test("Configuración: servicio de emergencias, turnos sin superposición y categorías", async ({
   page,
 }) => {

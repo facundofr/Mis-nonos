@@ -22,7 +22,8 @@ export const metadata: Metadata = { title: "Formulario público" };
 export default async function PublicIntakeSettingsPage() {
   const context = await requirePermission("settings.manage");
   const { site } = await getSiteContext(context);
-  const path = site.publicSlug ? `/residencia/${site.publicSlug}` : null;
+  // La landing está oculta (docs/decisions/0022): se comparte el formulario.
+  const path = site.publicSlug ? `/residencia/${site.publicSlug}/solicitar` : null;
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-5">

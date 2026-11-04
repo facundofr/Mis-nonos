@@ -49,8 +49,8 @@ export const serverEnvSchema = z.object({
   // Remitente, p. ej. "Mis Nonos <avisos@dominio>". El dominio necesita SPF, DKIM y DMARC.
   EMAIL_FROM: optional(z.string()),
 
-  // Dirección de la landing que se muestra en la raíz del dominio a quien no
-  // tiene sesión (la lee proxy.ts). Vacía: la raíz lleva al ingreso.
+  // Ya no se usa: la landing está oculta y la raíz lleva al ingreso
+  // (docs/decisions/0022). Se acepta para no romper configuraciones viejas.
   HOME_LANDING_SLUG: optional(
     z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "solo minúsculas, números y guiones"),
   ),

@@ -89,8 +89,8 @@ export default async function SettingsPage() {
       title: "Formulario público",
       summary:
         site.publicIntakeEnabled && site.publicSlug
-          ? `Publicado en /residencia/${site.publicSlug}`
-          : "Sin publicar · las familias piden un lugar desde una página propia",
+          ? `Publicado en /residencia/${site.publicSlug}/solicitar`
+          : "Sin publicar · las familias piden un lugar desde un formulario propio",
     },
     ...(enabled.has("fees")
       ? [

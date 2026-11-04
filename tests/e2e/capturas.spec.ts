@@ -105,7 +105,6 @@ test("capturas de las pantallas", async ({ page }) => {
     .browser()!
     .newPage({ ...devices["Pixel 7"] });
   for (const [name, url] of [
-    ["movil-landing", `/residencia/${slug}`],
     ["movil-landing-paso1", `/residencia/${slug}/solicitar`],
     ["movil-landing-privacidad", `/residencia/${slug}/privacidad`],
     ["movil-landing-enviada", `/residencia/${slug}/enviada`],
@@ -124,8 +123,11 @@ test("capturas de las pantallas", async ({ page }) => {
     fullPage: true,
   });
   await visitor.setViewportSize({ width: 1366, height: 860 });
-  await visitor.goto(`/residencia/${slug}`);
-  await visitor.screenshot({ path: path.join(output!, "escritorio-landing.png"), fullPage: true });
+  await visitor.goto(`/residencia/${slug}/solicitar`);
+  await visitor.screenshot({
+    path: path.join(output!, "escritorio-formulario.png"),
+    fullPage: true,
+  });
   await visitor.close();
 
   for (const [name, url] of [

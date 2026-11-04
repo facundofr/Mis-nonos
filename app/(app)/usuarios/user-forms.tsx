@@ -29,7 +29,15 @@ import {
   type InvitationResult,
 } from "./actions";
 
-function RoleChooser({ defaultValue, error }: { defaultValue?: string; error?: string }) {
+function RoleChooser({
+  defaultValue,
+  error,
+  onChange,
+}: {
+  defaultValue?: string;
+  error?: string;
+  onChange?: (roleKey: string) => void;
+}) {
   const names = Object.fromEntries(SYSTEM_ROLES.map((role) => [role.key, role.name]));
   // El Master no se elige: es una sola persona y su rol no cambia (0021).
   if (defaultValue === "master") {
@@ -57,6 +65,7 @@ function RoleChooser({ defaultValue, error }: { defaultValue?: string; error?: s
             name="roleKey"
             value={key}
             defaultChecked={defaultValue === key}
+            onChange={() => onChange?.(key)}
             className="mt-1 size-[18px] shrink-0 accent-primary-ink"
           />
           <span className="flex flex-col gap-0.5">
@@ -102,62 +111,101 @@ function CopyLink({ link }: { link: string }) {
   );
 }
 
-function ProfileFields({
+type ProfileDefaults = {
+  phone?: string | null;
+  profession?: string | null;
+  licenseNumber?: string | null;
+};
+
+function PhoneField({
   state,
   defaults,
 }: {
   state: FormState<unknown>;
-  defaults?: { phone?: string | null; profession?: string | null; licenseNumber?: string | null };
+  defaults?: ProfileDefaults;
+}) {
+  return (
+    <Field
+      id="phone"
+      label="Teléfono"
+      hint="Opcional. Lo ve el resto del personal."
+      error={state?.fieldErrors?.phone}
+    >
+      {(control) => (
+        <Input
+          {...control}
+          name="phone"
+          type="tel"
+          inputMode="tel"
+          defaultValue={state?.values?.phone ?? defaults?.phone ?? ""}
+        />
+      )}
+    </Field>
+  );
+}
+
+/**
+ * El rol y, solo para Profesional, la profesión (obligatoria) y la matrícula
+ * (docs/decisions/0021). Con otro rol esos campos no se muestran y se
+ * guardan vacíos.
+ */
+function RoleAndProfession({
+  state,
+  defaults,
+  defaultRole,
+}: {
+  state: FormState<unknown>;
+  defaults?: ProfileDefaults;
+  defaultRole: string;
 }) {
   const values = state?.values;
+  const [roleKey, setRoleKey] = useState(values?.roleKey ?? defaultRole);
+  const isProfessional = roleKey === "profesional";
   return (
     <>
-      <Field
-        id="phone"
-        label="Teléfono"
-        hint="Opcional. Lo ve el resto del personal."
-        error={state?.fieldErrors?.phone}
-      >
-        {(control) => (
-          <Input
-            {...control}
-            name="phone"
-            type="tel"
-            inputMode="tel"
-            defaultValue={values?.phone ?? defaults?.phone ?? ""}
-          />
-        )}
-      </Field>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field
-          id="profession"
-          label="Profesión"
-          hint="Obligatoria si es Profesional: Kinesiólogo, Médica, Nutricionista…"
-          error={state?.fieldErrors?.profession}
-        >
-          {(control) => (
-            <Input
-              {...control}
-              name="profession"
-              defaultValue={values?.profession ?? defaults?.profession ?? ""}
-            />
-          )}
-        </Field>
-        <Field
-          id="licenseNumber"
-          label="Matrícula"
-          hint="Si es profesional."
-          error={state?.fieldErrors?.licenseNumber}
-        >
-          {(control) => (
-            <Input
-              {...control}
-              name="licenseNumber"
-              defaultValue={values?.licenseNumber ?? defaults?.licenseNumber ?? ""}
-            />
-          )}
-        </Field>
-      </div>
+      <RoleChooser
+        defaultValue={roleKey}
+        error={state?.fieldErrors?.roleKey}
+        onChange={setRoleKey}
+      />
+      {isProfessional ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            id="profession"
+            label="Profesión"
+            required
+            hint="Por ejemplo Kinesiólogo, Médica o Nutricionista."
+            error={state?.fieldErrors?.profession}
+          >
+            {(control) => (
+              <Input
+                {...control}
+                name="profession"
+                defaultValue={values?.profession ?? defaults?.profession ?? ""}
+              />
+            )}
+          </Field>
+          <Field
+            id="licenseNumber"
+            label="Matrícula"
+            hint="Opcional."
+            error={state?.fieldErrors?.licenseNumber}
+          >
+            {(control) => (
+              <Input
+                {...control}
+                name="licenseNumber"
+                defaultValue={values?.licenseNumber ?? defaults?.licenseNumber ?? ""}
+              />
+            )}
+          </Field>
+        </div>
+      ) : (
+        <>
+          <input type="hidden" name="profession" value="" />
+          <input type="hidden" name="licenseNumber" value="" />
+        </>
+      )}
     </>
   );
 }
@@ -241,11 +289,8 @@ export function CreateWithEmailForm() {
           />
         )}
       </Field>
-      <ProfileFields state={state} />
-      <RoleChooser
-        defaultValue={values?.roleKey ?? "asistente"}
-        error={state?.fieldErrors?.roleKey}
-      />
+      <PhoneField state={state} />
+      <RoleAndProfession state={state} defaultRole="asistente" />
       <FormMessage state={state} />
       <SubmitButton pendingLabel="Creando…">Crear usuario y mandar contraseña</SubmitButton>
     </form>
@@ -287,11 +332,8 @@ export function InviteForm() {
           />
         )}
       </Field>
-      <ProfileFields state={state} />
-      <RoleChooser
-        defaultValue={values?.roleKey ?? "asistente"}
-        error={state?.fieldErrors?.roleKey}
-      />
+      <PhoneField state={state} />
+      <RoleAndProfession state={state} defaultRole="asistente" />
       <FormMessage state={state} />
       <SubmitButton pendingLabel="Enviando…">Enviar invitación</SubmitButton>
       <FieldMessage className="text-center">
@@ -345,11 +387,8 @@ export function CreateWithoutEmailForm({ suggestedPassword }: { suggestedPasswor
           />
         )}
       </Field>
-      <ProfileFields state={state} />
-      <RoleChooser
-        defaultValue={values?.roleKey ?? "asistente"}
-        error={state?.fieldErrors?.roleKey}
-      />
+      <PhoneField state={state} />
+      <RoleAndProfession state={state} defaultRole="asistente" />
       <FormMessage state={state} />
       <SubmitButton pendingLabel="Creando…">Crear usuario</SubmitButton>
     </form>
@@ -378,10 +417,7 @@ export function MemberForm({
   const values = state?.values;
   return (
     <form action={action} className="flex flex-col gap-4" noValidate>
-      <RoleChooser
-        defaultValue={values?.roleKey ?? defaults.roleKey}
-        error={state?.fieldErrors?.roleKey}
-      />
+      <RoleAndProfession state={state} defaults={defaults} defaultRole={defaults.roleKey} />
       <Field
         id="usualShiftId"
         label="Turno habitual"
@@ -403,7 +439,7 @@ export function MemberForm({
           </Select>
         )}
       </Field>
-      <ProfileFields state={state} defaults={defaults} />
+      <PhoneField state={state} defaults={defaults} />
       <FormMessage state={state} />
       <SubmitButton className="self-start">Guardar cambios</SubmitButton>
     </form>

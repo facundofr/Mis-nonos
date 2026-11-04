@@ -3,10 +3,19 @@ import { expect, test } from "@playwright/test";
 import { createTestOrganization, onboardAdmin } from "./support/organization";
 import { newPhone, suffix } from "./support/people";
 
-// F1-SOL-03 y F1-SOL-04: landing y formulario público (7.3-C3, 12.9). Es una
-// vía opcional más: la solicitud llega a la misma bandeja. Datos ficticios.
+// F1-SOL-03 y F1-SOL-04: formulario público (7.3-C3, 12.9). Es una vía
+// opcional más: la solicitud llega a la misma bandeja. La landing está oculta
+// (docs/decisions/0022): la app arranca en /ingresar. Datos ficticios.
 
-test("Administración publica la landing; una familia pide un lugar y llega a la bandeja", async ({
+test("la raíz y la landing llevan al ingreso", async ({ browser }) => {
+  const visitor = await newPhone(browser);
+  await visitor.goto("/");
+  await expect(visitor).toHaveURL(/\/ingresar$/);
+  await visitor.goto("/residencia/cualquiera");
+  await expect(visitor).toHaveURL(/\/ingresar$/);
+});
+
+test("Administración publica el formulario; una familia pide un lugar y llega a la bandeja", async ({
   page,
   browser,
 }) => {
@@ -16,7 +25,7 @@ test("Administración publica la landing; una familia pide un lugar y llega a la
 
   // Sin publicar, la dirección no existe.
   const family = await newPhone(browser, { skipWelcome: false });
-  const notFound = await family.goto(`/residencia/${slug}`);
+  const notFound = await family.goto(`/residencia/${slug}/solicitar`);
   expect(notFound?.status()).toBe(404);
 
   await page.goto("/configuracion");
@@ -30,11 +39,8 @@ test("Administración publica la landing; una familia pide un lugar y llega a la
   await page.getByRole("button", { name: "Guardar" }).click();
   await expect(page.getByText("Formulario publicado.")).toBeVisible();
 
-  // La familia entra sin sesión, desde su teléfono.
-  await family.goto(`/residencia/${slug}`);
-  await expect(family).toHaveURL(new RegExp(`/residencia/${slug}$`));
-  await expect(family.getByText(/Casa de familia en Haedo/)).toBeVisible();
-  await family.getByRole("link", { name: "Solicitar un lugar" }).click();
+  // La familia entra con el enlace del formulario: la landing ya no se muestra.
+  await family.goto(`/residencia/${slug}/solicitar`);
   await expect(family.getByText("Paso 1 de 2")).toBeVisible();
 
   // Sin los obligatorios, no pasa al paso 2.
@@ -87,6 +93,6 @@ test("Administración publica la landing; una familia pide un lugar y llega a la
   await page.getByText("Publicar el formulario").click();
   await page.getByRole("button", { name: "Guardar" }).click();
   await expect(page.getByText(/no está publicado/)).toBeVisible();
-  const off = await family.goto(`/residencia/${slug}`);
+  const off = await family.goto(`/residencia/${slug}/solicitar`);
   expect(off?.status()).toBe(404);
 });
