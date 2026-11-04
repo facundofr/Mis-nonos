@@ -14,7 +14,6 @@ import {
 } from "drizzle-orm";
 
 import * as schema from "@/db/schema";
-import { NURSING_SPECIALTY_KEY } from "@/db/schema/care";
 import type { Transaction } from "@/lib/db/client";
 
 /*
@@ -25,7 +24,6 @@ import type { Transaction } from "@/lib/db/client";
 
 export interface SpecialtyRow {
   id: string;
-  key: string | null;
   name: string;
   active: boolean;
   professionals: number;
@@ -54,7 +52,6 @@ export async function listSpecialties(
   const rows = await tx
     .select({
       id: schema.specialties.id,
-      key: schema.specialties.key,
       name: schema.specialties.name,
       active: schema.specialties.active,
       professionals: sql<number>`coalesce(${professionalsCount.total}, 0)::int`,
@@ -79,26 +76,11 @@ export async function getSpecialty(tx: Transaction, specialtyId: string) {
   const [row] = await tx
     .select({
       id: schema.specialties.id,
-      key: schema.specialties.key,
       name: schema.specialties.name,
       active: schema.specialties.active,
     })
     .from(schema.specialties)
     .where(eq(schema.specialties.id, specialtyId));
-  return row ?? null;
-}
-
-/** La especialidad de la sección Enfermería (clave fija). */
-export async function getNursingSpecialty(tx: Transaction) {
-  const [row] = await tx
-    .select({
-      id: schema.specialties.id,
-      key: schema.specialties.key,
-      name: schema.specialties.name,
-      active: schema.specialties.active,
-    })
-    .from(schema.specialties)
-    .where(eq(schema.specialties.key, NURSING_SPECIALTY_KEY));
   return row ?? null;
 }
 

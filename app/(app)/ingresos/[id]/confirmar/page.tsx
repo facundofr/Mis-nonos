@@ -4,13 +4,8 @@ import Link from "next/link";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
 import { PageHeader } from "@/components/ui/page-header";
-import { listPaymentMethods } from "@/features/fees/queries";
-import { addDays, defaultFirstDueDate } from "@/features/fees/schedule";
 import { formatNationalId, fullName } from "@/features/residents/format";
 import { COVERAGE_TYPES, MODALITIES } from "@/features/residents/schemas";
-import { inTenant } from "@/lib/actions";
-import { can } from "@/lib/auth/authorization";
-import { getSiteContext } from "@/lib/site/server";
 import { formatDateKey } from "@/lib/time/format";
 
 import { AdmissionSteps, loadDraftAdmission, stepHref } from "../../_shared";
@@ -61,13 +56,7 @@ export default async function AdmissionConfirmPage({
   params,
 }: PageProps<"/ingresos/[id]/confirmar">) {
   const { id } = await params;
-  const { context, admission, resident, contacts } = await loadDraftAdmission(id);
-  const withFee = await can(context, "fees.manage");
-  const { today } = await getSiteContext(context);
-  const admissionDate = resident.admissionDate ?? today;
-  const methods = withFee
-    ? await inTenant(context, (tx) => listPaymentMethods(tx, resident.siteId))
-    : [];
+  const { admission, resident, contacts } = await loadDraftAdmission(id);
   const responsible = contacts.find((contact) => contact.isAdmissionResponsible);
 
   return (
@@ -125,19 +114,7 @@ export default async function AdmissionConfirmPage({
       ) : null}
 
       <div className="flex flex-col gap-3">
-        <ConfirmAdmissionButton
-          admissionId={id}
-          disabled={!responsible}
-          fee={
-            withFee
-              ? {
-                  defaultFirstDue: defaultFirstDueDate(admissionDate),
-                  minDue: addDays(admissionDate, 1),
-                  methods,
-                }
-              : undefined
-          }
-        />
+        <ConfirmAdmissionButton admissionId={id} disabled={!responsible} />
         <CancelAdmissionButton admissionId={id} />
       </div>
     </div>

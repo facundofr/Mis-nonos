@@ -12,7 +12,7 @@ import { fieldErrorsFrom, formValues, type FormState } from "@/lib/forms";
 const id = z.uuid();
 
 /** Adónde vuelve "Registrar atención" al guardar. */
-export type EncounterReturn = "enfermeria" | "especialidad" | "atencion";
+export type EncounterReturn = "especialidad" | "atencion";
 
 export async function recordEncounterAction(
   residentId: string,
@@ -38,11 +38,9 @@ export async function recordEncounterAction(
   );
   if (result?.success) {
     redirect(
-      (back === "enfermeria"
-        ? "/enfermeria?registrada=1"
-        : back === "especialidad"
-          ? `/especialidades/${parsed.data.specialtyId}?registrada=1`
-          : `/atenciones/${encounterId}?registrada=1`) as Route,
+      (back === "especialidad"
+        ? `/especialidades/${parsed.data.specialtyId}?registrada=1`
+        : `/atenciones/${encounterId}?registrada=1`) as Route,
     );
   }
   return result;

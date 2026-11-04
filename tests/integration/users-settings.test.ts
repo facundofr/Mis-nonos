@@ -4,7 +4,7 @@ import { and, eq, isNull } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
 
 import * as schema from "@/db/schema";
-import { listDocumentTypes, listNoteCategories } from "@/features/settings/queries";
+import { listDocumentTypes } from "@/features/settings/queries";
 import { saveShift } from "@/features/settings/service";
 import { listMembers } from "@/features/users/queries";
 import {
@@ -114,14 +114,12 @@ async function newCaregiver(org: Org, name = "Marta Gómez") {
 }
 
 describe("Alta de una residencia", () => {
-  it("carga los turnos, las categorías y los documentos iniciales", async () => {
-    const { categories, documents, shifts } = await asA(async (tx) => ({
-      categories: await listNoteCategories(tx),
+  it("carga los turnos y los documentos iniciales", async () => {
+    const { documents, shifts } = await asA(async (tx) => ({
       documents: await listDocumentTypes(tx),
       shifts: await tx.select().from(schema.shifts),
     }));
     expect(shifts.map((shift) => shift.name)).toEqual(["Mañana", "Tarde", "Noche"]);
-    expect(categories).toHaveLength(6);
     expect(documents.filter((document) => document.required)).toHaveLength(6);
   });
 });

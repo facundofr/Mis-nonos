@@ -3,7 +3,6 @@ import {
   boolean,
   check,
   index,
-  integer,
   pgPolicy,
   pgTable,
   primaryKey,
@@ -74,14 +73,12 @@ export const sites = pgTable(
     emergencyServiceAccount: text("emergency_service_account"),
     // Reglas de la residencia como texto de referencia (7.3-B).
     medicalControlText: text("medical_control_text"),
-    feeRuleText: text("fee_rule_text"),
     familyProvidesText: text("family_provides_text"),
     // La recepción del turno es opcional y se activa por sede (F.4).
     handoverRequiresConfirmation: boolean("handover_requires_confirmation")
       .notNull()
       .default(false),
     // Días antes del vencimiento del abono en que llega el aviso (7.3-C4).
-    feeReminderDaysBefore: integer("fee_reminder_days_before").notNull().default(7),
     // Landing con el formulario público de solicitud (7.3-C3, 12.9): se
     // publica en /residencia/<public_slug> solo si está activada.
     publicIntakeEnabled: boolean("public_intake_enabled").notNull().default(false),
@@ -100,7 +97,6 @@ export const sites = pgTable(
   },
   (t) => [
     index("sites_organization_idx").on(t.organizationId),
-    check("sites_fee_reminder_days_check", sql`${t.feeReminderDaysBefore} between 1 and 30`),
     // La dirección pública es única entre todas las residencias.
     unique("sites_public_slug_unique").on(t.publicSlug),
     check(
@@ -135,7 +131,7 @@ export const organizationModules = pgTable(
     primaryKey({ columns: [t.organizationId, t.moduleKey] }),
     check(
       "organization_modules_key_check",
-      sql`${t.moduleKey} in ('core', 'care', 'medication', 'clinical_record', 'staff', 'family', 'admin', 'fees')`,
+      sql`${t.moduleKey} in ('core', 'care', 'medication', 'clinical_record', 'staff', 'family', 'admin')`,
     ),
     pgPolicy("organization_modules_select", {
       for: "select",

@@ -141,7 +141,6 @@ const CONTACT_FIELDS = [
   "isLegalRepresentative",
   "canReceiveInfo",
   "canPickUp",
-  "isPayer",
   "availabilityNotes",
   "lastVerifiedAt",
 ];

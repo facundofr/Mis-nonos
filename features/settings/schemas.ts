@@ -35,14 +35,8 @@ export const siteSettingsSchema = z.object({
   emergencyServicePhone: phone,
   emergencyServiceAccount: optionalText(40),
   medicalControlText: optionalText(200),
-  feeRuleText: optionalText(300),
   familyProvidesText: optionalText(500),
   handoverRequiresConfirmation: checkbox,
-  feeReminderDaysBefore: z.coerce
-    .number({ message: "Escribí un número de días." })
-    .int("Un número entero de días.")
-    .min(1, "Entre 1 y 30 días.")
-    .max(30, "Entre 1 y 30 días."),
 });
 export type SiteSettingsInput = z.infer<typeof siteSettingsSchema>;
 
@@ -70,12 +64,6 @@ export const shiftSchema = z
     message: "El turno tiene que terminar a otra hora.",
   });
 export type ShiftInput = z.infer<typeof shiftSchema>;
-
-export const categorySchema = z.object({
-  name: requiredText("el nombre de la categoría", 40),
-  active: checkbox,
-});
-export type CategoryInput = z.infer<typeof categorySchema>;
 
 export const documentTypeSchema = z.object({
   name: requiredText("el nombre del documento", 80),

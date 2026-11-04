@@ -45,19 +45,6 @@ export async function listEntityActivity(
             eq(schema.auditEvents.entityType, entity.type),
             eq(schema.auditEvents.entityId, entity.id),
           ),
-          // El historial de un paciente incluye sus novedades (7.3-I).
-          entity.type === "resident"
-            ? and(
-                eq(schema.auditEvents.entityType, "note"),
-                inArray(
-                  schema.auditEvents.entityId,
-                  tx
-                    .select({ id: schema.residentNotes.id })
-                    .from(schema.residentNotes)
-                    .where(eq(schema.residentNotes.residentId, entity.id)),
-                ),
-              )
-            : undefined,
           // Y sus atenciones y emergencias (qué se hizo y quién, sin el texto: 0017).
           entity.type === "resident"
             ? and(
@@ -87,7 +74,7 @@ export interface RecentActivityItem extends ActivityItem {
 /**
  * Actividad reciente de toda la residencia (Inicio de Dirección, 7.3-H).
  * Solo para quien tiene audit.read_all. Si el cambio es de un paciente (o
- * de una de sus novedades), trae su nombre para enlazarlo.
+ * de una de sus atenciones), trae su nombre para enlazarlo.
  */
 export async function listRecentActivity(
   tx: Transaction,

@@ -25,14 +25,10 @@ test("capturas de las pantallas", async ({ page }) => {
   });
   const organization = await createTestOrganization("Residencia Mis Nonos");
   await onboardAdmin(page, organization, { skipWelcome: false });
-  // Bienvenida de la primera vez (onboarding): primer paso y el del abono.
+  // Bienvenida de la primera vez (onboarding): el primer paso.
   const welcome = page.getByRole("dialog");
   await expect(welcome.getByRole("heading", { name: /Te damos la bienvenida/ })).toBeVisible();
   await page.screenshot({ path: path.join(output!, "movil-bienvenida.png") });
-  while ((await welcome.getByRole("heading", { name: "Abono mensual" }).count()) === 0) {
-    await welcome.getByRole("button", { name: "Siguiente" }).click();
-  }
-  await page.screenshot({ path: path.join(output!, "movil-bienvenida-abono.png") });
   await welcome.getByRole("button", { name: "Saltar la guía" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await shot("movil-inicio-puesta-en-marcha");
@@ -55,25 +51,6 @@ test("capturas de las pantallas", async ({ page }) => {
     room: "7",
   });
   const fichaPath = new URL(ficha).pathname;
-  const residentId = fichaPath.split("/").at(-1)!;
-  for (const [subject, category, content, followUp] of [
-    ["general", "Higiene", "Falta reponer guantes en el office del primer piso.", true],
-    [
-      residentId,
-      "Alimentación",
-      "No quiso almorzar. Avisar a la familia si repite en la cena.",
-      true,
-    ],
-    [residentId, "Visitas", "Recibió visita de su hija.", false],
-  ] as const) {
-    await page.goto(`/novedades/nueva?paciente=${subject}`);
-    await page.getByText(category, { exact: true }).click();
-    await page.getByLabel(/^¿Qué pasó\?/).fill(content);
-    if (followUp) await page.getByText("Requiere seguimiento").click();
-    await page.getByRole("button", { name: "Guardar novedad" }).click();
-    await expect(page.getByText("Novedad registrada.")).toBeVisible();
-  }
-
   // Una solicitud de ingreso cargada a mano.
   await page.goto("/solicitudes/nueva");
   await page.getByLabel(/^Canal/).selectOption("Teléfono");
@@ -138,12 +115,6 @@ test("capturas de las pantallas", async ({ page }) => {
     ["movil-ficha-actividad", `${fichaPath}?tab=actividad`],
     ["movil-emergencia", fichaPath + "/emergencia"],
     ["movil-notificaciones", "/notificaciones"],
-    ["movil-novedades", "/novedades"],
-    ["movil-nueva-novedad", "/novedades/nueva"],
-    ["movil-nueva-novedad-form", `/novedades/nueva?paciente=${residentId}`],
-    ["movil-ficha-novedades", `${fichaPath}?tab=novedades`],
-    ["movil-ficha-abono", fichaPath + "?tab=abono"],
-    ["movil-abonos", "/abonos"],
     ["movil-solicitudes", "/solicitudes"],
     ["movil-nueva-solicitud", "/solicitudes/nueva"],
     ["movil-turno", "/turno"],
@@ -166,10 +137,7 @@ test("capturas de las pantallas", async ({ page }) => {
   for (const [name, url] of [
     ["escritorio-pacientes", "/pacientes"],
     ["escritorio-inicio", "/inicio"],
-    ["escritorio-novedades", "/novedades"],
     ["escritorio-turno", "/turno"],
-    ["escritorio-abono", fichaPath + "?tab=abono"],
-    ["escritorio-abonos", "/abonos"],
     ["escritorio-solicitudes", "/solicitudes"],
     ["escritorio-ficha", fichaPath],
     ["escritorio-emergencia", fichaPath + "/emergencia"],

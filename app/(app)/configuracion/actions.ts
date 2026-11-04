@@ -3,15 +3,9 @@
 import { refresh } from "next/cache";
 import { z } from "zod";
 
+import { documentTypeSchema, shiftSchema, siteSettingsSchema } from "@/features/settings/schemas";
 import {
-  categorySchema,
-  documentTypeSchema,
-  shiftSchema,
-  siteSettingsSchema,
-} from "@/features/settings/schemas";
-import {
-  moveCatalogItem,
-  saveCategory,
+  moveDocumentType,
   saveDocumentType,
   saveShift,
   updateSiteSettings,
@@ -94,26 +88,6 @@ export async function saveShiftAction(
   );
 }
 
-export async function saveCategoryAction(
-  categoryId: string | null,
-  _previous: FormState,
-  formData: FormData,
-): Promise<FormState> {
-  const values = formValues(formData);
-  const parsed = categorySchema.safeParse(values);
-  if (!parsed.success) return { fieldErrors: fieldErrorsFrom(parsed.error), values };
-  if (!optionalId.safeParse(categoryId).success) return { error: "Categoría inválida." };
-  return runAction(
-    "settings.manage",
-    async (context) => {
-      await inTenant(context, (tx) => saveCategory(tx, context.tenant, categoryId, parsed.data));
-      refresh();
-      return { success: categoryId ? "Categoría guardada." : "Categoría agregada." };
-    },
-    { values },
-  );
-}
-
 export async function saveDocumentTypeAction(
   documentTypeId: string | null,
   _previous: FormState,
@@ -136,16 +110,13 @@ export async function saveDocumentTypeAction(
   );
 }
 
-export async function moveCatalogItemAction(
-  catalog: "note_categories" | "document_types",
+export async function moveDocumentTypeAction(
   itemId: string,
   direction: "up" | "down",
 ): Promise<void> {
   if (!z.uuid().safeParse(itemId).success) return;
   await runAction("settings.manage", async (context) => {
-    await inTenant(context, (tx) =>
-      moveCatalogItem(tx, context.tenant, catalog, itemId, direction),
-    );
+    await inTenant(context, (tx) => moveDocumentType(tx, context.tenant, itemId, direction));
     refresh();
     return null;
   });

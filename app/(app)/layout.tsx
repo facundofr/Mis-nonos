@@ -6,7 +6,6 @@ import { countUnread } from "@/features/notifications/service";
 import { WELCOME_KEY, welcomeStepsFor } from "@/features/onboarding/content";
 import { getSeenOnboarding } from "@/features/onboarding/server";
 import { inTenant } from "@/lib/actions";
-import { isSectionHidden } from "@/lib/navigation/hidden";
 import { getPermissions } from "@/lib/auth/authorization";
 import { requireAppContextWithGates } from "@/lib/auth/session";
 import { getSiteContext } from "@/lib/site/server";
@@ -44,7 +43,6 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       roleTitle={context.membership.roleTitle}
       shiftLabel={site.current ? shiftLabel(site.current.shift) : null}
       items={visibleNavItems(permissions)}
-      canCreateNote={!isSectionHidden("novedades") && permissions.has("notes.create")}
       unreadNotifications={unread}
     >
       {welcome ? (

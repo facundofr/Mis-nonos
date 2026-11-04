@@ -1,8 +1,8 @@
 # 0023 — Se ocultan Novedades, Enfermería, Abonos, Traspaso y Especialidades
 
 - **Fecha:** 04/11/2026
-- **Estado:** aceptada. Lo pidió el responsable del proyecto: la residencia
-  no va a usar esas secciones.
+- **Estado:** reemplazada en parte por 0024: Novedades, Enfermería y Abonos
+  ya no se ocultan, se quitaron. Sigue vigente el punto 1.
 
 ## Decisiones
 

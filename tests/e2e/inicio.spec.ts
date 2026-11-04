@@ -10,7 +10,7 @@ import { admitResident } from "./support/residents";
 
 // Etapa 3.6: Inicio de personal y de Dirección (F1-DIR-01). Datos ficticios.
 
-test("Inicio: el personal ve sus pendientes; Administración, además, legajos y actividad", async ({
+test("Inicio: el personal ve sus tareas; Administración, además, legajos y actividad", async ({
   page,
   browser,
 }) => {
@@ -29,7 +29,6 @@ test("Inicio: el personal ve sus pendientes; Administración, además, legajos y
 
   const marta = await newPhone(browser);
   await firstLoginWithTemporaryPassword(marta, martaCredentials);
-  // Novedades está oculta: Inicio no la muestra (lib/navigation/hidden).
   await marta.goto("/inicio");
   await expect(marta.getByRole("region", { name: "Tareas del turno" })).toBeVisible();
   await expect(marta.getByRole("heading", { name: "Novedades recientes" })).toHaveCount(0);

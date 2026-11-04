@@ -7,7 +7,6 @@ import * as schema from "@/db/schema";
 import { listEntityActivity } from "@/features/activity/queries";
 import {
   countOpenEmergencies,
-  getNursingSpecialty,
   lastVisitsBySpecialty,
   listEmergencies,
   listEncounters,
@@ -26,7 +25,6 @@ import {
   createSpecialty,
   recordEmergency,
   recordEncounter,
-  updateSpecialty,
   voidEncounter,
 } from "@/features/care/service";
 import { residentDataSchema } from "@/features/residents/schemas";
@@ -54,7 +52,7 @@ interface Org {
   carer: TenantContext;
   director: TenantContext;
   residentId: string;
-  nursingId: string;
+  clinicalId: string;
   kinesiologyId: string;
 }
 
@@ -125,7 +123,7 @@ async function setupOrg(name: string): Promise<Org> {
     carer,
     director,
     residentId,
-    nursingId: byName("Enfermería"),
+    clinicalId: byName("Medicina clínica"),
     kinesiologyId: byName("Kinesiología"),
   };
 }
@@ -135,7 +133,7 @@ let orgB: Org;
 
 const encounter = (org: Org, overrides: Record<string, string> = {}) =>
   encounterSchema.parse({
-    specialtyId: org.nursingId,
+    specialtyId: org.clinicalId,
     occurredDate: "2026-11-02",
     occurredTime: "09:30",
     location: "in_house",
@@ -176,7 +174,7 @@ afterAll(async () => {
 });
 
 describe("Residencia nueva", () => {
-  it("tiene el módulo encendido y las especialidades iniciales, con Enfermería marcada", async () => {
+  it("tiene el módulo encendido y las especialidades iniciales", async () => {
     const [module] = await owner
       .select({ enabled: schema.organizationModules.enabled })
       .from(schema.organizationModules)
@@ -187,26 +185,24 @@ describe("Residencia nueva", () => {
         ),
       );
     expect(module?.enabled).toBe(true);
-    const nursing = await withTenant(app, orgA.nurse, (tx) => getNursingSpecialty(tx));
-    expect(nursing?.id).toBe(orgA.nursingId);
     const list = await withTenant(app, orgA.nurse, (tx) => listSpecialties(tx));
-    expect(list).toHaveLength(10);
+    expect(list).toHaveLength(9);
   });
 });
 
 describe("Atenciones", () => {
-  it("Enfermería registra una atención y aparece en la lista y en la última visita", async () => {
+  it("un profesional registra una atención y aparece en la lista y en la última visita", async () => {
     const id = await withTenant(app, orgA.nurse, (tx) =>
       recordEncounter(tx, orgA.nurse, { ...encounter(orgA), residentId: orgA.residentId }, NOW),
     );
     const list = await withTenant(app, orgA.nurse, (tx) =>
-      listEncounters(tx, { siteId: orgA.siteId, specialtyId: orgA.nursingId }),
+      listEncounters(tx, { siteId: orgA.siteId, specialtyId: orgA.clinicalId }),
     );
     expect(list.map((row) => row.id)).toContain(id);
     expect(list[0]?.authorName).toBe("Marta Gómez");
 
     const visits = await withTenant(app, orgA.nurse, (tx) =>
-      lastVisitsBySpecialty(tx, { siteId: orgA.siteId, specialtyId: orgA.nursingId }),
+      lastVisitsBySpecialty(tx, { siteId: orgA.siteId, specialtyId: orgA.clinicalId }),
     );
     // 09:30 en Buenos Aires = 12:30 UTC.
     expect(visits[0]?.lastAt?.toISOString()).toBe("2026-11-02T12:30:00.000Z");
@@ -343,7 +339,7 @@ describe("Permisos en la base", () => {
           organizationId: orgA.organizationId,
           siteId: orgA.siteId,
           residentId: orgA.residentId,
-          specialtyId: orgA.nursingId,
+          specialtyId: orgA.clinicalId,
           occurredAt: NOW,
           reason: "Sin permiso",
           createdBy: orgA.carer.userId,
@@ -410,16 +406,6 @@ describe("Especialidades y profesionales", () => {
     expect(professionalId).toBeTruthy();
     const list = await withTenant(app, orgA.nurse, (tx) => listSpecialties(tx));
     expect(list.find((row) => row.id === specialtyId)?.professionals).toBe(1);
-  });
-
-  it("Enfermería no se puede desactivar", async () => {
-    expect(
-      await domainError(
-        withTenant(app, orgA.director, (tx) =>
-          updateSpecialty(tx, orgA.director, orgA.nursingId, { name: "Enfermería", active: false }),
-        ),
-      ),
-    ).toBe("Enfermería no se puede desactivar: la usa la sección del menú.");
   });
 });
 

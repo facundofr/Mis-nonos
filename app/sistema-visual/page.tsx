@@ -55,7 +55,7 @@ export default function VisualSystemPage() {
         </ul>
         <div className="flex flex-wrap gap-2">
           <span className="inline-flex h-10 items-center rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground">
-            Nueva novedad
+            Nuevo paciente
           </span>
           <span className="inline-flex h-10 items-center rounded-lg bg-destructive px-4 text-sm font-semibold text-destructive-foreground">
             Emergencia

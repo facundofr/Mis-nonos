@@ -2,11 +2,8 @@ import {
   ArrowRight,
   CalendarDays,
   ChevronRight,
-  ClipboardList,
   FileWarning,
   ListChecks,
-  NotebookPen,
-  Plus,
   Siren,
   UserRound,
   Users,
@@ -16,7 +13,6 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { buttonClassName } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
 import { actionLabel } from "@/features/activity/labels";
@@ -24,10 +20,8 @@ import { listRecentActivity } from "@/features/activity/queries";
 import { countRequests } from "@/features/admission-requests/queries";
 import { presentNow } from "@/features/attendance/queries";
 import { listEmergencies, upcomingControls } from "@/features/care/queries";
-import { feeAlerts } from "@/features/fees/queries";
 import { residentsWithMissingDocuments } from "@/features/documents/queries";
 import { canDeliverAt } from "@/features/handover/rules";
-import { listNotes } from "@/features/notes/queries";
 import { fullName } from "@/features/residents/format";
 import { SETUP_CATALOGS_KEY, SETUP_HIDDEN_KEY } from "@/features/onboarding/content";
 import { getSeenOnboarding } from "@/features/onboarding/server";
@@ -162,7 +156,7 @@ function TaskBand({ title, hint, items }: { title: string; hint: string; items: 
   );
 }
 
-/** Tarjeta de enlace con título y resumen (abonos, solicitudes). */
+/** Tarjeta de enlace con título y resumen (solicitudes). */
 function SummaryLink({ href, title, text }: { href: Route; title: string; text: string }) {
   return (
     <Link
@@ -181,7 +175,7 @@ function SummaryLink({ href, title, text }: { href: Route; title: string; text: 
 /**
  * Inicio (7.3-H), con la estructura de un CRM de residencias: saludo con el
  * turno, indicadores, las tareas del turno por urgencia y la agenda de
- * controles. Administración y Dirección suman abonos, solicitudes,
+ * controles. Administración y Dirección suman solicitudes,
  * documentos faltantes y actividad reciente.
  */
 export default async function HomePage() {
@@ -211,19 +205,8 @@ export default async function HomePage() {
     !isSectionHidden("turno") &&
     (permissions.has("handover.deliver") || permissions.has("handover.confirm"));
 
-  // Novedades está oculta (lib/navigation/hidden): Inicio no la muestra.
-  const showNotes = canRead && !isSectionHidden("novedades");
-
   const data = canRead
     ? await inTenant(context, async (tx) => ({
-        pending: showNotes
-          ? await listNotes(tx, { siteId: site.id, view: "pendientes", limit: 100 })
-          : [],
-        shiftNotes:
-          showNotes && current
-            ? await listNotes(tx, { siteId: site.id, from: current.startsAt, limit: 100 })
-            : [],
-        recent: showNotes ? await listNotes(tx, { siteId: site.id, limit: 5 }) : [],
         counts: await countResidents(tx),
         emergencies: permissions.has("emergencies.manage")
           ? (await listEmergencies(tx, { siteId: site.id, limit: 10 })).filter(
@@ -237,9 +220,6 @@ export default async function HomePage() {
         present: permissions.has("attendance.read") ? await presentNow(tx, site.id, now) : null,
         missing: canDocuments ? await residentsWithMissingDocuments(tx) : null,
         activity: canAllActivity ? await listRecentActivity(tx) : [],
-        fees: permissions.has("fees.read")
-          ? await feeAlerts(tx, site.id, today, site.feeReminderDaysBefore)
-          : null,
         requests: permissions.has("admission_requests.manage")
           ? await countRequests(tx, site.id)
           : null,
@@ -289,23 +269,6 @@ export default async function HomePage() {
           <span className="first-letter:uppercase">{formatLongDate(now, site.timezone)}</span>
         </p>
       </div>
-      {showNotes ? (
-        <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
-          {permissions.has("notes.create") ? (
-            <Link href="/novedades/nueva" className={buttonClassName({ size: "md" })}>
-              <Plus aria-hidden="true" className="size-4" />
-              Nueva novedad
-            </Link>
-          ) : null}
-          <Link
-            href="/novedades?ver=pendientes"
-            className={buttonClassName({ size: "md", variant: "outline" })}
-          >
-            <ListChecks aria-hidden="true" className="size-4" />
-            Ver pendientes
-          </Link>
-        </div>
-      ) : null}
     </div>
   );
 
@@ -322,39 +285,7 @@ export default async function HomePage() {
     );
   }
 
-  const {
-    pending,
-    shiftNotes,
-    recent,
-    counts,
-    emergencies,
-    controls,
-    staffActive,
-    present,
-    missing,
-    activity,
-    requests,
-    fees,
-  } = data;
-  const earlier = current ? pending.filter((note) => note.createdAt < current.startsAt) : pending;
-  const thisShift = current ? pending.filter((note) => note.createdAt >= current.startsAt) : [];
-  const lastNote = shiftNotes[0];
-
-  const noteTask = (note: (typeof pending)[number]): TaskItem => ({
-    key: note.id,
-    href: `/novedades/${note.id}` as Route,
-    title: (
-      <>
-        {note.residentFirstName && note.residentLastName ? (
-          <b className="font-semibold">
-            {fullName({ firstName: note.residentFirstName, lastName: note.residentLastName })}:{" "}
-          </b>
-        ) : null}
-        {note.content}
-      </>
-    ),
-    meta: `${note.categoryName} · ${formatWhen(note.createdAt, now, site.timezone)}`,
-  });
+  const { counts, emergencies, controls, staffActive, present, missing, activity, requests } = data;
   const nowTasks: TaskItem[] = [
     ...emergencies.map((item) => ({
       key: item.id,
@@ -397,21 +328,6 @@ export default async function HomePage() {
   const agenda = (controls ?? []).filter((item) => item.nextControlOn <= agendaUntil);
 
   const adminCards = [
-    fees && (fees.dueSoon > 0 || fees.overdue > 0) ? (
-      <SummaryLink
-        key="abonos"
-        href="/abonos"
-        title="Abonos"
-        text={[
-          fees.dueSoon > 0
-            ? `${fees.dueSoon} vence${fees.dueSoon === 1 ? "" : "n"} en los próximos ${site.feeReminderDaysBefore} días`
-            : null,
-          fees.overdue > 0 ? `${fees.overdue} vencida${fees.overdue === 1 ? "" : "s"}` : null,
-        ]
-          .filter(Boolean)
-          .join(" · ")}
-      />
-    ) : null,
     requests && requests.abiertas > 0 ? (
       <SummaryLink
         key="solicitudes"
@@ -443,33 +359,6 @@ export default async function HomePage() {
           }
           href="/pacientes"
         />
-        {showNotes ? (
-          <>
-            <KpiCard
-              icon={ClipboardList}
-              label="En seguimiento"
-              value={String(pending.length)}
-              detail={
-                earlier.length > 0 && current
-                  ? `${earlier.length} de turnos anteriores`
-                  : "Ver pendientes"
-              }
-              href="/novedades?ver=pendientes"
-              tone={pending.length > 0 ? "attention" : "default"}
-            />
-            <KpiCard
-              icon={NotebookPen}
-              label="Novedades del turno"
-              value={String(shiftNotes.length)}
-              detail={
-                lastNote
-                  ? `Última ${formatWhen(lastNote.createdAt, now, site.timezone)}`
-                  : "Ninguna todavía"
-              }
-              href="/novedades?ver=todas"
-            />
-          </>
-        ) : null}
         {present ? (
           <KpiCard
             icon={UserRound}
@@ -510,11 +399,7 @@ export default async function HomePage() {
           <CardHeader
             id="tareas"
             title="Tareas del turno"
-            description={
-              showNotes
-                ? "Ordenadas por urgencia. Tocá una para abrirla."
-                : "Emergencias en curso. Tocá una para abrirla."
-            }
+            description="Emergencias en curso y entrega del turno."
             action={handoverAction}
           />
           <div className="divide-y">
@@ -523,31 +408,7 @@ export default async function HomePage() {
               hint={canHandover ? "emergencias y entrega" : "emergencias"}
               items={nowTasks}
             />
-            {showNotes && current ? (
-              <TaskBand
-                title="De este turno"
-                hint="pendientes abiertos"
-                items={thisShift.slice(0, 6).map(noteTask)}
-              />
-            ) : null}
-            {showNotes ? (
-              <TaskBand
-                title={current ? "De turnos anteriores" : "Pendientes"}
-                hint="siguen abiertos"
-                items={earlier.slice(0, 6).map(noteTask)}
-              />
-            ) : null}
           </div>
-          {pending.length > 12 ? (
-            <div className="border-t px-5 py-3">
-              <Link
-                href="/novedades?ver=pendientes"
-                className="text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
-              >
-                Ver los {pending.length} pendientes
-              </Link>
-            </div>
-          ) : null}
         </Card>
 
         <div className="flex flex-col gap-4">
@@ -636,42 +497,6 @@ export default async function HomePage() {
                       </li>
                     );
                   })}
-                </ul>
-              )}
-            </Card>
-          ) : null}
-
-          {showNotes ? (
-            <Card aria-labelledby="recientes">
-              <CardHeader id="recientes" title="Novedades recientes" />
-              {recent.length === 0 ? (
-                <p className="px-5 py-4 text-sm text-muted-foreground">Todavía no hay novedades.</p>
-              ) : (
-                <ul className="divide-y">
-                  {recent.map((note) => (
-                    <li key={note.id}>
-                      <Link
-                        href={`/novedades/${note.id}` as Route}
-                        className="flex flex-col gap-0.5 px-5 py-3 hover:bg-muted/60"
-                      >
-                        <span className="line-clamp-2 text-[15px]">
-                          {note.residentFirstName && note.residentLastName ? (
-                            <b className="font-semibold">
-                              {fullName({
-                                firstName: note.residentFirstName,
-                                lastName: note.residentLastName,
-                              })}
-                              :{" "}
-                            </b>
-                          ) : null}
-                          {note.content}
-                        </span>
-                        <span className="text-[13px] text-muted-foreground">
-                          {note.categoryName} · {formatWhen(note.createdAt, now, site.timezone)}
-                        </span>
-                      </Link>
-                    </li>
-                  ))}
                 </ul>
               )}
             </Card>

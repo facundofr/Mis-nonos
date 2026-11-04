@@ -14,15 +14,12 @@ export type NavIcon =
   | "home"
   | "requests"
   | "residents"
-  | "notes"
   | "handover"
   | "attendance"
   | "specialties"
   | "professionals"
-  | "nursing"
   | "emergencies"
   | "staff"
-  | "fees"
   | "users"
   | "settings"
   | "audit"
@@ -56,29 +53,19 @@ export interface NavItem {
 }
 
 export const NAV_ITEMS: readonly NavItem[] = [
-  // En el teléfono, el inicio se abre desde el logo y desde "Más" (13.2).
   {
     key: "inicio",
     label: "Inicio",
     href: "/inicio",
     icon: "home",
     section: "diario",
-    mobile: "more",
+    mobile: "tab",
   },
   {
     key: "pacientes",
     label: "Pacientes",
     href: "/pacientes",
     icon: "residents",
-    section: "diario",
-    anyOf: ["residents.read"],
-    mobile: "tab",
-  },
-  {
-    key: "novedades",
-    label: "Novedades",
-    href: "/novedades",
-    icon: "notes",
     section: "diario",
     anyOf: ["residents.read"],
     mobile: "tab",
@@ -105,15 +92,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
     mobile: "more",
   },
   // Seguimiento del cuidado (docs/decisions/0017). En el teléfono, desde "Más".
-  {
-    key: "enfermeria",
-    label: "Enfermería",
-    href: "/enfermeria",
-    icon: "nursing",
-    section: "cuidado",
-    anyOf: ["care.read"],
-    mobile: "more",
-  },
   {
     key: "especialidades",
     label: "Especialidades",
@@ -148,15 +126,6 @@ export const NAV_ITEMS: readonly NavItem[] = [
     icon: "staff",
     section: "gestion",
     anyOf: ["staff.read"],
-    mobile: "more",
-  },
-  {
-    key: "abonos",
-    label: "Abonos",
-    href: "/abonos",
-    icon: "fees",
-    section: "gestion",
-    anyOf: ["fees.read"],
     mobile: "more",
   },
   {

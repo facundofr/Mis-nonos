@@ -45,12 +45,12 @@ beforeAll(async () => {
   ids.orgA = orgA!.id;
   ids.orgB = orgB!.id;
 
-  // A tiene solo el núcleo; B tiene además el abono.
+  // A tiene solo el núcleo; B tiene además el seguimiento del cuidado.
   await owner.insert(schema.organizationModules).values([
     { organizationId: ids.orgA, moduleKey: "core", enabled: true },
-    { organizationId: ids.orgA, moduleKey: "fees", enabled: false },
+    { organizationId: ids.orgA, moduleKey: "care", enabled: false },
     { organizationId: ids.orgB, moduleKey: "core", enabled: true },
-    { organizationId: ids.orgB, moduleKey: "fees", enabled: true },
+    { organizationId: ids.orgB, moduleKey: "care", enabled: true },
   ]);
 
   const roles = await owner
@@ -97,26 +97,25 @@ describe("Permisos efectivos (rol + módulos activos)", () => {
   const permissionsOf = (organizationId: string, role: string) =>
     queryPermissions(app, { organizationId, userId: someone, roleId: ids.roles[role]! });
 
-  it("sin el módulo del abono, Administración no ve montos", async () => {
+  it("sin el módulo del cuidado, Administración no ve atenciones", async () => {
     const admin = await permissionsOf(ids.orgA, "admin");
     expect(admin.has("attendance.read")).toBe(true);
     expect(admin.has("users.manage")).toBe(true);
-    expect(admin.has("fees.read")).toBe(false);
-    expect(admin.size).toBe(23);
+    expect(admin.has("care.read")).toBe(false);
+    expect(admin.size).toBe(20);
   });
 
-  it("con el módulo del abono activo, sí", async () => {
+  it("con el módulo del cuidado activo, sí", async () => {
     const admin = await permissionsOf(ids.orgB, "admin");
-    expect(admin.has("fees.read")).toBe(true);
-    expect(admin.size).toBe(25);
+    expect(admin.has("care.read")).toBe(true);
+    expect(admin.size).toBe(24);
   });
 
-  it("Profesional no edita datos ni ve montos aunque el módulo esté activo", async () => {
+  it("Profesional registra atenciones, pero no edita datos", async () => {
     const profesional = await permissionsOf(ids.orgB, "profesional");
     expect(profesional.has("residents.read")).toBe(true);
-    expect(profesional.has("notes.create")).toBe(true);
+    expect(profesional.has("care.record")).toBe(true);
     expect(profesional.has("residents.update")).toBe(false);
-    expect(profesional.has("fees.read")).toBe(false);
     expect(profesional.size).toBe(11);
   });
 
@@ -136,7 +135,7 @@ describe("Permisos efectivos (rol + módulos activos)", () => {
   });
 
   it("los módulos de otra residencia no cuentan", async () => {
-    // B tiene el abono activo; con el contexto de A no se ve.
+    // B tiene el cuidado activo; con el contexto de A no se ve.
     const modules = await withTenant(app, { organizationId: ids.orgA, userId: someone }, (tx) =>
       tx.select().from(schema.organizationModules),
     );

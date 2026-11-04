@@ -41,8 +41,8 @@ export function AuthShell({ children }: { children: ReactNode }) {
               Cada residente, cada turno, todo en un solo lugar.
             </p>
             <p className="text-base leading-relaxed text-primary-foreground/80">
-              Novedades, contactos y la ficha de emergencia a un toque, con registro de quién hizo
-              qué y cuándo.
+              Contactos y la ficha de emergencia a un toque, con registro de quién hizo qué y
+              cuándo.
             </p>
           </div>
           <ul className="flex flex-col gap-2.5 text-sm text-primary-foreground/80">

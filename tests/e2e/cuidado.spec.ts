@@ -9,7 +9,7 @@ import {
 import { admitResident } from "./support/residents";
 
 // Seguimiento del cuidado (docs/decisions/0017): profesionales,
-// especialidades, enfermería y registro de emergencias. Datos ficticios.
+// especialidades y registro de emergencias. Datos ficticios.
 
 test("Administración carga un profesional, un profesional registra una atención y una emergencia", async ({
   page,
@@ -47,11 +47,8 @@ test("Administración carga un profesional, un profesional registra una atenció
   await expect(page.getByText("Profesional agregado.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Llamar a Lic. Paula Díaz" })).toBeVisible();
 
-  // Enfermería está oculta por ahora (lib/navigation/hidden): no se abre.
   const nurse = await newPhone(browser);
   await firstLoginWithTemporaryPassword(nurse, nurseCredentials);
-  const hidden = await nurse.goto("/enfermeria");
-  expect(hidden?.status()).toBe(404);
 
   // Kinesiología: la última visita todavía no existe.
   await nurse.goto("/especialidades");

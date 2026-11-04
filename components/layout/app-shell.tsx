@@ -20,8 +20,6 @@ export interface ShellProps {
   /** "Mañana · 06–14 h", o null si a esta hora no hay turno configurado. */
   shiftLabel: string | null;
   items: NavItem[];
-  /** Botón central "+" de la barra del teléfono (registrar novedad, 13.2). */
-  canCreateNote: boolean;
   /** Avisos sin leer (campana). */
   unreadNotifications: number;
   children: ReactNode;
@@ -41,7 +39,6 @@ export function AppShell({
   roleTitle,
   shiftLabel,
   items,
-  canCreateNote,
   unreadNotifications,
   children,
 }: ShellProps) {
@@ -161,7 +158,7 @@ export function AppShell({
           aria-label="Navegación principal"
           className="fixed inset-x-0 bottom-0 z-30 h-[84px] border-t bg-card pb-[env(safe-area-inset-bottom)] lg:hidden print:hidden"
         >
-          <TabBarLinks items={items} canCreateNote={canCreateNote} />
+          <TabBarLinks items={items} />
         </nav>
       </div>
     </div>

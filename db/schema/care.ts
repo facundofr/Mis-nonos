@@ -11,7 +11,6 @@ import {
   text,
   timestamp,
   unique,
-  uniqueIndex,
   uuid,
 } from "drizzle-orm/pg-core";
 
@@ -66,19 +65,12 @@ export const SPECIALTY_NAME_MAX_LENGTH = 60;
 export const CARE_TEXT_MAX_LENGTH = 2000;
 export const CARE_SHORT_TEXT_MAX_LENGTH = 200;
 
-/** Clave fija de la especialidad que usa la sección Enfermería. */
-export const NURSING_SPECIALTY_KEY = "enfermeria";
-
-/**
- * Especialidades (8.7): catálogo de la residencia. `key` marca las que la
- * app necesita reconocer (Enfermería); las demás no tienen clave.
- */
+/** Especialidades (8.7): catálogo de la residencia. */
 export const specialties = pgTable(
   "specialties",
   {
     id: primaryId(),
     organizationId: organizationId(),
-    key: text("key"),
     name: text("name").notNull(),
     position: integer("position").notNull().default(0),
     active: boolean("active").notNull().default(true),
@@ -87,9 +79,6 @@ export const specialties = pgTable(
   },
   (t) => [
     unique("specialties_organization_name_unique").on(t.organizationId, t.name),
-    uniqueIndex("specialties_organization_key_unique")
-      .on(t.organizationId, t.key)
-      .where(sql`${t.key} is not null`),
     unique("specialties_id_organization_unique").on(t.id, t.organizationId),
     check(
       "specialties_name_check",

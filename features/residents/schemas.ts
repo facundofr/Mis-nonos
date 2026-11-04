@@ -153,7 +153,6 @@ export const contactSchema = z
     isLegalRepresentative: checkbox,
     canReceiveInfo: checkbox,
     canPickUp: checkbox,
-    isPayer: checkbox,
     availabilityNotes: optionalText(300),
     verified: checkbox,
   })

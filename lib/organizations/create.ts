@@ -46,12 +46,12 @@ export async function createOrganization(
     .returning({ id: schema.sites.id });
   if (!site) throw new Error("No se pudo crear la sede.");
 
-  // Turnos, categorías de novedades y documentos del legajo iniciales.
+  // Turnos, documentos del legajo y especialidades iniciales.
   await seedOrganizationDefaults(tx, { organizationId: organization.id, siteId: site.id });
 
-  // Módulos: el núcleo, el abono mensual (DT-05) y el seguimiento del cuidado (0017).
+  // Módulos: el núcleo y el seguimiento del cuidado (0017).
   await tx.insert(schema.organizationModules).values(
-    (["core", "fees", "care"] as const).map((moduleKey) => ({
+    (["core", "care"] as const).map((moduleKey) => ({
       organizationId: organization.id,
       moduleKey,
       enabled: true,

@@ -11,10 +11,7 @@ import { admitResident } from "./support/residents";
 // Etapa 3.5: traspaso de turno con confirmación por sede (F1-TUR-01, F.4).
 // Los turnos se corren para que el actual termine en 30 minutos.
 
-// El traspaso y las novedades están ocultos por ahora (lib/navigation/hidden).
-test.skip(true, "Traspaso y novedades están ocultos");
-
-test("se entrega el turno con sus pendientes y el entrante confirma la recepción", async ({
+test("se entrega el turno con una nota y el entrante confirma la recepción", async ({
   page,
   browser,
 }) => {
@@ -46,24 +43,12 @@ test("se entrega el turno con sus pendientes y el entrante confirma la recepció
     roleName: "Profesional",
   });
 
-  // Marta registra un seguimiento y entrega el turno.
+  // Marta entrega el turno. El traspaso está oculto del menú: se entra por su dirección.
   const marta = await newPhone(browser);
   await firstLoginWithTemporaryPassword(marta, martaCredentials);
-  await marta.goto("/novedades/nueva");
-  await marta.getByRole("link", { name: /Elena Ramírez/ }).click();
-  await marta.getByText("Estado general", { exact: true }).click();
-  await marta.getByLabel(/^¿Qué pasó\?/).fill("Enrojecimiento en el talón derecho.");
-  await marta.getByText("Requiere seguimiento").click();
-  await marta.getByRole("button", { name: "Guardar novedad" }).click();
-  await expect(marta.getByText("Novedad registrada.")).toBeVisible();
-
-  // El traspaso está oculto del menú: se entra por su dirección.
   await marta.goto("/turno");
   await expect(marta.getByRole("heading", { name: "Traspaso de turno" })).toBeVisible();
   await expect(marta.getByRole("heading", { name: "Entregar el turno" })).toBeVisible();
-  await expect(
-    marta.getByRole("region", { name: "Quedan pendientes" }).getByText(/Enrojecimiento/),
-  ).toBeVisible();
   await marta
     .getByLabel("Nota para el turno entrante")
     .fill("Elena: revisar el talón en el cambio postural.");

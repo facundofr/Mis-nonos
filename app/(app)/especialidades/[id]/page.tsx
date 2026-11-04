@@ -1,11 +1,10 @@
 import type { Metadata, Route } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { z } from "zod";
 
 import { RecordEncounterLink, SpecialtyOverview } from "@/components/care/specialty-overview";
 import { Notice } from "@/components/ui/notice";
 import { PageHeader } from "@/components/ui/page-header";
-import { NURSING_SPECIALTY_KEY } from "@/db/schema/care";
 import {
   getSpecialty,
   lastVisitsBySpecialty,
@@ -15,7 +14,6 @@ import {
 } from "@/features/care/queries";
 import { inTenant } from "@/lib/actions";
 import { can, requirePermission } from "@/lib/auth/authorization";
-import { isSectionHidden } from "@/lib/navigation/hidden";
 import { getSiteContext } from "@/lib/site/server";
 
 export const metadata: Metadata = { title: "Especialidad" };
@@ -44,14 +42,6 @@ export default async function SpecialtyPage({
     };
   });
   if (!data) notFound();
-  // Enfermería tiene su propia sección (salvo que esté oculta).
-  if (
-    data.specialty.key === NURSING_SPECIALTY_KEY &&
-    !registrada &&
-    !isSectionHidden("enfermeria")
-  ) {
-    redirect("/enfermeria");
-  }
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-5">

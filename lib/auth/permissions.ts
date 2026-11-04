@@ -9,7 +9,7 @@ import type { SystemRoleKey } from "./policy";
 
 /** Módulos activables (E3). Un permiso vale solo si su módulo está activo. */
 export type ModuleKey =
-  "core" | "care" | "medication" | "clinical_record" | "staff" | "family" | "admin" | "fees";
+  "core" | "care" | "medication" | "clinical_record" | "staff" | "family" | "admin";
 
 interface PermissionDefinition {
   module: ModuleKey;
@@ -75,21 +75,6 @@ export const PERMISSIONS = {
     description: "Generar la hoja de derivación",
     roles: ALL,
   },
-  "notes.create": {
-    module: "core",
-    description: "Registrar novedades",
-    roles: WRITERS,
-  },
-  "notes.edit_own": {
-    module: "core",
-    description: "Corregir las novedades propias (nueva versión)",
-    roles: WRITERS,
-  },
-  "notes.resolve": {
-    module: "core",
-    description: "Resolver seguimientos",
-    roles: WRITERS,
-  },
   "handover.deliver": {
     module: "core",
     description: "Entregar el turno",
@@ -123,22 +108,12 @@ export const PERMISSIONS = {
   },
   "settings.manage": {
     module: "core",
-    description: "Datos de la residencia, turnos, categorías, documentos y aviso del abono",
-    roles: MANAGERS,
-  },
-  "fees.read": {
-    module: "fees",
-    description: "Ver abonos, cuotas y pagos",
-    roles: MANAGERS,
-  },
-  "fees.manage": {
-    module: "fees",
-    description: "Fijar precios y registrar o anular pagos",
+    description: "Datos de la residencia, turnos y documentos",
     roles: MANAGERS,
   },
   "audit.read_resident": {
     module: "core",
-    description: "Ver el historial de cambios de un paciente y de sus novedades",
+    description: "Ver el historial de cambios de un paciente",
     roles: WRITERS,
   },
   "audit.read_all": {
@@ -166,7 +141,7 @@ export const PERMISSIONS = {
   },
   "care.record": {
     module: "care",
-    description: "Registrar y anular atenciones, también las de enfermería",
+    description: "Registrar y anular atenciones",
     roles: WRITERS,
   },
   "care.manage": {
