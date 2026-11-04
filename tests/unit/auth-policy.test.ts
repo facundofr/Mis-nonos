@@ -30,21 +30,21 @@ describe("evaluateSession (DC-10)", () => {
   const base = { now, createdAt: at(-1 * HOUR), absoluteExpiresAt: null, lastActiveAt: null };
 
   it("vence cuando se pasa el tope absoluto", () => {
-    expect(evaluateSession({ ...base, absoluteExpiresAt: at(-1), roleKey: "cuidado" }).status).toBe(
-      "expired",
-    );
+    expect(
+      evaluateSession({ ...base, absoluteExpiresAt: at(-1), roleKey: "asistente" }).status,
+    ).toBe("expired");
   });
 
-  it("cierra por inactividad a Administración y Dirección a las 8 h", () => {
+  it("cierra por inactividad a Master y Administración a las 8 h", () => {
     const idle = { ...base, lastActiveAt: at(-8 * HOUR) };
     expect(evaluateSession({ ...idle, roleKey: "admin" }).status).toBe("inactive");
-    expect(evaluateSession({ ...idle, roleKey: "direccion" }).status).toBe("inactive");
+    expect(evaluateSession({ ...idle, roleKey: "master" }).status).toBe("inactive");
   });
 
-  it("no corta por inactividad a Enfermería ni a Cuidado", () => {
+  it("no corta por inactividad a Profesional ni a Asistente", () => {
     const idle = { ...base, lastActiveAt: at(-10 * HOUR) };
-    expect(evaluateSession({ ...idle, roleKey: "enfermeria" }).status).toBe("active");
-    expect(evaluateSession({ ...idle, roleKey: "cuidado" }).status).toBe("active");
+    expect(evaluateSession({ ...idle, roleKey: "profesional" }).status).toBe("active");
+    expect(evaluateSession({ ...idle, roleKey: "asistente" }).status).toBe("active");
   });
 
   it("sin actividad anotada mide desde que se abrió la sesión", () => {
@@ -61,11 +61,11 @@ describe("evaluateSession (DC-10)", () => {
 });
 
 describe("roles", () => {
-  it("solo Administración y Dirección son roles con 2FA obligatoria", () => {
+  it("solo Master y Administración son roles con 2FA obligatoria", () => {
     expect(isPrivilegedRole("admin")).toBe(true);
-    expect(isPrivilegedRole("direccion")).toBe(true);
-    expect(isPrivilegedRole("enfermeria")).toBe(false);
-    expect(isPrivilegedRole("cuidado")).toBe(false);
+    expect(isPrivilegedRole("master")).toBe(true);
+    expect(isPrivilegedRole("profesional")).toBe(false);
+    expect(isPrivilegedRole("asistente")).toBe(false);
   });
 
   it("los plazos coinciden con lo confirmado", () => {

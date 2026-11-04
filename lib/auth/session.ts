@@ -10,6 +10,7 @@ import { getDb, withUserContext, type TenantContext } from "@/lib/db";
 import { env } from "@/lib/env";
 
 import { evaluateSession, isPrivilegedRole } from "./policy";
+import { roleLabel } from "./role-label";
 import { getAuth } from "./server";
 
 /*
@@ -107,7 +108,7 @@ export const getMemberships = cache(async (userId: string): Promise<Membership[]
         siteId: schema.organizationMemberships.siteId,
         roleId: schema.organizationMemberships.roleId,
         roleKey: schema.roles.key,
-        roleName: schema.roles.name,
+        roleName: roleLabel,
       })
       .from(schema.organizationMemberships)
       .innerJoin(

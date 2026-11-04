@@ -1,9 +1,10 @@
-import { and, eq, isNull, ne, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, ne, sql } from "drizzle-orm";
 
 import * as schema from "@/db/schema";
 import { diffChanges, recordAudit } from "@/lib/audit";
 import { createInvitation } from "@/lib/auth/invitations";
 import { canReceiveEmail, technicalEmailFor } from "@/lib/auth/identifiers";
+import { MANAGER_ROLES } from "@/lib/auth/policy";
 import type { Transaction } from "@/lib/db/client";
 import type { TenantContext } from "@/lib/db/tenant";
 import { DomainError } from "@/lib/errors";
@@ -37,7 +38,16 @@ async function requireMember(tx: Transaction, membershipId: string): Promise<Mem
   return member;
 }
 
-/** Cuántas personas de Administración activas hay, sin contar una. */
+/** El usuario Master es uno solo y no se asigna ni se toca desde la app (0021). */
+const MASTER_LOCKED_MESSAGE = "El usuario Master no se puede modificar desde la app.";
+
+function refuseMasterRole(roleKey: string): void {
+  if (roleKey === "master") {
+    throw new DomainError("El rol Master no se asigna desde la app.", "roleKey");
+  }
+}
+
+/** Cuántas personas de Administración (o Master) activas hay, sin contar una. */
 async function otherActiveAdmins(tx: Transaction, exceptMembershipId: string): Promise<number> {
   const [row] = await tx
     .select({ count: sql<number>`count(*)::int` })
@@ -45,7 +55,7 @@ async function otherActiveAdmins(tx: Transaction, exceptMembershipId: string): P
     .innerJoin(schema.roles, eq(schema.roles.id, schema.organizationMemberships.roleId))
     .where(
       and(
-        eq(schema.roles.key, "admin"),
+        inArray(schema.roles.key, [...MANAGER_ROLES]),
         eq(schema.organizationMemberships.status, "active"),
         ne(schema.organizationMemberships.id, exceptMembershipId),
       ),
@@ -78,6 +88,7 @@ export async function inviteMember(tx: Transaction, actor: TenantContext, input:
     );
   }
 
+  refuseMasterRole(input.roleKey);
   const roleId = await roleIdFor(tx, input.roleKey);
   const invitation = await createInvitation(tx, {
     organizationId: actor.organizationId,
@@ -86,6 +97,7 @@ export async function inviteMember(tx: Transaction, actor: TenantContext, input:
     name: input.name,
     roleId,
     phone: input.phone,
+    profession: input.profession,
     licenseNumber: input.licenseNumber,
     invitedBy: actor.userId,
   });
@@ -107,6 +119,7 @@ export async function createMemberWithoutEmail(
     .where(eq(schema.users.username, input.username));
   if (taken) throw new DomainError("Ese usuario ya existe: elegí otro.", "username");
 
+  refuseMasterRole(input.roleKey);
   const roleId = await roleIdFor(tx, input.roleKey);
   const [user] = await tx
     .insert(schema.users)
@@ -185,6 +198,7 @@ export async function createMemberWithEmail(
     );
   }
 
+  refuseMasterRole(input.roleKey);
   const roleId = await roleIdFor(tx, input.roleKey);
   const [user] = await tx
     .insert(schema.users)
@@ -236,11 +250,15 @@ export async function updateMember(
   input: UpdateMemberInput,
 ): Promise<void> {
   const before = await requireMember(tx, membershipId);
+  if (before.roleKey === "master" && before.userId !== actor.userId) {
+    throw new DomainError(MASTER_LOCKED_MESSAGE);
+  }
   if (before.roleKey !== input.roleKey) {
+    refuseMasterRole(input.roleKey);
     if (before.userId === actor.userId) {
       throw new DomainError("No podés cambiar tu propio rol.", "roleKey");
     }
-    if (before.roleKey === "admin" && before.status === "active") {
+    if (MANAGER_ROLES.includes(before.roleKey as never) && before.status === "active") {
       if ((await otherActiveAdmins(tx, membershipId)) === 0) {
         throw new DomainError(LAST_ADMIN_MESSAGE, "roleKey");
       }
@@ -297,12 +315,16 @@ export async function setMemberActive(
 ): Promise<void> {
   const member = await requireMember(tx, membershipId);
   const status = active ? "active" : "disabled";
+  if (member.roleKey === "master") throw new DomainError(MASTER_LOCKED_MESSAGE);
   if (member.status === status) return;
   if (!active) {
     if (member.userId === actor.userId) {
       throw new DomainError("No podés desactivarte a vos mismo.");
     }
-    if (member.roleKey === "admin" && (await otherActiveAdmins(tx, membershipId)) === 0) {
+    if (
+      MANAGER_ROLES.includes(member.roleKey as never) &&
+      (await otherActiveAdmins(tx, membershipId)) === 0
+    ) {
       throw new DomainError(LAST_ADMIN_MESSAGE);
     }
   }
@@ -347,6 +369,7 @@ export async function resetTemporaryPassword(
   if (member.userId === actor.userId) {
     throw new DomainError("Tu contraseña la cambiás desde tu perfil.");
   }
+  if (member.roleKey === "master") throw new DomainError(MASTER_LOCKED_MESSAGE);
 
   const updated = await tx
     .update(schema.accounts)
@@ -398,6 +421,7 @@ export async function resendInvitation(
     name: invitation.name,
     roleId: invitation.roleId,
     phone: invitation.phone,
+    profession: invitation.profession,
     licenseNumber: invitation.licenseNumber,
     invitedBy: actor.userId,
   });

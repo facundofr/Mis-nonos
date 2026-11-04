@@ -119,16 +119,16 @@ beforeAll(async () => {
   siteId = created.siteId;
   direccion = {
     organizationId: created.organizationId,
-    userId: await member(created.organizationId, "Sofía Medina", "direccion"),
+    userId: await member(created.organizationId, "Sofía Medina", "admin"),
   };
   cuidado = {
     organizationId: created.organizationId,
-    userId: await member(created.organizationId, "Marta Gómez", "cuidado"),
+    userId: await member(created.organizationId, "Marta Gómez", "profesional"),
   };
   const other = await newOrg("Otra residencia (abono)");
   otherOrg = {
     organizationId: other.organizationId,
-    userId: await member(other.organizationId, "Ana Paz", "direccion"),
+    userId: await member(other.organizationId, "Ana Paz", "admin"),
   };
   const [method] = await owner
     .select({ id: schema.paymentMethods.id })

@@ -15,7 +15,7 @@ describe("parseServerEnv", () => {
     });
   });
 
-  it("la 2FA de Administración y Dirección se puede desactivar", () => {
+  it("la 2FA de Master y Administración se puede desactivar", () => {
     expect(parseServerEnv({ REQUIRE_PRIVILEGED_2FA: "false" }).REQUIRE_PRIVILEGED_2FA).toBe(false);
     expect(parseServerEnv({ REQUIRE_PRIVILEGED_2FA: "" }).REQUIRE_PRIVILEGED_2FA).toBe(true);
     expect(() => parseServerEnv({ REQUIRE_PRIVILEGED_2FA: "no" })).toThrow(

@@ -1,6 +1,7 @@
 import { PROFESSIONAL_KINDS } from "@/features/care/schemas";
 import { COVERAGE_TYPES, DISCHARGE_REASONS, MODALITIES } from "@/features/residents/schemas";
 import { STATUS_LABELS } from "@/features/residents/format";
+import { SYSTEM_ROLES } from "@/lib/auth/policy";
 import { formatDateKey } from "@/lib/time/format";
 
 /*
@@ -16,6 +17,11 @@ export const ACTION_LABELS: Record<string, string> = {
   "invitation.accepted": "Aceptó la invitación",
   "invitation.revoked": "Anuló una invitación",
   "user.created": "Creó un usuario",
+  "user.master_assigned": "Pasó a ser el usuario Master",
+  "membership.updated": "Editó los datos de una persona",
+  "membership.role_changed": "Cambió el rol de una persona",
+  "membership.disabled": "Desactivó a una persona",
+  "membership.reactivated": "Reactivó a una persona",
   "user.password_changed": "Cambió su contraseña",
   "user.password_reset": "Dio una contraseña provisoria",
   "profile.updated": "Editó su perfil",
@@ -129,6 +135,11 @@ const FIELD_LABELS: Record<string, string> = {
   institution: "Institución",
   notes: "Notas",
   active: "Activo",
+  roleKey: "Rol",
+  profession: "Profesión",
+  phone: "Teléfono",
+  username: "Usuario",
+  usualShiftId: "Turno habitual",
 };
 
 const VALUE_LABELS: Record<string, Record<string, string>> = {
@@ -137,6 +148,13 @@ const VALUE_LABELS: Record<string, Record<string, string>> = {
   coverageType: COVERAGE_TYPES,
   dischargeReason: DISCHARGE_REASONS,
   kind: PROFESSIONAL_KINDS,
+  roleKey: {
+    // Roles anteriores a docs/decisions/0021, para el historial viejo.
+    direccion: "Dirección",
+    enfermeria: "Enfermería",
+    cuidado: "Cuidador/a",
+    ...Object.fromEntries(SYSTEM_ROLES.map((role) => [role.key, role.name])),
+  },
 };
 
 export function fieldLabel(field: string): string {

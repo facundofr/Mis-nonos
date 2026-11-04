@@ -468,7 +468,7 @@ export default async function ResidentPage({ params, searchParams }: PageProps<"
             description={
               permissions.has("documents.files")
                 ? "Documentación del ingreso. Las fotos son privadas: cada apertura queda registrada."
-                : "Qué documentación está completa. Las fotos las ven Administración y Dirección."
+                : "Qué documentación está completa. Las fotos las ve Administración."
             }
           />
           <DocumentChecklist

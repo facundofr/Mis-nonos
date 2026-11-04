@@ -88,21 +88,39 @@ describe("Formularios de usuarios", () => {
     const parsed = inviteSchema.parse({
       name: "Marta Gómez",
       email: " Marta@Ejemplo.COM ",
-      roleKey: "cuidado",
+      roleKey: "asistente",
       phone: "",
       profession: "",
       licenseNumber: "",
     });
     expect(parsed).toMatchObject({ email: "marta@ejemplo.com", phone: null });
     expect(inviteSchema.safeParse({ ...parsed, roleKey: "superusuario" }).success).toBe(false);
+    // Master no se elige desde la app (docs/decisions/0021).
+    expect(inviteSchema.safeParse({ ...parsed, roleKey: "master" }).success).toBe(false);
+  });
+
+  it("Profesional lleva la profesión escrita a mano", () => {
+    const input = {
+      name: "Laura Pereyra",
+      email: "laura@ejemplo.com",
+      roleKey: "profesional",
+      phone: "",
+      licenseNumber: "",
+    };
+    const missing = inviteSchema.safeParse({ ...input, profession: " " });
+    expect(missing.success).toBe(false);
+    expect(missing.error?.issues[0]?.path).toEqual(["profession"]);
+    expect(inviteSchema.parse({ ...input, profession: "Kinesióloga" }).profession).toBe(
+      "Kinesióloga",
+    );
   });
 
   it("el usuario sin email va en minúsculas y sin caracteres raros", () => {
     const input = {
       name: "Jorge Suárez",
-      roleKey: "enfermeria",
+      roleKey: "profesional",
       phone: "",
-      profession: "",
+      profession: "Enfermera",
       licenseNumber: "",
       temporaryPassword: "k7m2-p9qx-4rtz",
     };

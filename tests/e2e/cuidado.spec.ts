@@ -11,7 +11,7 @@ import { admitResident } from "./support/residents";
 // Seguimiento del cuidado (docs/decisions/0017): profesionales,
 // especialidades, enfermería y registro de emergencias. Datos ficticios.
 
-test("Administración carga un profesional, Enfermería registra una atención y Cuidado una emergencia", async ({
+test("Administración carga un profesional, un profesional registra una atención y una emergencia", async ({
   page,
   browser,
 }) => {
@@ -26,11 +26,11 @@ test("Administración carga un profesional, Enfermería registra una atención y
   const residentId = /\/pacientes\/([0-9a-f-]+)/.exec(ficha)?.[1] ?? "";
   const nurseCredentials = await createUserWithoutEmail(page, {
     name: "Jorge Suárez",
-    roleName: "Enfermería",
+    roleName: "Profesional",
   });
   const carerCredentials = await createUserWithoutEmail(page, {
     name: "Marta Gómez",
-    roleName: "Cuidador/a",
+    roleName: "Asistente",
   });
 
   // Administración agrega una kinesióloga externa.
@@ -73,11 +73,17 @@ test("Administración carga un profesional, Enfermería registra una atención y
   ).toBeVisible();
   await expect(nurse.getByText("Lic. Paula Díaz")).toBeVisible();
 
-  // Cuidado no ve atenciones, pero registra la emergencia desde la ficha.
-  const carer = await newPhone(browser);
-  await firstLoginWithTemporaryPassword(carer, carerCredentials);
-  const denied = await carer.goto("/enfermeria");
+  // Asistente no ve atenciones ni registra emergencias (docs/decisions/0021).
+  const assistant = await newPhone(browser);
+  await firstLoginWithTemporaryPassword(assistant, carerCredentials);
+  const denied = await assistant.goto("/enfermeria");
   expect(denied?.url()).toMatch(/sin-permiso/);
+  await assistant.goto(`/pacientes/${residentId}/emergencia`);
+  await expect(assistant.getByText("Ficha de emergencia", { exact: true })).toBeVisible();
+  await expect(assistant.getByRole("link", { name: /Registrar la emergencia/ })).toHaveCount(0);
+
+  // El profesional la registra desde la ficha.
+  const carer = nurse;
   await carer.goto(`/pacientes/${residentId}/emergencia`);
   await carer.getByRole("link", { name: /Registrar la emergencia/ }).click();
   await carer.getByLabel(/^¿Qué pasó\?/).fill("Caída en el baño, golpe en la cadera.");

@@ -177,7 +177,7 @@ export function SiteForm({ defaults, timezones }: { defaults: SiteDefaults; time
         <Field
           id="feeReminderDaysBefore"
           label="Aviso de vencimiento del abono"
-          hint="Días antes del vencimiento en que Administración y Dirección reciben el aviso."
+          hint="Días antes del vencimiento en que Administración recibe el aviso."
           error={error("feeReminderDaysBefore")}
         >
           {(control) => (

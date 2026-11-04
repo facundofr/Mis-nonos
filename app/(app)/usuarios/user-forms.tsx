@@ -10,7 +10,7 @@ import { FormMessage, SubmitButton } from "@/components/ui/form-status";
 import { FieldMessage, Input } from "@/components/ui/input";
 import { Notice } from "@/components/ui/notice";
 import { ROLE_DESCRIPTIONS } from "@/features/users/schemas";
-import { SYSTEM_ROLES, type SystemRoleKey } from "@/lib/auth/policy";
+import { ASSIGNABLE_ROLES, SYSTEM_ROLES } from "@/lib/auth/policy";
 import type { FormState } from "@/lib/forms";
 import Link from "next/link";
 import type { Route } from "next";
@@ -29,15 +29,25 @@ import {
   type InvitationResult,
 } from "./actions";
 
-/** Orden del diseño: de menos a más permisos. */
-const ROLE_ORDER: SystemRoleKey[] = ["cuidado", "enfermeria", "direccion", "admin"];
-
 function RoleChooser({ defaultValue, error }: { defaultValue?: string; error?: string }) {
   const names = Object.fromEntries(SYSTEM_ROLES.map((role) => [role.key, role.name]));
+  // El Master no se elige: es una sola persona y su rol no cambia (0021).
+  if (defaultValue === "master") {
+    return (
+      <div className="flex flex-col gap-1 rounded-xl border bg-muted/50 px-3.5 py-3">
+        <input type="hidden" name="roleKey" value="master" />
+        <span className="text-[15px] font-semibold">{names.master}</span>
+        <span className="text-[13px] leading-snug text-muted-foreground">
+          {ROLE_DESCRIPTIONS.master}
+        </span>
+      </div>
+    );
+  }
   return (
     <fieldset className="flex flex-col gap-2" aria-describedby={error ? "rol-error" : undefined}>
       <legend className="mb-1.5 text-sm font-medium">Rol *</legend>
-      {ROLE_ORDER.map((key) => (
+      {/* De menos a más permisos. */}
+      {ASSIGNABLE_ROLES.map((key) => (
         <label
           key={key}
           className="flex cursor-pointer items-start gap-3 rounded-xl border bg-card px-3.5 py-3 has-[:checked]:border-primary-ink has-[:checked]:bg-secondary"
@@ -122,7 +132,7 @@ function ProfileFields({
         <Field
           id="profession"
           label="Profesión"
-          hint="Opcional, p. ej. Enfermera."
+          hint="Obligatoria si es Profesional: Kinesiólogo, Médica, Nutricionista…"
           error={state?.fieldErrors?.profession}
         >
           {(control) => (
@@ -233,7 +243,7 @@ export function CreateWithEmailForm() {
       </Field>
       <ProfileFields state={state} />
       <RoleChooser
-        defaultValue={values?.roleKey ?? "cuidado"}
+        defaultValue={values?.roleKey ?? "asistente"}
         error={state?.fieldErrors?.roleKey}
       />
       <FormMessage state={state} />
@@ -279,7 +289,7 @@ export function InviteForm() {
       </Field>
       <ProfileFields state={state} />
       <RoleChooser
-        defaultValue={values?.roleKey ?? "cuidado"}
+        defaultValue={values?.roleKey ?? "asistente"}
         error={state?.fieldErrors?.roleKey}
       />
       <FormMessage state={state} />
@@ -337,7 +347,7 @@ export function CreateWithoutEmailForm({ suggestedPassword }: { suggestedPasswor
       </Field>
       <ProfileFields state={state} />
       <RoleChooser
-        defaultValue={values?.roleKey ?? "cuidado"}
+        defaultValue={values?.roleKey ?? "asistente"}
         error={state?.fieldErrors?.roleKey}
       />
       <FormMessage state={state} />

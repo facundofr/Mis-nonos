@@ -73,10 +73,10 @@ test("una familia llama: se carga la solicitud, se convierte en ingreso y otra s
   await page.goto("/solicitudes?ver=convertidas");
   await expect(page.getByRole("link", { name: /Rosa Medina/ })).toBeVisible();
 
-  // Cuidador/a no ve la bandeja.
+  // Asistente no ve la bandeja.
   const credentials = await createUserWithoutEmail(page, {
     name: "Marta Gómez",
-    roleName: "Cuidador/a",
+    roleName: "Asistente",
   });
   const marta = await newPhone(browser);
   await firstLoginWithTemporaryPassword(marta, credentials);

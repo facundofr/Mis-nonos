@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = { title: "Personal" };
 
 function detailOf(member: MemberRow): string {
-  const parts = [member.profession ?? member.roleName];
+  const parts = [member.roleName];
   if (member.licenseNumber) parts.push(`Mat. ${member.licenseNumber}`);
   if (member.usualShiftName)
     parts.push(`Turno ${member.usualShiftName.toLocaleLowerCase("es-AR")}`);

@@ -40,7 +40,7 @@ async function member(organizationId: string, name: string): Promise<string> {
   const [role] = await owner
     .select({ id: schema.roles.id })
     .from(schema.roles)
-    .where(and(eq(schema.roles.key, "cuidado"), isNull(schema.roles.organizationId)));
+    .where(and(eq(schema.roles.key, "profesional"), isNull(schema.roles.organizationId)));
   await owner
     .insert(schema.organizationMemberships)
     .values({ organizationId, userId: user!.id, roleId: role!.id });

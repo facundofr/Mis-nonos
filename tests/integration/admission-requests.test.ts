@@ -71,7 +71,7 @@ async function setupOrg(name: string): Promise<Org> {
     siteId: created.siteId,
     direccion: {
       organizationId,
-      userId: await member(organizationId, "Sofía Medina", "direccion"),
+      userId: await member(organizationId, "Sofía Medina", "admin"),
     },
     admin: { organizationId, userId: await member(organizationId, "Laura Pereyra", "admin") },
   };

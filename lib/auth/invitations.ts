@@ -24,6 +24,7 @@ export interface InvitationView {
   roleKey: string;
   roleName: string;
   phone: string | null;
+  profession: string | null;
   licenseNumber: string | null;
   expiresAt: Date;
   acceptedAt: Date | null;
@@ -53,6 +54,7 @@ interface InvitationRow extends Record<string, unknown> {
   role_key: string;
   role_name: string;
   phone: string | null;
+  profession: string | null;
   license_number: string | null;
   expires_at: Date;
   accepted_at: Date | null;
@@ -84,6 +86,7 @@ export async function findInvitationByToken(
     roleKey: row.role_key,
     roleName: row.role_name,
     phone: row.phone,
+    profession: row.profession,
     licenseNumber: row.license_number,
     expiresAt: new Date(row.expires_at),
     acceptedAt: row.accepted_at ? new Date(row.accepted_at) : null,
@@ -98,6 +101,7 @@ export interface CreateInvitationInput {
   name: string;
   roleId: string;
   phone?: string | null;
+  profession?: string | null;
   licenseNumber?: string | null;
   /** Nulo cuando invita el sistema (alta de la residencia, DC-12). */
   invitedBy: string | null;
@@ -140,6 +144,7 @@ export async function createInvitation(
       name: input.name.trim(),
       roleId: input.roleId,
       phone: input.phone ?? null,
+      profession: input.profession ?? null,
       licenseNumber: input.licenseNumber ?? null,
       tokenHash: hashToken(token),
       expiresAt,
@@ -290,6 +295,7 @@ async function joinOrganization(
       userId,
       roleId: invitation.roleId,
       phone: invitation.phone,
+      profession: invitation.profession,
       licenseNumber: invitation.licenseNumber,
       status: "active",
     })
@@ -301,6 +307,7 @@ async function joinOrganization(
       set: {
         siteId: invitation.siteId,
         roleId: invitation.roleId,
+        profession: invitation.profession,
         status: "active",
         updatedAt: now,
       },

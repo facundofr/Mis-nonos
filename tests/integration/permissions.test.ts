@@ -86,7 +86,7 @@ describe("Matriz en la base", () => {
       withTenant(app, { organizationId: ids.orgA, userId: someone }, (tx) =>
         tx
           .insert(schema.rolePermissions)
-          .values({ roleId: ids.roles.cuidado!, permissionKey: "users.manage" }),
+          .values({ roleId: ids.roles.asistente!, permissionKey: "users.manage" }),
       ),
     );
     expect(error.code).toBe("42501");
@@ -102,21 +102,37 @@ describe("Permisos efectivos (rol + módulos activos)", () => {
     expect(admin.has("attendance.read")).toBe(true);
     expect(admin.has("users.manage")).toBe(true);
     expect(admin.has("fees.read")).toBe(false);
-    expect(admin.size).toBe(21);
+    expect(admin.size).toBe(23);
   });
 
   it("con el módulo del abono activo, sí", async () => {
     const admin = await permissionsOf(ids.orgB, "admin");
     expect(admin.has("fees.read")).toBe(true);
-    expect(admin.size).toBe(23);
+    expect(admin.size).toBe(25);
   });
 
-  it("Cuidado no edita datos ni ve montos aunque el módulo esté activo", async () => {
-    const cuidado = await permissionsOf(ids.orgB, "cuidado");
-    expect(cuidado.has("residents.read")).toBe(true);
-    expect(cuidado.has("residents.update")).toBe(false);
-    expect(cuidado.has("fees.read")).toBe(false);
-    expect(cuidado.size).toBe(11);
+  it("Profesional no edita datos ni ve montos aunque el módulo esté activo", async () => {
+    const profesional = await permissionsOf(ids.orgB, "profesional");
+    expect(profesional.has("residents.read")).toBe(true);
+    expect(profesional.has("notes.create")).toBe(true);
+    expect(profesional.has("residents.update")).toBe(false);
+    expect(profesional.has("fees.read")).toBe(false);
+    expect(profesional.size).toBe(11);
+  });
+
+  it("Asistente solo ve y ficha; el registro completo es del Master", async () => {
+    const asistente = await permissionsOf(ids.orgB, "asistente");
+    expect([...asistente].sort()).toEqual(
+      [
+        "attendance.record",
+        "emergency.pdf",
+        "emergency.view",
+        "residents.read",
+        "staff.read",
+      ].sort(),
+    );
+    expect((await permissionsOf(ids.orgB, "master")).has("audit.master")).toBe(true);
+    expect((await permissionsOf(ids.orgB, "admin")).has("audit.master")).toBe(false);
   });
 
   it("los módulos de otra residencia no cuentan", async () => {

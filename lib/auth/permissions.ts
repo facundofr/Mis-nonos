@@ -3,7 +3,7 @@ import type { SystemRoleKey } from "./policy";
 /*
  * Permisos del MVP: matriz F.3 del plan, confirmada el 01/11/2026 (DC-01),
  * más los del seguimiento del cuidado (docs/decisions/0017) y la asistencia
- * (0020). La base tiene la misma matriz (migraciones 0005, 0035, 0037 y 0038);
+ * (0020). La base tiene la misma matriz (migraciones 0005, 0035, 0037 y, desde los roles nuevos, 0040);
  * una prueba unitaria compara las dos para que no se separen.
  */
 
@@ -17,7 +17,12 @@ interface PermissionDefinition {
   roles: readonly SystemRoleKey[];
 }
 
-const ALL: readonly SystemRoleKey[] = ["admin", "direccion", "enfermeria", "cuidado"];
+/** Todos los roles (docs/decisions/0021). */
+const ALL: readonly SystemRoleKey[] = ["master", "admin", "profesional", "asistente"];
+/** Los que escriben sobre los pacientes. */
+const WRITERS: readonly SystemRoleKey[] = ["master", "admin", "profesional"];
+/** Los que editan y gestionan: Master y Administración. */
+const MANAGERS: readonly SystemRoleKey[] = ["master", "admin"];
 
 export const PERMISSIONS = {
   "residents.read": {
@@ -28,37 +33,37 @@ export const PERMISSIONS = {
   "residents.update": {
     module: "core",
     description: "Editar datos, cobertura, alergias, indicaciones y médico de cabecera",
-    roles: ["admin", "direccion", "enfermeria"],
+    roles: MANAGERS,
   },
   "residents.status": {
     module: "core",
     description: "Marcar «internado fuera» y volver a «activo»",
-    roles: ["admin", "direccion", "enfermeria"],
+    roles: MANAGERS,
   },
   "residents.discharge": {
     module: "core",
     description: "Registrar el egreso",
-    roles: ["admin", "direccion"],
+    roles: MANAGERS,
   },
   "admissions.manage": {
     module: "core",
     description: "Hacer, retomar y confirmar ingresos guiados",
-    roles: ["admin", "direccion"],
+    roles: MANAGERS,
   },
   "admission_requests.manage": {
     module: "core",
     description: "Cargar, gestionar y convertir solicitudes de ingreso",
-    roles: ["admin", "direccion"],
+    roles: MANAGERS,
   },
   "documents.files": {
     module: "core",
     description: "Ver, subir y reemplazar las fotos del legajo",
-    roles: ["admin", "direccion"],
+    roles: MANAGERS,
   },
   "contacts.manage": {
     module: "core",
     description: "Agregar, editar y ordenar contactos",
-    roles: ["admin", "direccion", "enfermeria"],
+    roles: MANAGERS,
   },
   "emergency.view": {
     module: "core",
@@ -73,27 +78,27 @@ export const PERMISSIONS = {
   "notes.create": {
     module: "core",
     description: "Registrar novedades",
-    roles: ALL,
+    roles: WRITERS,
   },
   "notes.edit_own": {
     module: "core",
     description: "Corregir las novedades propias (nueva versión)",
-    roles: ALL,
+    roles: WRITERS,
   },
   "notes.resolve": {
     module: "core",
     description: "Resolver seguimientos",
-    roles: ALL,
+    roles: WRITERS,
   },
   "handover.deliver": {
     module: "core",
     description: "Entregar el turno",
-    roles: ["direccion", "enfermeria", "cuidado"],
+    roles: WRITERS,
   },
   "handover.confirm": {
     module: "core",
     description: "Confirmar la recepción del turno",
-    roles: ["direccion", "enfermeria", "cuidado"],
+    roles: WRITERS,
   },
   "staff.read": {
     module: "core",
@@ -109,64 +114,70 @@ export const PERMISSIONS = {
   "attendance.read": {
     module: "core",
     description: "Ver el fichaje del personal y el QR",
-    roles: ["admin"],
+    roles: MANAGERS,
   },
   "users.manage": {
     module: "core",
     description: "Invitar, cambiar el rol y desactivar usuarios",
-    roles: ["admin"],
+    roles: MANAGERS,
   },
   "settings.manage": {
     module: "core",
     description: "Datos de la residencia, turnos, categorías, documentos y aviso del abono",
-    roles: ["admin"],
+    roles: MANAGERS,
   },
   "fees.read": {
     module: "fees",
     description: "Ver abonos, cuotas y pagos",
-    roles: ["admin", "direccion"],
+    roles: MANAGERS,
   },
   "fees.manage": {
     module: "fees",
     description: "Fijar precios y registrar o anular pagos",
-    roles: ["admin", "direccion"],
+    roles: MANAGERS,
   },
   "audit.read_resident": {
     module: "core",
     description: "Ver el historial de cambios de un paciente y de sus novedades",
-    roles: ALL,
+    roles: WRITERS,
   },
   "audit.read_all": {
     module: "core",
     description:
       "Ver toda la actividad, incluidas las aperturas de la ficha de emergencia y de las fotos",
-    roles: ["admin", "direccion"],
+    roles: MANAGERS,
+  },
+  // Registro completo de la app: solo Master (docs/decisions/0021).
+  "audit.master": {
+    module: "core",
+    description: "Ver el registro completo de cambios de la app",
+    roles: ["master"],
   },
   "org.export": {
     module: "core",
     description: "Exportar los datos de la residencia (E14)",
-    roles: ["admin", "direccion"],
+    roles: MANAGERS,
   },
   // Seguimiento del cuidado (fase 2 adelantada, migración 0035, docs/decisions/0017).
   "care.read": {
     module: "care",
     description: "Ver profesionales, especialidades y atenciones",
-    roles: ["admin", "direccion", "enfermeria"],
+    roles: WRITERS,
   },
   "care.record": {
     module: "care",
     description: "Registrar y anular atenciones, también las de enfermería",
-    roles: ["admin", "direccion", "enfermeria"],
+    roles: WRITERS,
   },
   "care.manage": {
     module: "care",
     description: "Agregar y editar profesionales y especialidades",
-    roles: ["admin", "direccion"],
+    roles: MANAGERS,
   },
   "emergencies.manage": {
     module: "care",
     description: "Registrar, completar y cerrar emergencias",
-    roles: ALL,
+    roles: WRITERS,
   },
 } as const satisfies Record<string, PermissionDefinition>;
 

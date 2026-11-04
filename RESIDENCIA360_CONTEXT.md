@@ -3672,6 +3672,12 @@ estas decisiones, salvo DC-07 (ver F.9).
 
 ## F.3 Matriz de permisos del MVP (propuesta)
 
+> **Actualización (04/11/2026):** los roles ahora son Master,
+> Administración, Profesional y Asistente; Dirección y Enfermería ya no
+> existen. La matriz vigente está en `lib/auth/permissions.ts` y en
+> `docs/decisions/0021-roles-master-admin-profesional-asistente.md`. La
+> tabla de abajo queda como antecedente.
+
 Reemplaza al Apéndice D para la fase 1. ✓ = sí; — = no. Administración
 y Dirección usan 2FA obligatoria (10.10). Los números entre paréntesis
 remiten a las notas de abajo, que marcan dónde la propuesta se aparta

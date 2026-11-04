@@ -1,6 +1,11 @@
 import { expect, test } from "@playwright/test";
 
-import { activateTwoFactor, createTestOrganization, onboardAdmin } from "./support/organization";
+import {
+  activateTwoFactor,
+  createTestOrganization,
+  makeMaster,
+  onboardAdmin,
+} from "./support/organization";
 import {
   createUserWithoutEmail,
   firstLoginWithTemporaryPassword,
@@ -9,10 +14,10 @@ import {
 import { admitResident } from "./support/residents";
 
 // Etapa 3.3: ficha de emergencia (F1-EMG-01), hoja de derivación en PDF
-// (F1-EMG-02), auditoría de aperturas (F1-EMG-03) y aviso a Dirección
-// (DC-02, F1-NOT-01). Datos ficticios.
+// (F1-EMG-02), auditoría de aperturas (F1-EMG-03) y aviso al Master
+// (DC-02, F1-NOT-01, docs/decisions/0021). Datos ficticios.
 
-test("Cuidador/a abre la ficha de emergencia; Dirección recibe el aviso y todo queda auditado", async ({
+test("Asistente abre la ficha de emergencia; el Master recibe el aviso y todo queda auditado", async ({
   page,
   browser,
 }) => {
@@ -37,20 +42,21 @@ test("Cuidador/a abre la ficha de emergencia; Dirección recibe el aviso y todo 
   await page.getByRole("button", { name: "Agregar alergia" }).click();
   await expect(page.getByText("Alergia a Penicilina agregada.")).toBeVisible();
 
-  const direccionCredentials = await createUserWithoutEmail(page, {
+  const masterCredentials = await createUserWithoutEmail(page, {
     name: "Sofía Medina",
-    roleName: "Dirección",
+    roleName: "Administración",
   });
+  await makeMaster(masterCredentials.username);
   const cuidadoCredentials = await createUserWithoutEmail(page, {
     name: "Marta Gómez",
-    roleName: "Cuidador/a",
+    roleName: "Asistente",
   });
 
   const sofia = await newPhone(browser);
-  await firstLoginWithTemporaryPassword(sofia, direccionCredentials);
+  await firstLoginWithTemporaryPassword(sofia, masterCredentials);
   await activateTwoFactor(sofia);
 
-  // Cuidador/a: desde la lista, el botón Emergencia.
+  // Asistente: desde la lista, el botón Emergencia.
   const marta = await newPhone(browser);
   await firstLoginWithTemporaryPassword(marta, cuidadoCredentials);
   await marta.goto("/pacientes");
@@ -62,7 +68,7 @@ test("Cuidador/a abre la ficha de emergencia; Dirección recibe el aviso y todo 
   await expect(calls.first()).toContainText("Emergencias · Medicardio");
   await expect(calls.first()).toHaveAttribute("href", "tel:08105550000");
   await expect(calls.nth(1)).toContainText("Silvia Ramírez");
-  await expect(marta.getByText(/Se avisa a Dirección que abriste esta ficha/)).toBeVisible();
+  await expect(marta.getByText(/Queda registrado que abriste esta ficha/)).toBeVisible();
 
   // Hoja de derivación: un PDF real.
   const pdf = await marta.request.get(
@@ -72,7 +78,7 @@ test("Cuidador/a abre la ficha de emergencia; Dirección recibe el aviso y todo 
   expect(pdf.headers()["content-type"]).toBe("application/pdf");
   expect((await pdf.body()).subarray(0, 5).toString()).toBe("%PDF-");
 
-  // Dirección recibe el aviso (lo crea el worker a partir del evento).
+  // El Master recibe el aviso (lo crea el worker a partir del evento).
   await expect
     .poll(
       async () => {
@@ -90,7 +96,14 @@ test("Cuidador/a abre la ficha de emergencia; Dirección recibe el aviso y todo 
   await expect(sofia.getByText("Abrió la ficha de emergencia").first()).toBeVisible();
   await expect(sofia.getByText("Generó la hoja de derivación")).toBeVisible();
 
-  // Administración (que no es Dirección) no recibe ese aviso.
+  // Y lo ve en el registro de cambios, que Administración no tiene.
+  await sofia.goto("/registro?tipo=aperturas");
+  await expect(sofia.getByText("Abrió la ficha de emergencia").first()).toBeVisible();
+  await expect(sofia.getByRole("link", { name: "Elena Ramírez" }).first()).toBeVisible();
+  await page.goto("/registro");
+  await expect(page).toHaveURL(/\/sin-permiso/);
+
+  // Administración no recibe ese aviso.
   await page.goto("/notificaciones");
   await expect(page.getByText("Sin notificaciones")).toBeVisible();
 });

@@ -67,7 +67,7 @@ export const WELCOME_STEPS: readonly WelcomeStep[] = [
     key: "abonos",
     icon: "fees",
     title: "Abono mensual",
-    body: "En «Abonos» ves las cuotas del mes y registrás los pagos. Una semana antes de cada vencimiento te llega un aviso en la app y por email. Solo Administración y Dirección ven los montos.",
+    body: "En «Abonos» ves las cuotas del mes y registrás los pagos. Una semana antes de cada vencimiento te llega un aviso en la app y por email. Solo Administración ve los montos.",
     anyOf: ["fees.read"],
   },
   {

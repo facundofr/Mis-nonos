@@ -2,6 +2,7 @@ import { and, asc, eq, isNull, sql, type SQL } from "drizzle-orm";
 
 import * as schema from "@/db/schema";
 import { canReceiveEmail } from "@/lib/auth/identifiers";
+import { roleLabel } from "@/lib/auth/role-label";
 import type { Transaction } from "@/lib/db/client";
 
 /*
@@ -39,7 +40,7 @@ const memberColumns = {
   username: schema.users.username,
   roleId: schema.roles.id,
   roleKey: schema.roles.key,
-  roleName: schema.roles.name,
+  roleName: roleLabel,
   status: schema.organizationMemberships.status,
   phone: schema.organizationMemberships.phone,
   profession: schema.organizationMemberships.profession,

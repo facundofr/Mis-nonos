@@ -38,7 +38,7 @@ export async function createNotifications(
 }
 
 /**
- * DC-02: cuando alguien abre una ficha de emergencia, Dirección recibe un
+ * DC-02: cuando alguien abre una ficha de emergencia, Master recibe un
  * aviso en la app (salvo quien la abrió). Corre en el worker, con
  * withSystemTenant.
  */
@@ -62,7 +62,7 @@ export async function notifyEmergencyViewed(
         .from(schema.users)
         .where(eq(schema.users.id, event.viewerUserId))
     : [];
-  const recipients = (await activeMembersWithRoles(tx, event.organizationId, ["direccion"])).filter(
+  const recipients = (await activeMembersWithRoles(tx, event.organizationId, ["master"])).filter(
     (member) => member.userId !== event.viewerUserId,
   );
   return createNotifications(
@@ -83,7 +83,7 @@ export async function notifyEmergencyViewed(
 
 /**
  * 7.3-C3: una solicitud de ingreso nueva avisa a Administración y
- * Dirección (salvo a quien la cargó). Sin datos del futuro paciente.
+ * Master (salvo a quien la cargó). Sin datos del futuro paciente.
  */
 export async function notifyAdmissionRequestCreated(
   tx: Transaction,
@@ -95,7 +95,7 @@ export async function notifyAdmissionRequestCreated(
     .where(eq(schema.admissionRequests.id, event.requestId));
   if (!request) return 0;
   const recipients = (
-    await activeMembersWithRoles(tx, event.organizationId, ["admin", "direccion"])
+    await activeMembersWithRoles(tx, event.organizationId, ["admin", "master"])
   ).filter((member) => member.userId !== event.createdBy);
   return createNotifications(
     tx,

@@ -31,7 +31,7 @@ export default function EmergencyError({ error, retry }: { error: unknown; retry
         </h1>
         <p className="text-[15px]">
           Si es una urgencia, no esperes a la app: llamá al servicio de emergencias de la residencia
-          y avisá a Dirección.
+          y avisá a Administración.
         </p>
       </div>
 

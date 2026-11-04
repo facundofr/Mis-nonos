@@ -23,7 +23,7 @@ const appPool = createPool(appUrl, { application_name: "pruebas-asistencia-app" 
 const owner = createDb(ownerPool);
 const app = createDb(appPool);
 
-type RoleKey = "admin" | "direccion" | "enfermeria" | "cuidado";
+type RoleKey = "master" | "admin" | "profesional" | "asistente";
 
 async function member(organizationId: string, name: string, role: RoleKey): Promise<string> {
   const [user] = await owner
@@ -58,9 +58,9 @@ beforeAll(async () => {
   );
   const organizationId = created.organizationId;
   siteId = created.siteId;
-  carer = { organizationId, userId: await member(organizationId, "Marta Gómez", "cuidado") };
-  nurse = { organizationId, userId: await member(organizationId, "Jorge Suárez", "enfermeria") };
-  director = { organizationId, userId: await member(organizationId, "Elena Ruiz", "direccion") };
+  carer = { organizationId, userId: await member(organizationId, "Marta Gómez", "asistente") };
+  nurse = { organizationId, userId: await member(organizationId, "Jorge Suárez", "profesional") };
+  director = { organizationId, userId: await member(organizationId, "Elena Ruiz", "profesional") };
   admin = { organizationId, userId: await member(organizationId, "Laura Pereyra", "admin") };
   const [site] = await owner
     .select({ token: schema.sites.attendanceToken })
@@ -137,7 +137,7 @@ describe("asistencia con QR", () => {
         }),
       ),
     ).rejects.toThrow();
-    // Cuidado y Dirección ven solo lo suyo; Administración, a todos.
+    // Asistente y Profesional ven solo lo suyo; Administración, a todos.
     const seenByCarer = await withTenant(app, carer, (tx) =>
       tx.select({ userId: schema.attendanceRecords.userId }).from(schema.attendanceRecords),
     );

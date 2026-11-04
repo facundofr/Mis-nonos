@@ -45,7 +45,7 @@ const appPool = createPool(appUrl, { application_name: "pruebas-cuidado-app" });
 const owner = createDb(ownerPool);
 const app = createDb(appPool);
 
-type RoleKey = "admin" | "direccion" | "enfermeria" | "cuidado";
+type RoleKey = "master" | "admin" | "profesional" | "asistente";
 
 interface Org {
   organizationId: string;
@@ -85,12 +85,15 @@ async function setupOrg(name: string): Promise<Org> {
   const organizationId = created.organizationId;
   const nurse = {
     organizationId,
-    userId: await member(organizationId, "Marta Gómez", "enfermeria"),
+    userId: await member(organizationId, "Marta Gómez", "profesional"),
   };
-  const carer = { organizationId, userId: await member(organizationId, "Jorge Suárez", "cuidado") };
+  const carer = {
+    organizationId,
+    userId: await member(organizationId, "Jorge Suárez", "asistente"),
+  };
   const director = {
     organizationId,
-    userId: await member(organizationId, "Elena Ruiz", "direccion"),
+    userId: await member(organizationId, "Elena Ruiz", "admin"),
   };
   const { residentId } = await withTenant(app, nurse, (tx) =>
     startAdmission(
@@ -328,7 +331,7 @@ describe("Atenciones", () => {
 });
 
 describe("Permisos en la base", () => {
-  it("Cuidado no ve atenciones ni profesionales, ni puede registrar una", async () => {
+  it("Asistente no ve atenciones ni profesionales, ni puede registrar una", async () => {
     const list = await withTenant(app, orgA.carer, (tx) =>
       listEncounters(tx, { siteId: orgA.siteId }),
     );
@@ -421,11 +424,11 @@ describe("Especialidades y profesionales", () => {
 });
 
 describe("Emergencias", () => {
-  it("Cuidado registra una emergencia; queda abierta hasta que se cierra", async () => {
-    const id = await withTenant(app, orgA.carer, (tx) =>
+  it("Profesional registra una emergencia; queda abierta hasta que se cierra", async () => {
+    const id = await withTenant(app, orgA.nurse, (tx) =>
       recordEmergency(
         tx,
-        orgA.carer,
+        orgA.nurse,
         {
           ...emergency({ transferred: "on", transferDestination: "Hospital Central" }),
           residentId: orgA.residentId,
@@ -433,14 +436,14 @@ describe("Emergencias", () => {
         NOW,
       ),
     );
-    expect(await withTenant(app, orgA.carer, (tx) => countOpenEmergencies(tx, orgA.siteId))).toBe(
+    expect(await withTenant(app, orgA.nurse, (tx) => countOpenEmergencies(tx, orgA.siteId))).toBe(
       1,
     );
 
-    await withTenant(app, orgA.carer, (tx) =>
+    await withTenant(app, orgA.nurse, (tx) =>
       closeEmergency(
         tx,
-        orgA.carer,
+        orgA.nurse,
         id,
         closeEmergencySchema.parse({
           calls: "Servicio de emergencias, la hija y Dirección",
@@ -450,18 +453,18 @@ describe("Emergencias", () => {
         }),
       ),
     );
-    const [row] = await withTenant(app, orgA.carer, (tx) =>
+    const [row] = await withTenant(app, orgA.nurse, (tx) =>
       listEmergencies(tx, { siteId: orgA.siteId }),
     );
     expect(row).toMatchObject({
       status: "closed",
       transferDestination: "Hospital Central",
-      closedByName: "Jorge Suárez",
+      closedByName: "Marta Gómez",
     });
     expect(
       await domainError(
-        withTenant(app, orgA.carer, (tx) =>
-          closeEmergency(tx, orgA.carer, id, closeEmergencySchema.parse({ outcome: "Otra vez" })),
+        withTenant(app, orgA.nurse, (tx) =>
+          closeEmergency(tx, orgA.nurse, id, closeEmergencySchema.parse({ outcome: "Otra vez" })),
         ),
       ),
     ).toBe("Esa emergencia no existe o ya está cerrada.");
