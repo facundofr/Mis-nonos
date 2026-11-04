@@ -40,6 +40,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       organizationName={context.membership.organizationName}
       userName={context.user.name}
       roleName={context.membership.roleName}
+      roleTitle={context.membership.roleTitle}
       shiftLabel={site.current ? shiftLabel(site.current.shift) : null}
       items={visibleNavItems(permissions)}
       canCreateNote={permissions.has("notes.create")}
