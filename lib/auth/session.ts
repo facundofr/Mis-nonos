@@ -10,7 +10,7 @@ import { getDb, withUserContext, type TenantContext } from "@/lib/db";
 import { env } from "@/lib/env";
 
 import { evaluateSession, isPrivilegedRole } from "./policy";
-import { roleLabel } from "./role-label";
+import { roleLabel, roleTitle } from "./role-label";
 import { getAuth } from "./server";
 
 /*
@@ -44,6 +44,8 @@ export interface Membership {
   roleId: string;
   roleKey: string;
   roleName: string;
+  /** Para el saludo: la profesión de Profesional o el nombre del rol. */
+  roleTitle: string;
 }
 
 export interface AppContext {
@@ -109,6 +111,7 @@ export const getMemberships = cache(async (userId: string): Promise<Membership[]
         roleId: schema.organizationMemberships.roleId,
         roleKey: schema.roles.key,
         roleName: roleLabel,
+        roleTitle,
       })
       .from(schema.organizationMemberships)
       .innerJoin(

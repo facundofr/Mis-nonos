@@ -15,6 +15,8 @@ export interface ShellProps {
   organizationName: string;
   userName: string;
   roleName: string;
+  /** Para el saludo: "Kinesiólogo", "Asistente", "Administración"… */
+  roleTitle: string;
   /** "Mañana · 06–14 h", o null si a esta hora no hay turno configurado. */
   shiftLabel: string | null;
   items: NavItem[];
@@ -36,12 +38,15 @@ export function AppShell({
   organizationName,
   userName,
   roleName,
+  roleTitle,
   shiftLabel,
   items,
   canCreateNote,
   unreadNotifications,
   children,
 }: ShellProps) {
+  const firstName = userName.trim().split(/\s+/)[0] || userName;
+  const title = capitalize(roleTitle);
   return (
     <div className="min-h-dvh bg-surface lg:grid lg:grid-cols-[260px_minmax(0,1fr)] print:block print:bg-white">
       <aside className="sticky top-0 hidden h-dvh flex-col border-r border-sidebar-border bg-sidebar lg:flex print:hidden">
@@ -93,7 +98,12 @@ export function AppShell({
               <span className="flex size-8 shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground">
                 <LogoMark className="size-4" />
               </span>
-              <span className="truncate text-[15px] font-semibold">{organizationName}</span>
+              <span className="flex min-w-0 flex-col leading-tight">
+                <span className="truncate text-[15px] font-semibold">Bienvenido, {firstName}</span>
+                <span className="truncate text-xs text-muted-foreground">
+                  <span className="font-medium text-primary-ink">{title}</span> · {organizationName}
+                </span>
+              </span>
             </Link>
             <div className="hidden min-w-0 flex-1 lg:flex">
               <SectionTrail items={items} />
@@ -122,6 +132,23 @@ export function AppShell({
                   </span>
                 ) : null}
               </Link>
+              {/* Saludo con el rol (en el teléfono va a la izquierda, con la residencia). */}
+              <span aria-hidden="true" className="mx-1 hidden h-8 w-px bg-border lg:block" />
+              <Link
+                href="/perfil"
+                title="Mi perfil"
+                className="hidden items-center gap-3 rounded-full py-1 pr-1 pl-3 hover:bg-muted focus-visible:ring-3 focus-visible:ring-ring/40 focus-visible:outline-none lg:flex"
+              >
+                <span className="flex min-w-0 flex-col items-end leading-tight">
+                  <span className="max-w-56 truncate text-sm font-semibold">
+                    Bienvenido, {firstName}
+                  </span>
+                  <span className="max-w-56 truncate text-xs font-medium text-primary-ink">
+                    {title}
+                  </span>
+                </span>
+                <Avatar name={userName} size="sm" />
+              </Link>
             </div>
           </div>
         </header>
@@ -139,6 +166,11 @@ export function AppShell({
       </div>
     </div>
   );
+}
+
+/** "kinesiólogo" → "Kinesiólogo" (la profesión la escribe Administración a mano). */
+function capitalize(text: string): string {
+  return text.charAt(0).toLocaleUpperCase("es-AR") + text.slice(1);
 }
 
 /** Marco mínimo mientras falta un paso obligatorio (cambiar la contraseña o activar el 2FA). */
