@@ -4,10 +4,7 @@ import type { Route } from "next";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
-import { feeSetupSchema } from "@/features/fees/schemas";
-import { addDays } from "@/features/fees/schedule";
-import { CHARGE_HORIZON_DAYS, ensureCharges, setupFeePlan } from "@/features/fees/service";
-import { getAdmission, getResident } from "@/features/residents/queries";
+import { getAdmission } from "@/features/residents/queries";
 import { residentDataSchema } from "@/features/residents/schemas";
 import {
   assertUniqueNationalId,
@@ -18,7 +15,6 @@ import {
   updateResidentData,
 } from "@/features/residents/service";
 import { inTenant, runAction } from "@/lib/actions";
-import { can } from "@/lib/auth/authorization";
 import { DomainError } from "@/lib/errors";
 import { fieldErrorsFrom, formValues, type FormState } from "@/lib/forms";
 import { getSiteContext } from "@/lib/site/server";
@@ -103,11 +99,7 @@ export async function completeStepAction(admissionId: string, step: 2 | 3): Prom
   if (result?.success) redirect(stepPath(admissionId, step + 1));
 }
 
-/**
- * Confirmar el ingreso (paso 4). Con el módulo del abono, quien confirma
- * (Administración o Dirección) fija también el abono y el próximo
- * vencimiento, en la misma transacción (7.3-C4).
- */
+/** Confirmar el ingreso (paso 4). */
 export async function confirmAdmissionAction(
   admissionId: string,
   _previous: FormState,
@@ -119,19 +111,9 @@ export async function confirmAdmissionAction(
   const result = await runAction(
     "admissions.manage",
     async (context) => {
-      const withFee = await can(context, "fees.manage");
-      const fee = withFee ? feeSetupSchema.safeParse(values) : null;
-      if (fee && !fee.success) return { fieldErrors: fieldErrorsFrom(fee.error), values };
-      const { today } = await getSiteContext(context);
-      residentId = await inTenant(context, async (tx) => {
-        const confirmed = await confirmAdmission(tx, context.tenant, admissionId);
-        if (fee?.success) {
-          const resident = await getResident(tx, confirmed);
-          await setupFeePlan(tx, context.tenant, resident!, fee.data, today);
-          await ensureCharges(tx, confirmed, addDays(today, CHARGE_HORIZON_DAYS));
-        }
-        return confirmed;
-      });
+      residentId = await inTenant(context, (tx) =>
+        confirmAdmission(tx, context.tenant, admissionId),
+      );
       return { success: "ok" };
     },
     { values },

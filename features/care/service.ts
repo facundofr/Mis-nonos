@@ -19,7 +19,6 @@ import type {
 /*
  * Reglas del seguimiento del cuidado (docs/decisions/0017):
  * - especialidades y profesionales no se borran: se desactivan;
- *   Enfermería no se puede desactivar (la usa su sección);
  * - una atención o una emergencia se registra sobre un paciente activo o
  *   internado fuera, y no puede ser futura;
  * - una atención no se corrige: se anula con motivo y se registra de nuevo;
@@ -117,12 +116,6 @@ export async function updateSpecialty(
     .from(schema.specialties)
     .where(eq(schema.specialties.id, specialtyId));
   if (!current) throw new DomainError("Esa especialidad no existe.");
-  if (current.key && !input.active) {
-    throw new DomainError(
-      `${current.name} no se puede desactivar: la usa la sección del menú.`,
-      "active",
-    );
-  }
   await assertUniqueSpecialty(tx, input.name, specialtyId);
   const changes = diffChanges(
     { name: current.name, active: current.active },

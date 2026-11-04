@@ -43,7 +43,7 @@ export default async function ResidentStatusPage({ params }: PageProps<"/pacient
         <Card>
           <CardHeader
             title="Internado fuera"
-            description="Sigue siendo paciente de la residencia y su abono sigue corriendo."
+            description="Sigue siendo paciente de la residencia."
           />
           <div className="p-5">
             <HospitalizeForm residentId={id} today={today} />

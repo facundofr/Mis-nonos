@@ -41,7 +41,6 @@ export default async function DocumentTypesSettingsPage() {
                 </span>
               </span>
               <MoveButtons
-                catalog="document_types"
                 itemId={document.id}
                 first={index === 0}
                 last={index === documents.length - 1}

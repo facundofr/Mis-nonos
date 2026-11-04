@@ -9,7 +9,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Notice } from "@/components/ui/notice";
 import { PageHeader } from "@/components/ui/page-header";
-import { getHandover, handoverSummary, listHandoverVersions } from "@/features/handover/queries";
+import { getHandover, listHandoverVersions } from "@/features/handover/queries";
 import {
   canConfirmAt,
   canDeliverAt,
@@ -23,24 +23,14 @@ import { getSiteContext } from "@/lib/site/server";
 import { formatDateKey, formatDateTime, formatTime } from "@/lib/time/format";
 import { shiftLabel, shiftOccurrenceOn } from "@/lib/time/shifts";
 
-import { NoteList } from "../novedades/note-list";
 import { ConfirmForm, DeliverForm } from "./handover-forms";
 import { PageTip } from "../guia/page-tip";
 
 export const metadata: Metadata = { title: "Traspaso de turno" };
 
-function Stat({ value, label }: { value: number; label: string }) {
-  return (
-    <div className="flex flex-col items-center gap-0.5 rounded-[14px] border bg-card px-2 py-3">
-      <span className="text-2xl font-semibold tabular-nums">{value}</span>
-      <span className="text-[13px] text-muted-foreground">{label}</span>
-    </div>
-  );
-}
-
 /**
- * Traspaso de turno (diseño MovilTurnos, 7.3-G, F.4): resumen del turno,
- * pendientes, nota para el entrante, entrega y confirmación. Con
+ * Traspaso de turno (diseño MovilTurnos, 7.3-G, F.4): nota para el
+ * entrante, entrega y confirmación. Con
  * ?turno=&fecha= muestra un traspaso anterior (historial).
  */
 export default async function HandoverPage({ searchParams }: PageProps<"/turno">) {
@@ -82,14 +72,13 @@ export default async function HandoverPage({ searchParams }: PageProps<"/turno">
     const handover = await getHandover(tx, site.id, shift.id, shiftDate);
     return {
       handover,
-      summary: await handoverSummary(tx, site.id, occurrence, handover, now),
       versions:
         handover && handover.version > 1 && permissions.has("audit.read_resident")
           ? await listHandoverVersions(tx, handover.id)
           : [],
     };
   });
-  const { handover, summary, versions } = data;
+  const { handover, versions } = data;
   const incoming = incomingShift(shifts, occurrence, site.timezone);
   const delivering = canDeliverAt(occurrence, now);
   const canDeliver = permissions.has("handover.deliver") && delivering && !handover?.confirmedAt;
@@ -145,12 +134,6 @@ export default async function HandoverPage({ searchParams }: PageProps<"/turno">
         )}
       </div>
 
-      <div className="grid grid-cols-3 gap-2.5">
-        <Stat value={summary.notes.length} label="Novedades" />
-        <Stat value={summary.pending.length} label="Pendientes" />
-        <Stat value={summary.resolvedCount} label="Resueltas" />
-      </div>
-
       {handover?.note ? (
         <Card aria-labelledby="nota-entrante">
           <CardHeader id="nota-entrante" title="Nota para el turno entrante" />
@@ -161,19 +144,6 @@ export default async function HandoverPage({ searchParams }: PageProps<"/turno">
       ) : null}
 
       {canConfirm ? <ConfirmForm shiftId={shift.id} shiftDate={shiftDate} /> : null}
-
-      <section aria-labelledby="pendientes" className="flex flex-col gap-2.5">
-        <h2 id="pendientes" className="text-lg font-semibold">
-          Quedan pendientes
-        </h2>
-        <NoteList
-          notes={summary.pending}
-          now={now}
-          timeZone={site.timezone}
-          canResolve={permissions.has("notes.resolve")}
-          empty={{ title: "Sin pendientes", body: "No quedan seguimientos abiertos." }}
-        />
-      </section>
 
       {canDeliver ? (
         <Card>
@@ -205,19 +175,6 @@ export default async function HandoverPage({ searchParams }: PageProps<"/turno">
           termine el turno.
         </Notice>
       ) : null}
-
-      <section aria-labelledby="novedades-turno" className="flex flex-col gap-2.5">
-        <h2 id="novedades-turno" className="text-lg font-semibold">
-          Novedades del turno
-        </h2>
-        <NoteList
-          notes={summary.notes}
-          now={now}
-          timeZone={site.timezone}
-          canResolve={false}
-          empty={{ title: "Sin novedades", body: "No se registraron novedades en este turno." }}
-        />
-      </section>
 
       {versions.length > 1 ? (
         <Card>

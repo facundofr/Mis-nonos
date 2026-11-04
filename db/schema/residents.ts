@@ -186,7 +186,6 @@ export const residentContacts = pgTable(
     isLegalRepresentative: boolean("is_legal_representative").notNull().default(false),
     canReceiveInfo: boolean("can_receive_info").notNull().default(true),
     canPickUp: boolean("can_pick_up").notNull().default(false),
-    isPayer: boolean("is_payer").notNull().default(false),
     availabilityNotes: text("availability_notes"),
     lastVerifiedAt: date("last_verified_at"),
     active: boolean("active").notNull().default(true),

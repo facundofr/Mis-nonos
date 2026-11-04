@@ -8,15 +8,7 @@ import { isSectionHidden } from "@/lib/navigation/hidden";
  */
 
 export type WelcomeIcon =
-  | "home"
-  | "residents"
-  | "notes"
-  | "handover"
-  | "admission"
-  | "activity"
-  | "settings"
-  | "fees"
-  | "privacy";
+  "home" | "residents" | "handover" | "admission" | "activity" | "settings" | "privacy";
 
 export interface WelcomeStep {
   key: string;
@@ -44,17 +36,10 @@ export const WELCOME_STEPS: readonly WelcomeStep[] = [
     anyOf: ["emergency.view"],
   },
   {
-    key: "novedades",
-    icon: "notes",
-    title: "Novedades con el botón «+»",
-    body: "Registrá lo que pasa en segundos. Si hay que seguirlo, marcá «Requiere seguimiento»: queda pendiente hasta que alguien lo resuelva.",
-    anyOf: ["notes.create"],
-  },
-  {
     key: "turno",
     icon: "handover",
     title: "Traspaso de turno",
-    body: "Al terminar tu turno, en «Turno» ves el resumen y lo entregás con una nota para quien entra. Nada se pierde entre un turno y otro.",
+    body: "Al terminar tu turno, en «Turno» lo entregás con una nota para quien entra.",
     anyOf: ["handover.deliver", "handover.confirm"],
   },
   {
@@ -63,13 +48,6 @@ export const WELCOME_STEPS: readonly WelcomeStep[] = [
     title: "Ingresos y legajo",
     body: "Las familias que piden una vacante quedan en «Solicitudes». Los pacientes entran con el ingreso guiado: datos, responsable, documentos y confirmación; se puede dejar a medias. Las fotos del legajo son privadas.",
     anyOf: ["admissions.manage"],
-  },
-  {
-    key: "abonos",
-    icon: "fees",
-    title: "Abono mensual",
-    body: "En «Abonos» ves las cuotas del mes y registrás los pagos. Una semana antes de cada vencimiento te llega un aviso en la app y por email. Solo Administración ve los montos.",
-    anyOf: ["fees.read"],
   },
   {
     key: "actividad",
@@ -109,19 +87,11 @@ export const TIPS = {
   },
   ficha: {
     title: "Todo el paciente, por pestañas",
-    body: "En «Novedades» está lo registrado del paciente y en «Actividad», quién cambió qué y cuándo.",
-  },
-  novedades: {
-    title: "Pendientes primero",
-    body: "Son las novedades que piden seguimiento. Tocá «Resolver» cuando esté hecho; para dejar un comentario, entrá a la novedad.",
-  },
-  "nueva-novedad": {
-    title: "¿De quién es la novedad?",
-    body: "Elegí al paciente o «General» si es algo de la residencia. Podés corregirla durante 24 h y la versión anterior se conserva.",
+    body: "En «Actividad» ves quién cambió qué y cuándo.",
   },
   turno: {
     title: "Entregá tu turno",
-    body: "Una hora antes de terminar ya podés entregarlo. Quien entra ve los pendientes, las novedades del turno y tu nota.",
+    body: "Una hora antes de terminar ya podés entregarlo con una nota para quien entra.",
   },
   ingresos: {
     title: "Ingresos a medias",
@@ -130,10 +100,6 @@ export const TIPS = {
   solicitudes: {
     title: "Antes del ingreso",
     body: "Cargá acá a las familias que piden una vacante. Cuando se confirma, «Convertir en ingreso» arma el ingreso guiado con los datos ya cargados.",
-  },
-  abonos: {
-    title: "Los abonos del mes",
-    body: "Cada cuota se genera sola con el abono del paciente. Tocá una para registrar un pago (puede ser parcial). Una semana antes del vencimiento te llega un aviso.",
   },
   configuracion: {
     title: "Lo usa toda la residencia",

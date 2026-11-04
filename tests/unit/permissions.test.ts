@@ -23,6 +23,15 @@ const catalogMigrations = [
   .map(read)
   .join("\n");
 const matrixMigration = read("0040_roles_master_admin_profesional_asistente.sql");
+// El abono y las novedades se quitaron después (docs/decisions/0024).
+const removalMigration = read("0042_remove_fees_notes_nursing.sql");
+const removed = new Set(
+  [
+    ...(
+      removalMigration.match(/DELETE FROM permissions\s+WHERE key IN \(([^)]*)\)/)?.[1] ?? ""
+    ).matchAll(/'([a-z_.]+)'/g),
+  ].map(([, key]) => key),
+);
 
 function permissionsOfRole(role: string) {
   return rolePermissionPairs()
@@ -33,9 +42,9 @@ function permissionsOfRole(role: string) {
 
 describe("matriz de permisos (docs/decisions/0021)", () => {
   it("la migración tiene el mismo catálogo que el código", () => {
-    const catalog = [...catalogMigrations.matchAll(/\('([a-z_.]+)', '([a-z_]+)', '[^']+'\)/g)].map(
-      ([, key, module]) => `${key}:${module}`,
-    );
+    const catalog = [...catalogMigrations.matchAll(/\('([a-z_.]+)', '([a-z_]+)', '[^']+'\)/g)]
+      .filter(([, key]) => !removed.has(key!))
+      .map(([, key, module]) => `${key}:${module}`);
     const expected = PERMISSION_KEYS.map((key) => `${key}:${PERMISSIONS[key].module}`);
     expect(catalog.sort()).toEqual(expected.sort());
   });
@@ -43,10 +52,12 @@ describe("matriz de permisos (docs/decisions/0021)", () => {
   it("la migración tiene los mismos pares (permiso, rol) que el código", () => {
     const pairs = [
       ...matrixMigration.matchAll(/\('([a-z_.]+)', '(master|admin|profesional|asistente)'\)/g),
-    ].map(([, permission, role]) => `${permission}:${role}`);
+    ]
+      .filter(([, permission]) => !removed.has(permission!))
+      .map(([, permission, role]) => `${permission}:${role}`);
     const expected = rolePermissionPairs().map((pair) => `${pair.permission}:${pair.role}`);
     expect(pairs.sort()).toEqual(expected.sort());
-    expect(expected).toHaveLength(78);
+    expect(expected).toHaveLength(65);
   });
 
   it("Master tiene todo, incluido el registro completo de cambios", () => {
@@ -64,16 +75,14 @@ describe("matriz de permisos (docs/decisions/0021)", () => {
 
   it("Profesional escribe sobre los pacientes, pero no edita datos ni gestiona", () => {
     const profesional = permissionsOfRole("profesional");
-    expect(profesional).toContain("notes.create");
     expect(profesional).toContain("care.record");
     expect(profesional).toContain("handover.deliver");
     expect(profesional).toContain("emergencies.manage");
     expect(profesional).not.toContain("residents.update");
     expect(profesional).not.toContain("contacts.manage");
-    expect(profesional).not.toContain("fees.read");
     expect(profesional).not.toContain("users.manage");
     expect(profesional).not.toContain("attendance.read");
-    expect(profesional).toHaveLength(14);
+    expect(profesional).toHaveLength(11);
   });
 
   it("Asistente solo ve a los pacientes y ficha", () => {
@@ -91,10 +100,10 @@ describe("matriz de permisos (docs/decisions/0021)", () => {
 
 describe("effectivePermissions (módulos activables, E3)", () => {
   it("descarta los permisos de módulos apagados y las claves desconocidas", () => {
-    const granted = ["residents.read", "fees.read", "permiso.inventado"];
+    const granted = ["residents.read", "care.read", "permiso.inventado"];
     expect([...effectivePermissions(granted, ["core"])]).toEqual(["residents.read"]);
-    expect([...effectivePermissions(granted, ["core", "fees"])].sort()).toEqual([
-      "fees.read",
+    expect([...effectivePermissions(granted, ["core", "care"])].sort()).toEqual([
+      "care.read",
       "residents.read",
     ]);
     expect(effectivePermissions(granted, []).size).toBe(0);

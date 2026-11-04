@@ -2,10 +2,6 @@ import { aliasedTable, and, desc, eq, gte } from "drizzle-orm";
 
 import * as schema from "@/db/schema";
 import type { Transaction } from "@/lib/db/client";
-import type { ShiftOccurrence } from "@/lib/time/shifts";
-
-import { countResolvedBetween, listNotes, type NoteListItem } from "../notes/queries";
-import { DELIVERY_CLOSES_AFTER_END_MS } from "./rules";
 
 /* Lecturas del traspaso (dentro de withTenant: solo la residencia activa). */
 
@@ -62,39 +58,6 @@ export function listHandoverVersions(tx: Transaction, handoverId: string) {
     .innerJoin(schema.users, eq(schema.users.id, schema.shiftHandoverVersions.deliveredBy))
     .where(eq(schema.shiftHandoverVersions.handoverId, handoverId))
     .orderBy(desc(schema.shiftHandoverVersions.version));
-}
-
-export interface HandoverSummary {
-  /** Novedades creadas dentro del horario del turno. */
-  notes: NoteListItem[];
-  /** Seguimientos abiertos al momento de la entrega (o ahora, si no se entregó). */
-  pending: NoteListItem[];
-  resolvedCount: number;
-  /** Momento al que corresponden los pendientes. */
-  pendingAt: Date;
-}
-
-/** Resumen del turno (F.4): novedades del período y pendientes abiertos. */
-export async function handoverSummary(
-  tx: Transaction,
-  siteId: string,
-  occurrence: ShiftOccurrence,
-  handover: Pick<HandoverRow, "deliveredAt"> | null,
-  now: Date,
-): Promise<HandoverSummary> {
-  const closesAt = new Date(occurrence.endsAt.getTime() + DELIVERY_CLOSES_AFTER_END_MS);
-  const pendingAt = handover?.deliveredAt ?? (now < closesAt ? now : occurrence.endsAt);
-  const [notes, pending, resolvedCount] = [
-    await listNotes(tx, {
-      siteId,
-      from: occurrence.startsAt,
-      to: occurrence.endsAt,
-      limit: 100,
-    }),
-    await listNotes(tx, { siteId, pendingAt, limit: 100 }),
-    await countResolvedBetween(tx, siteId, occurrence.startsAt, occurrence.endsAt),
-  ];
-  return { notes, pending, resolvedCount, pendingAt };
 }
 
 /** Entregas de la sede desde una fecha (historial). */

@@ -119,35 +119,6 @@ export function escapeHtml(value: string): string {
 }
 
 /**
- * Resumen diario de vencimientos del abono (7.3-C4, 12.10): solo cuántas
- * cuotas vencen, sin nombres ni montos, con enlace a la app.
- */
-export function feeDueSoonDigestEmail(input: {
-  to: string;
-  name: string;
-  count: number;
-  days: number;
-  url: string;
-}): EmailMessage {
-  const cuotas =
-    input.count === 1 ? "1 cuota del abono vence" : `${input.count} cuotas del abono vencen`;
-  const subject = `${cuotas} en los próximos ${input.days} días`;
-  const text = [
-    `Hola, ${input.name}:`,
-    "",
-    `${cuotas} en los próximos ${input.days} días y todavía no están pagas.`,
-    "Entrá a la app para ver el detalle:",
-    input.url,
-  ].join("\n");
-  const html = layout(
-    `<p>Hola, ${escapeHtml(input.name)}:</p>
-     <p>${escapeHtml(cuotas)} en los próximos ${input.days} días y todavía no están pagas.</p>
-     ${button(input.url, "Ver los abonos")}`,
-  );
-  return { to: input.to, subject, text, html };
-}
-
-/**
  * Acuse a la familia que mandó el formulario público (DC-16, 12.9):
  * genérico, sin datos del futuro residente. Solo se manda si dejó un email.
  */

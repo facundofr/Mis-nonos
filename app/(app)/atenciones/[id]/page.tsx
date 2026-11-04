@@ -7,13 +7,11 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
 import { PageHeader } from "@/components/ui/page-header";
-import { NURSING_SPECIALTY_KEY } from "@/db/schema/care";
-import { getEncounter, getSpecialty } from "@/features/care/queries";
+import { getEncounter } from "@/features/care/queries";
 import { ENCOUNTER_LOCATIONS, type EncounterLocation } from "@/features/care/schemas";
 import { fullName } from "@/features/residents/format";
 import { inTenant } from "@/lib/actions";
 import { can, requirePermission } from "@/lib/auth/authorization";
-import { isSectionHidden } from "@/lib/navigation/hidden";
 import { getSiteContext } from "@/lib/site/server";
 import { formatDateKey, formatDateTime } from "@/lib/time/format";
 
@@ -47,21 +45,18 @@ export default async function EncounterPage({
   const data = await inTenant(context, async (tx) => {
     const encounter = await getEncounter(tx, id);
     if (!encounter) return null;
-    return { encounter, specialty: await getSpecialty(tx, encounter.specialtyId) };
+    return { encounter };
   });
   if (!data) notFound();
-  const { encounter, specialty } = data;
+  const { encounter } = data;
   const name = fullName({
     firstName: encounter.residentFirstName,
     lastName: encounter.residentLastName,
   });
-  const back =
-    specialty?.key === NURSING_SPECIALTY_KEY && !isSectionHidden("enfermeria")
-      ? { href: "/enfermeria" as Route, label: "Enfermería" }
-      : {
-          href: `/especialidades/${encounter.specialtyId}` as Route,
-          label: encounter.specialtyName,
-        };
+  const back = {
+    href: `/especialidades/${encounter.specialtyId}` as Route,
+    label: encounter.specialtyName,
+  };
 
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-5">

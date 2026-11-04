@@ -30,12 +30,7 @@ const id = z.uuid();
 export default async function NewEncounterPage({ searchParams }: PageProps<"/atenciones/nueva">) {
   const context = await requirePermission("care.record");
   const params = await searchParams;
-  const back: EncounterReturn =
-    params.volver === "enfermeria"
-      ? "enfermeria"
-      : params.volver === "especialidad"
-        ? "especialidad"
-        : "atencion";
+  const back: EncounterReturn = params.volver === "especialidad" ? "especialidad" : "atencion";
   const specialtyParam = id.safeParse(params.especialidad);
   const specialtyId = specialtyParam.success ? specialtyParam.data : "";
   const residentParam = id.safeParse(params.paciente);
@@ -47,7 +42,6 @@ export default async function NewEncounterPage({ searchParams }: PageProps<"/ate
 
   const { site } = await getSiteContext(context);
   const backLink = await inTenant(context, async (tx) => {
-    if (back === "enfermeria") return { href: "/enfermeria" as Route, label: "Enfermería" };
     const specialty = specialtyId ? await getSpecialty(tx, specialtyId) : null;
     return specialty
       ? { href: `/especialidades/${specialty.id}` as Route, label: specialty.name }

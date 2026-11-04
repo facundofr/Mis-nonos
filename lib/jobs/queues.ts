@@ -60,32 +60,13 @@ export const QUEUES = {
     retryDelayMax: 3600,
     expireInSeconds: 300,
   },
-  /** 7.3-C4: cuotas del abono y avisos de vencimiento (diario, 08:00). */
-  feesDaily: {
-    name: "fees.daily",
-    retryLimit: 3,
-    retryDelay: 120,
-    retryDelayMax: 3600,
-    expireInSeconds: 900,
-  },
-  /** 7.3-C4: un email por persona y por día con los vencimientos (sin nombres ni montos). */
-  emailFeeDigest: {
-    name: "email.fee-digest",
-    retryLimit: 5,
-    retryDelay: 60,
-    retryDelayMax: 3600,
-    expireInSeconds: 120,
-  },
 } as const satisfies Record<string, QueueDefinition>;
 
-/** Datos del email diario de vencimientos. */
-export interface FeeDigestJobData {
-  organizationId: string;
-  userId: string;
-  date: string;
-  count: number;
-  days: number;
-}
+/**
+ * Colas que ya no se usan (el abono se quitó: docs/decisions/0024). El
+ * worker las borra al arrancar, con sus trabajos y sus programaciones.
+ */
+export const RETIRED_QUEUES = ["fees.daily", "email.fee-digest"] as const;
 
 export type QueueName = (typeof QUEUES)[keyof typeof QUEUES]["name"];
 

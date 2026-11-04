@@ -37,7 +37,7 @@ export const ROLE_DESCRIPTIONS: Record<SystemRoleKey, string> = {
   asistente:
     "Ve a los pacientes y su ficha de emergencia, y ficha con el QR. No carga ni edita nada.",
   profesional:
-    "Escribe novedades y atenciones, hace el traspaso de turno y registra emergencias. No edita datos.",
+    "Registra atenciones, hace el traspaso de turno y registra emergencias. No edita datos.",
   admin: "Todo: pacientes, ingresos, cuotas, personal, usuarios y configuración.",
   master: "Lo mismo que Administración, más el registro completo de cambios.",
 };

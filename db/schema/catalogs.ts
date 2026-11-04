@@ -56,28 +56,6 @@ export const shifts = pgTable(
   ],
 );
 
-/** Categorías de las novedades (7.3-B). */
-export const noteCategories = pgTable(
-  "note_categories",
-  {
-    id: primaryId(),
-    organizationId: uuid("organization_id")
-      .notNull()
-      .references(() => organizations.id, { onDelete: "restrict" }),
-    name: text("name").notNull(),
-    position: integer("position").notNull().default(0),
-    active: boolean("active").notNull().default(true),
-    createdAt: createdAt(),
-    updatedAt: updatedAt(),
-  },
-  (t) => [
-    unique("note_categories_organization_name_unique").on(t.organizationId, t.name),
-    unique("note_categories_id_organization_unique").on(t.id, t.organizationId),
-    check("note_categories_name_check", sql`length(trim(${t.name})) between 1 and 40`),
-    ...tenantPolicies("note_categories"),
-  ],
-);
-
 /**
  * Documentos del legajo por modalidad (7.3-C2, 11.2). `key` es estable: el
  * nombre visible se puede cambiar sin perder los documentos cargados.

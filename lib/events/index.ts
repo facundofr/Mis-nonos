@@ -19,7 +19,7 @@ const TYPE_PATTERN = /^[a-z][a-z_]*\.[a-z][a-z_]*$/;
 /**
  * Agrega un evento de dominio (E8, patrón outbox) en la misma transacción
  * que el cambio. El worker de pg-boss (Etapa 2.5) los procesa después:
- * notificaciones, avisos del abono, trabajos programados.
+ * notificaciones y trabajos programados.
  */
 export async function emitDomainEvent(
   tx: Transaction,

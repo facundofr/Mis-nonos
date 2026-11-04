@@ -6,8 +6,6 @@ export interface TestResident {
   lastName: string;
   nationalId: string;
   room: string;
-  /** Abono mensual, como lo escribe la persona (por defecto, 450.000). */
-  fee?: string;
 }
 
 /**
@@ -39,8 +37,6 @@ export async function admitResident(page: Page, resident: TestResident): Promise
   await expect(page).toHaveURL(/\/documentos/);
   await page.getByRole("button", { name: "Siguiente: revisar" }).click();
   await expect(page).toHaveURL(/\/confirmar/);
-  // Paso 4: abono (7.3-C4); vencimiento por defecto y primer mes cobrado.
-  await page.getByLabel(/^Abono mensual/).fill(resident.fee ?? "450.000");
   await page.getByRole("button", { name: "Confirmar ingreso" }).click();
   await expect(page.getByText(/Ingreso confirmado/)).toBeVisible();
   return page.url().split("?")[0]!;

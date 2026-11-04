@@ -13,7 +13,7 @@ import { saveSpecialtyAction } from "./actions";
 export function SpecialtyForm({
   specialty,
 }: {
-  specialty?: { id: string; name: string; active: boolean; fixed: boolean };
+  specialty?: { id: string; name: string; active: boolean };
 }) {
   const [state, action] = useActionState<FormState, FormData>(
     saveSpecialtyAction.bind(null, specialty?.id ?? null),
@@ -34,7 +34,7 @@ export function SpecialtyForm({
           />
         )}
       </Field>
-      {specialty && !specialty.fixed ? (
+      {specialty ? (
         <CheckboxField
           name="active"
           label="Activa"
@@ -42,8 +42,6 @@ export function SpecialtyForm({
           defaultChecked={state?.values ? state.values.active === "on" : specialty.active}
         />
       ) : null}
-      {/* Enfermería siempre queda activa: la usa su sección del menú. */}
-      {specialty?.fixed ? <input type="hidden" name="active" value="on" /> : null}
       <SubmitButton size="md" variant={specialty ? "outline" : "primary"} className="self-start">
         {specialty ? "Guardar" : "Agregar especialidad"}
       </SubmitButton>

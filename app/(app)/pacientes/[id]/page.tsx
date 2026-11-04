@@ -13,7 +13,6 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
 import { listEntityActivity } from "@/features/activity/queries";
 import { listResidentDocuments } from "@/features/documents/queries";
-import { listNotes } from "@/features/notes/queries";
 import {
   ageOn,
   formatNationalId,
@@ -32,13 +31,10 @@ import { COVERAGE_TYPES, DISCHARGE_REASONS, MODALITIES } from "@/features/reside
 import { listDocumentTypes } from "@/features/settings/queries";
 import { inTenant } from "@/lib/actions";
 import { getPermissions, requirePermission } from "@/lib/auth/authorization";
-import { isSectionHidden } from "@/lib/navigation/hidden";
 import { getSiteContext } from "@/lib/site/server";
 import { formatDateKey } from "@/lib/time/format";
 import { cn } from "@/lib/utils";
 
-import { ResidentFees } from "../../abonos/resident-fees";
-import { NoteList } from "../../novedades/note-list";
 import { AllergyForm, DiscardAllergyButton } from "../resident-forms";
 import { PageTip } from "../../guia/page-tip";
 
@@ -46,10 +42,8 @@ export const metadata: Metadata = { title: "Ficha del paciente" };
 
 const TABS = [
   { key: "resumen", label: "Resumen" },
-  { key: "novedades", label: "Novedades" },
   { key: "contactos", label: "Contactos" },
   { key: "legajo", label: "Legajo" },
-  { key: "abono", label: "Abono", permission: "fees.read" },
   { key: "actividad", label: "Actividad", permission: "audit.read_resident" },
 ] as const;
 type TabKey = (typeof TABS)[number]["key"];
@@ -76,7 +70,6 @@ function ContactCard({
   const roles = [
     contact.isAdmissionResponsible ? "Responsable de la internación" : null,
     contact.isLegalRepresentative ? "Referente legal" : null,
-    contact.isPayer ? "Paga el abono" : null,
   ].filter(Boolean);
   return (
     <li className="flex items-center gap-3 px-5 py-3.5">
@@ -141,10 +134,7 @@ export default async function ResidentPage({ params, searchParams }: PageProps<"
     getPermissions(context),
     getSiteContext(context),
   ]);
-  const tabs = TABS.filter(
-    (tab) =>
-      (!("permission" in tab) || permissions.has(tab.permission)) && !isSectionHidden(tab.key),
-  );
+  const tabs = TABS.filter((tab) => !("permission" in tab) || permissions.has(tab.permission));
   const tab: TabKey = tabs.some((item) => item.key === query.tab)
     ? (query.tab as TabKey)
     : "resumen";
@@ -163,16 +153,12 @@ export default async function ResidentPage({ params, searchParams }: PageProps<"
       allergies: await listAllergies(tx, id),
       contacts: await listContacts(tx, id),
       activity: tab === "actividad" ? await listEntityActivity(tx, { type: "resident", id }) : [],
-      notes:
-        tab === "novedades"
-          ? await listNotes(tx, { siteId: resident.siteId, residentId: id, limit: 50 })
-          : [],
       documentTypes: tab === "legajo" ? await listDocumentTypes(tx) : [],
       documents: tab === "legajo" ? await listResidentDocuments(tx, id) : new Map(),
     };
   });
   if (!data) notFound();
-  const { resident, allergies, contacts, activity, notes, documentTypes, documents } = data;
+  const { resident, allergies, contacts, activity, documentTypes, documents } = data;
   const name = fullName(resident);
   const age = ageOn(resident.birthDate, today);
   const canUpdate = permissions.has("residents.update");
@@ -390,46 +376,6 @@ export default async function ResidentPage({ params, searchParams }: PageProps<"
             </div>
           </Card>
         </div>
-      ) : null}
-
-      {tab === "abono" ? (
-        <ResidentFees
-          context={context}
-          resident={resident}
-          siteId={resident.siteId}
-          today={today}
-          canManage={permissions.has("fees.manage")}
-        />
-      ) : null}
-
-      {tab === "novedades" ? (
-        <section aria-labelledby="novedades-titulo" className="flex flex-col gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h2 id="novedades-titulo" className="text-lg font-semibold">
-              Novedades
-            </h2>
-            {!discharged && permissions.has("notes.create") ? (
-              <Link
-                href={`/novedades/nueva?paciente=${id}&volver=ficha` as Route}
-                className={buttonClassName({ size: "md" })}
-              >
-                Nueva novedad
-              </Link>
-            ) : null}
-          </div>
-          {query.registrada ? <Notice tone="success">Novedad registrada.</Notice> : null}
-          <NoteList
-            notes={notes}
-            now={new Date()}
-            timeZone={site.timezone}
-            canResolve={permissions.has("notes.resolve")}
-            showSubject={false}
-            empty={{
-              title: "Sin novedades",
-              body: "Acá aparecen las novedades de este paciente, de la más nueva a la más vieja.",
-            }}
-          />
-        </section>
       ) : null}
 
       {tab === "contactos" ? (

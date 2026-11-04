@@ -2,14 +2,12 @@
 
 import {
   ArrowRightLeft,
-  ClipboardList,
   ClipboardPlus,
   History,
   House,
   LockKeyhole,
   Settings,
   Users,
-  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { useEffect, useRef, useState, useTransition } from "react";
@@ -23,12 +21,10 @@ import { completeWelcomeAction } from "./actions";
 const ICONS: Record<WelcomeIcon, LucideIcon> = {
   home: House,
   residents: Users,
-  notes: ClipboardList,
   handover: ArrowRightLeft,
   admission: ClipboardPlus,
   activity: History,
   settings: Settings,
-  fees: Wallet,
   privacy: LockKeyhole,
 };
 

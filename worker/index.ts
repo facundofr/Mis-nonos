@@ -1,7 +1,7 @@
 /*
  * Worker de trabajos en segundo plano (pg-boss, E15). Proceso aparte de la
  * app: pasa los eventos de dominio a la cola, corre los trabajos y los
- * programados (limpieza diaria; en la Etapa 3, los avisos del abono).
+ * programados (limpiezas diarias).
  *
  * Desarrollo: corepack pnpm worker (lee .env.local).
  * Producción: node dist/worker/index.cjs (corepack pnpm worker:build).
@@ -11,7 +11,6 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { setTimeout as delay } from "node:timers/promises";
 
-import { sql } from "drizzle-orm";
 import { PgBoss } from "pg-boss";
 
 import { createDb, createPool } from "@/lib/db/client";
@@ -20,17 +19,15 @@ import {
   notifyAdmissionRequestCreated,
   notifyEmergencyViewed,
 } from "@/features/notifications/service";
-import { runDailyFees } from "@/features/fees/daily";
 import { recordAudit } from "@/lib/audit";
 import { sendAdmissionRequestReceipt } from "./jobs/admission-request-receipt";
-import { sendFeeDigest } from "./jobs/fee-digest";
 import { withSystemTenant } from "@/lib/db/tenant";
 import {
   DEAD_LETTER_QUEUE,
   EVENT_SUBSCRIPTIONS,
   QUEUES,
+  RETIRED_QUEUES,
   type DomainEventJobData,
-  type FeeDigestJobData,
 } from "@/lib/jobs/queues";
 import { createLogger, serializeError, type Logger } from "@/lib/logger";
 
@@ -124,6 +121,9 @@ async function registerQueues(
 ) {
   // Los trabajos que agotan sus reintentos quedan acá 30 días para revisarlos.
   await boss.createQueue(DEAD_LETTER_QUEUE, { deleteAfterSeconds: 30 * 24 * 3600 });
+  for (const name of RETIRED_QUEUES) {
+    if (await boss.getQueue(name)) await boss.deleteQueue(name);
+  }
   for (const queue of Object.values(QUEUES)) {
     await boss.createQueue(queue.name, {
       retryLimit: queue.retryLimit,
@@ -208,51 +208,8 @@ async function registerQueues(
     }),
   );
 
-  await boss.work(
-    QUEUES.feesDaily.name,
-    safe(logger, QUEUES.feesDaily.name, async () => {
-      const now = new Date();
-      const date = now.toLocaleDateString("sv-SE", { timeZone: SYSTEM_TIMEZONE });
-      const organizations = await workerDb.execute<{ organization_id: string }>(
-        sql`select organization_id from app.organizations_with_module('fees')`,
-      );
-      for (const { organization_id: organizationId } of organizations.rows) {
-        const result = await withSystemTenant(appDb, organizationId, (tx) =>
-          runDailyFees(tx, organizationId, now),
-        );
-        for (const [userId, reminder] of result.newReminders) {
-          // Un email por persona y por día, aunque el trabajo se reintente.
-          await boss.send(
-            QUEUES.emailFeeDigest.name,
-            { organizationId, userId, date, ...reminder } satisfies FeeDigestJobData,
-            { singletonKey: `${userId}:${date}` },
-          );
-        }
-        logger.info(
-          {
-            chargesCreated: result.chargesCreated,
-            chargesVoided: result.chargesVoided,
-            reminded: result.newReminders.size,
-          },
-          "Abono: cuotas y avisos del día",
-        );
-      }
-    }),
-  );
-  await boss.work<FeeDigestJobData>(
-    QUEUES.emailFeeDigest.name,
-    safe(logger, QUEUES.emailFeeDigest.name, async (jobs: { data: FeeDigestJobData }[]) => {
-      for (const job of jobs) {
-        const sent = await sendFeeDigest(appDb, env, job.data);
-        logger.debug({ sent }, "Email de vencimientos del abono");
-      }
-    }),
-  );
-
   // Todos los días a las 03:15, cuando casi no hay uso.
   await boss.schedule(QUEUES.authCleanup.name, "15 3 * * *", null, { tz: SYSTEM_TIMEZONE });
-  // Cuotas y avisos del abono: 08:00 (7.3-C4).
-  await boss.schedule(QUEUES.feesDaily.name, "0 8 * * *", null, { tz: SYSTEM_TIMEZONE });
   await boss.schedule(QUEUES.purgeAdmissionRequests.name, "45 3 * * *", null, {
     tz: SYSTEM_TIMEZONE,
   });

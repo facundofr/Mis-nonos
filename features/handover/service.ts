@@ -2,7 +2,7 @@ import { and, eq, isNull, sql } from "drizzle-orm";
 import { z } from "zod";
 
 import * as schema from "@/db/schema";
-import { HANDOVER_NOTE_MAX_LENGTH } from "@/db/schema/notes";
+import { HANDOVER_NOTE_MAX_LENGTH } from "@/db/schema/handover";
 import { recordAudit } from "@/lib/audit";
 import type { Transaction } from "@/lib/db/client";
 import type { TenantContext } from "@/lib/db/tenant";

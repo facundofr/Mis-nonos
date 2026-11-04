@@ -7,7 +7,7 @@ import type { TenantContext } from "@/lib/db/tenant";
 import { DomainError } from "@/lib/errors";
 import { formatTimeOfDay } from "@/lib/time/zoned";
 
-import type { CategoryInput, DocumentTypeInput, ShiftInput, SiteSettingsInput } from "./schemas";
+import type { DocumentTypeInput, ShiftInput, SiteSettingsInput } from "./schemas";
 import { shiftsOverlap } from "./shift-rules";
 
 /*
@@ -134,60 +134,6 @@ export async function saveShift(
   }
 }
 
-export async function saveCategory(
-  tx: Transaction,
-  actor: TenantContext,
-  categoryId: string | null,
-  input: CategoryInput,
-): Promise<void> {
-  const [duplicate] = await tx
-    .select({ id: schema.noteCategories.id })
-    .from(schema.noteCategories)
-    .where(
-      and(
-        sql`lower(${schema.noteCategories.name}) = lower(${input.name})`,
-        categoryId ? ne(schema.noteCategories.id, categoryId) : undefined,
-      ),
-    );
-  if (duplicate) throw new DomainError("Ya hay una categoría con ese nombre.", "name");
-
-  if (categoryId) {
-    const [before] = await tx
-      .select()
-      .from(schema.noteCategories)
-      .where(eq(schema.noteCategories.id, categoryId));
-    if (!before) throw new DomainError("Esa categoría no existe.");
-    await tx
-      .update(schema.noteCategories)
-      .set(input)
-      .where(eq(schema.noteCategories.id, categoryId));
-    const changes = diffChanges(before, input, ["name", "active"]);
-    if (changes) {
-      await recordAudit(tx, actor, {
-        action: "note_category.updated",
-        entityType: "note_category",
-        entityId: categoryId,
-        changes,
-      });
-    }
-    return;
-  }
-
-  const [last] = await tx
-    .select({ value: max(schema.noteCategories.position) })
-    .from(schema.noteCategories);
-  const [created] = await tx
-    .insert(schema.noteCategories)
-    .values({ organizationId: actor.organizationId, ...input, position: (last?.value ?? 0) + 1 })
-    .returning({ id: schema.noteCategories.id });
-  await recordAudit(tx, actor, {
-    action: "note_category.created",
-    entityType: "note_category",
-    entityId: created?.id,
-    changes: diffChanges(null, input),
-  });
-}
-
 /** Clave estable a partir del nombre: "Credencial de obra social" → "credencial_de_obra_social". */
 export function documentKeyFrom(name: string): string {
   const slug = name
@@ -263,15 +209,14 @@ export async function saveDocumentType(
   });
 }
 
-/** Sube o baja un ítem de un catálogo ordenado (categorías y documentos). */
-export async function moveCatalogItem(
+/** Sube o baja un documento del legajo en la lista. */
+export async function moveDocumentType(
   tx: Transaction,
   actor: TenantContext,
-  catalog: "note_categories" | "document_types",
   itemId: string,
   direction: "up" | "down",
 ): Promise<void> {
-  const table = catalog === "note_categories" ? schema.noteCategories : schema.documentTypes;
+  const table = schema.documentTypes;
   const items = await tx
     .select({ id: table.id, position: table.position })
     .from(table)
@@ -288,8 +233,8 @@ export async function moveCatalogItem(
       .where(eq(table.id, item.id));
   }
   await recordAudit(tx, actor, {
-    action: catalog === "note_categories" ? "note_category.reordered" : "document_type.reordered",
-    entityType: catalog === "note_categories" ? "note_category" : "document_type",
+    action: "document_type.reordered",
+    entityType: "document_type",
     entityId: itemId,
     metadata: { direccion: direction === "up" ? "arriba" : "abajo" },
   });

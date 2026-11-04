@@ -17,7 +17,7 @@ interface PickerResident {
 
 /**
  * Primer paso de "Registrar atención" y "Registrar emergencia": elegir el
- * paciente, con búsqueda por nombre o habitación (como en Nueva novedad).
+ * paciente, con búsqueda por nombre o habitación.
  */
 export function ResidentPicker({
   residents,

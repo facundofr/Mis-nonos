@@ -10,8 +10,7 @@ import { REQUIRED_FOR_LABELS } from "@/features/settings/schemas";
 import type { FormState } from "@/lib/forms";
 
 import {
-  moveCatalogItemAction,
-  saveCategoryAction,
+  moveDocumentTypeAction,
   saveDocumentTypeAction,
   saveShiftAction,
   updateSiteAction,
@@ -26,10 +25,8 @@ export interface SiteDefaults {
   emergencyServicePhone: string | null;
   emergencyServiceAccount: string | null;
   medicalControlText: string | null;
-  feeRuleText: string | null;
   familyProvidesText: string | null;
   handoverRequiresConfirmation: boolean;
-  feeReminderDaysBefore: number;
 }
 
 export function SiteForm({ defaults, timezones }: { defaults: SiteDefaults; timezones: string[] }) {
@@ -137,16 +134,6 @@ export function SiteForm({ defaults, timezones }: { defaults: SiteDefaults; time
           )}
         </Field>
         <Field
-          id="feeRuleText"
-          label="Regla de la cuota"
-          hint="Por ejemplo, mes adelantado; vence el día de ingreso."
-          error={error("feeRuleText")}
-        >
-          {(control) => (
-            <Input {...control} name="feeRuleText" defaultValue={value("feeRuleText")} />
-          )}
-        </Field>
-        <Field
           id="familyProvidesText"
           label="Qué provee la familia"
           error={error("familyProvidesText")}
@@ -163,7 +150,7 @@ export function SiteForm({ defaults, timezones }: { defaults: SiteDefaults; time
       </fieldset>
 
       <fieldset className="flex flex-col gap-4">
-        <legend className="mb-3 text-base font-semibold">Turno y abono</legend>
+        <legend className="mb-3 text-base font-semibold">Turno</legend>
         <CheckboxField
           name="handoverRequiresConfirmation"
           label="El turno entrante confirma la recepción"
@@ -174,25 +161,6 @@ export function SiteForm({ defaults, timezones }: { defaults: SiteDefaults; time
               : defaults.handoverRequiresConfirmation
           }
         />
-        <Field
-          id="feeReminderDaysBefore"
-          label="Aviso de vencimiento del abono"
-          hint="Días antes del vencimiento en que Administración recibe el aviso."
-          error={error("feeReminderDaysBefore")}
-        >
-          {(control) => (
-            <Input
-              {...control}
-              name="feeReminderDaysBefore"
-              type="number"
-              inputMode="numeric"
-              min={1}
-              max={30}
-              className="max-w-32"
-              defaultValue={value("feeReminderDaysBefore")}
-            />
-          )}
-        </Field>
       </fieldset>
 
       <FormMessage state={state} />
@@ -237,41 +205,6 @@ export function ShiftForm({
       <FormMessage state={state} />
       <SubmitButton variant={shift ? "outline" : "primary"} size="md" className="self-start">
         {shift ? "Guardar turno" : "Agregar turno"}
-      </SubmitButton>
-    </form>
-  );
-}
-
-export function CategoryForm({
-  category,
-}: {
-  category?: { id: string; name: string; active: boolean };
-}) {
-  const [state, action] = useActionState<FormState, FormData>(
-    saveCategoryAction.bind(null, category?.id ?? null),
-    null,
-  );
-  const prefix = category?.id ?? "nueva";
-  return (
-    <form action={action} className="flex flex-col gap-3" noValidate>
-      <Field id={`${prefix}-name`} label="Nombre" error={state?.fieldErrors?.name}>
-        {(control) => (
-          <Input
-            {...control}
-            name="name"
-            defaultValue={state?.values?.name ?? category?.name ?? ""}
-          />
-        )}
-      </Field>
-      <CheckboxField
-        name="active"
-        label="Activa"
-        description="Las inactivas no se ofrecen al registrar una novedad; las novedades viejas la conservan."
-        defaultChecked={state?.values ? state.values.active === "on" : (category?.active ?? true)}
-      />
-      <FormMessage state={state} />
-      <SubmitButton variant={category ? "outline" : "primary"} size="md" className="self-start">
-        {category ? "Guardar" : "Agregar categoría"}
       </SubmitButton>
     </form>
   );
@@ -350,15 +283,13 @@ export function DocumentTypeForm({
   );
 }
 
-/** Botones para cambiar el orden de un catálogo. */
+/** Botones para cambiar el orden de los documentos del legajo. */
 export function MoveButtons({
-  catalog,
   itemId,
   first,
   last,
   name,
 }: {
-  catalog: "note_categories" | "document_types";
   itemId: string;
   first: boolean;
   last: boolean;
@@ -368,12 +299,12 @@ export function MoveButtons({
     "flex size-10 items-center justify-center rounded-lg border bg-card text-muted-foreground hover:bg-muted disabled:opacity-40";
   return (
     <div className="flex gap-1">
-      <form action={moveCatalogItemAction.bind(null, catalog, itemId, "up")}>
+      <form action={moveDocumentTypeAction.bind(null, itemId, "up")}>
         <button type="submit" disabled={first} aria-label={`Subir ${name}`} className={buttonClass}>
           <ArrowUp aria-hidden="true" className="size-4" />
         </button>
       </form>
-      <form action={moveCatalogItemAction.bind(null, catalog, itemId, "down")}>
+      <form action={moveDocumentTypeAction.bind(null, itemId, "down")}>
         <button type="submit" disabled={last} aria-label={`Bajar ${name}`} className={buttonClass}>
           <ArrowDown aria-hidden="true" className="size-4" />
         </button>

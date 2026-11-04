@@ -3,14 +3,11 @@
 import {
   ArrowRightLeft,
   ChevronRight,
-  ClipboardList,
   Inbox,
-  HeartPulse,
   History,
   House,
   IdCard,
   Menu,
-  Plus,
   Settings,
   ShieldCheck,
   Siren,
@@ -18,7 +15,6 @@ import {
   UserCheck,
   UserRound,
   Users,
-  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import Link from "next/link";
@@ -32,15 +28,12 @@ const ICONS: Record<NavIcon, LucideIcon> = {
   home: House,
   requests: Inbox,
   residents: Users,
-  notes: ClipboardList,
   handover: ArrowRightLeft,
   attendance: UserCheck,
   specialties: Stethoscope,
   professionals: IdCard,
-  nursing: HeartPulse,
   emergencies: Siren,
   staff: UserRound,
-  fees: Wallet,
   users: ShieldCheck,
   settings: Settings,
   audit: History,
@@ -100,7 +93,7 @@ export function SidebarLinks({ items }: { items: NavItem[] }) {
   );
 }
 
-/** Encabezado de escritorio: dónde estás ("CUIDADO › Enfermería"). */
+/** Encabezado de escritorio: dónde estás ("CUIDADO › Especialidades"). */
 export function SectionTrail({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
   const item = currentItem(items, pathname);
@@ -129,34 +122,11 @@ const COLUMNS: Record<number, string> = {
   5: "grid-cols-5",
 };
 
-/**
- * Barra inferior del teléfono (diseño TabBar, 13.2): pestañas, botón central
- * "+" elevado para registrar una novedad y "Más".
- */
-export function TabBarLinks({
-  items,
-  canCreateNote,
-}: {
-  items: NavItem[];
-  canCreateNote: boolean;
-}) {
+/** Barra inferior del teléfono (diseño TabBar, 13.2): pestañas y "Más". */
+export function TabBarLinks({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
-  // En la ficha de emergencia el "+" queda pegado a las llamadas y se toca sin
-  // querer; ahí no se registra una novedad.
-  const showCreate = canCreateNote && !/^\/pacientes\/[^/]+\/emergencia$/.test(pathname);
-  const main = items.filter((item) => item.mobile === "tab");
-  const create: NavItem = {
-    key: "nueva-novedad",
-    label: "Nueva novedad",
-    href: "/novedades/nueva",
-    icon: "notes",
-    section: "diario",
-    mobile: "tab",
-  };
-  const middle = Math.ceil((main.length + 1) / 2);
   const tabs: NavItem[] = [
-    ...main.slice(0, showCreate ? middle : main.length),
-    ...(showCreate ? [create, ...main.slice(middle)] : []),
+    ...items.filter((item) => item.mobile === "tab"),
     { key: "mas", label: "Más", href: "/mas", icon: "more", section: "diario", mobile: "tab" },
   ];
   // "Más" queda marcado también en las secciones que se abren desde ahí.
@@ -169,27 +139,8 @@ export function TabBarLinks({
       className={cn("grid h-full items-start px-1 pt-1.5", COLUMNS[tabs.length] ?? "grid-cols-5")}
     >
       {tabs.map((item) => {
-        if (item.key === "nueva-novedad") {
-          return (
-            <li key={item.key} className="flex justify-center">
-              <Link
-                href={item.href}
-                aria-label="Registrar una novedad"
-                className={cn(
-                  "-mt-5 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg ring-4 ring-card",
-                  "focus-visible:ring-ring/40 focus-visible:outline-none",
-                )}
-              >
-                <Plus aria-hidden="true" className="size-7" />
-              </Link>
-            </li>
-          );
-        }
         const Icon = ICONS[item.icon];
-        const active =
-          item.key === "mas"
-            ? moreActive
-            : isActive(pathname, item.href) && !isActive(pathname, "/novedades/nueva");
+        const active = item.key === "mas" ? moreActive : isActive(pathname, item.href);
         return (
           <li key={item.key} className="flex justify-center">
             <Link

@@ -1,11 +1,10 @@
 import * as schema from "@/db/schema";
-import { NURSING_SPECIALTY_KEY } from "@/db/schema/care";
 import type { Transaction } from "@/lib/db/client";
 
 /*
- * Valores iniciales de una residencia nueva (DC-12): turnos, categorías de
- * novedades, documentos del legajo, medios de pago y especialidades. Salen del diseño y del legajo real de
- * Mis Nonos (Apéndice E). Después se cambian desde Configuración.
+ * Valores iniciales de una residencia nueva (DC-12): turnos, documentos del
+ * legajo y especialidades. Salen del diseño y del legajo real de Mis Nonos
+ * (Apéndice E). Después se cambian desde Configuración.
  */
 
 export const DEFAULT_SHIFTS = [
@@ -14,34 +13,18 @@ export const DEFAULT_SHIFTS = [
   { name: "Noche", startsAt: "22:00", endsAt: "06:00" },
 ] as const;
 
-export const DEFAULT_NOTE_CATEGORIES = [
-  "Alimentación",
-  "Estado general",
-  "Higiene",
-  "Sueño",
-  "Visitas",
-  "Caída o incidente",
-] as const;
-
-/**
- * Especialidades (8.7, docs/decisions/0017). Enfermería lleva la clave fija
- * que usa su sección; las demás se renombran o desactivan libremente.
- */
+/** Especialidades (8.7, docs/decisions/0017): se renombran o desactivan libremente. */
 export const DEFAULT_SPECIALTIES = [
-  { key: null, name: "Medicina clínica" },
-  { key: NURSING_SPECIALTY_KEY, name: "Enfermería" },
-  { key: null, name: "Kinesiología" },
-  { key: null, name: "Nutrición" },
-  { key: null, name: "Psicología" },
-  { key: null, name: "Psiquiatría" },
-  { key: null, name: "Terapia ocupacional" },
-  { key: null, name: "Fonoaudiología" },
-  { key: null, name: "Odontología" },
-  { key: null, name: "Podología" },
+  "Medicina clínica",
+  "Kinesiología",
+  "Nutrición",
+  "Psicología",
+  "Psiquiatría",
+  "Terapia ocupacional",
+  "Fonoaudiología",
+  "Odontología",
+  "Podología",
 ] as const;
-
-/** Medios de pago del abono (DC-21), configurables por sede. */
-export const DEFAULT_PAYMENT_METHODS = ["Efectivo", "Transferencia", "Otro"] as const;
 
 export const DEFAULT_DOCUMENT_TYPES = [
   {
@@ -123,13 +106,6 @@ export async function seedOrganizationDefaults(
       position: index + 1,
     })),
   );
-  await tx.insert(schema.noteCategories).values(
-    DEFAULT_NOTE_CATEGORIES.map((name, index) => ({
-      organizationId: input.organizationId,
-      name,
-      position: index + 1,
-    })),
-  );
   await tx.insert(schema.documentTypes).values(
     DEFAULT_DOCUMENT_TYPES.map((type, index) => ({
       organizationId: input.organizationId,
@@ -137,19 +113,10 @@ export async function seedOrganizationDefaults(
       position: index + 1,
     })),
   );
-  await tx.insert(schema.paymentMethods).values(
-    DEFAULT_PAYMENT_METHODS.map((name, index) => ({
-      organizationId: input.organizationId,
-      siteId: input.siteId,
-      name,
-      position: index + 1,
-    })),
-  );
   await tx.insert(schema.specialties).values(
-    DEFAULT_SPECIALTIES.map((specialty, index) => ({
+    DEFAULT_SPECIALTIES.map((name, index) => ({
       organizationId: input.organizationId,
-      key: specialty.key,
-      name: specialty.name,
+      name,
       position: index + 1,
     })),
   );

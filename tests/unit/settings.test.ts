@@ -54,24 +54,18 @@ describe("Configuración de la residencia", () => {
     emergencyServicePhone: "0810 555 0000",
     emergencyServiceAccount: "",
     medicalControlText: "",
-    feeRuleText: "",
     familyProvidesText: "",
-    feeReminderDaysBefore: "7",
   };
 
-  it("convierte vacíos en null, la casilla en booleano y los días en número", () => {
+  it("convierte vacíos en null y la casilla en booleano", () => {
     expect(siteSettingsSchema.parse(base)).toMatchObject({
       address: null,
       handoverRequiresConfirmation: false,
-      feeReminderDaysBefore: 7,
     });
   });
 
-  it("rechaza zonas horarias desconocidas y avisos fuera de rango", () => {
+  it("rechaza zonas horarias desconocidas", () => {
     expect(siteSettingsSchema.safeParse({ ...base, timezone: "Marte/Olympus" }).success).toBe(
-      false,
-    );
-    expect(siteSettingsSchema.safeParse({ ...base, feeReminderDaysBefore: "0" }).success).toBe(
       false,
     );
   });

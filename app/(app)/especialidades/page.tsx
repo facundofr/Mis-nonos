@@ -103,7 +103,6 @@ export default async function SpecialtiesPage() {
                       id: specialty.id,
                       name: specialty.name,
                       active: specialty.active,
-                      fixed: specialty.key !== null,
                     }}
                   />
                 </li>

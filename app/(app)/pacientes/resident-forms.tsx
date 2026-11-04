@@ -321,7 +321,6 @@ export interface ContactDefaults {
   isLegalRepresentative: boolean;
   canReceiveInfo: boolean;
   canPickUp: boolean;
-  isPayer: boolean;
   availabilityNotes: string | null;
 }
 
@@ -497,11 +496,6 @@ export function ContactForm({
           name="canPickUp"
           label="Puede retirarlo/a de la residencia"
           defaultChecked={checked("canPickUp", false)}
-        />
-        <CheckboxField
-          name="isPayer"
-          label="Paga el abono"
-          defaultChecked={checked("isPayer", false)}
         />
         <CheckboxField
           name="isLegalRepresentative"

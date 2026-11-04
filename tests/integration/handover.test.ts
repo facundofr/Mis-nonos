@@ -4,14 +4,11 @@ import { and, eq, isNull } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
 
 import * as schema from "@/db/schema";
-import { getHandover, handoverSummary, listHandoverVersions } from "@/features/handover/queries";
+import { getHandover, listHandoverVersions } from "@/features/handover/queries";
 import { confirmHandover, deliverHandover } from "@/features/handover/service";
-import { noteSchema } from "@/features/notes/schemas";
-import { createNote, resolveNote } from "@/features/notes/service";
 import { createDb, createPool } from "@/lib/db/client";
 import { withTenant, type TenantContext } from "@/lib/db/tenant";
 import { createOrganization } from "@/lib/organizations/create";
-import { shiftOccurrenceOn } from "@/lib/time/shifts";
 
 // Etapa 3.5: traspaso de turno (7.3-G, F.4). Datos ficticios.
 
@@ -168,39 +165,6 @@ describe("Traspaso de turno", () => {
     ).rejects.toThrow(/ya confirmó/);
     const handover = await withTenant(app, marta, (tx) => getHandover(tx, siteId, morning.id, DAY));
     expect(handover?.confirmedByName).toBe("Jorge Suárez");
-  });
-
-  it("el resumen trae las novedades del turno y los pendientes al momento de la entrega", async () => {
-    const [category] = await owner
-      .select({ id: schema.noteCategories.id })
-      .from(schema.noteCategories)
-      .where(eq(schema.noteCategories.organizationId, marta.organizationId))
-      .limit(1);
-    const noteId = await withTenant(app, marta, (tx) =>
-      createNote(tx, marta, {
-        ...noteSchema.parse({
-          categoryId: category!.id,
-          content: "Reponer guantes.",
-          followUp: "on",
-        }),
-        residentId: null,
-        siteId,
-      }),
-    );
-    await owner
-      .update(schema.residentNotes)
-      .set({ createdAt: at(`${DAY}T10:00:00`) })
-      .where(eq(schema.residentNotes.id, noteId));
-    // Se resuelve hoy: al momento de la entrega (el 01/10) seguía abierto.
-    await withTenant(app, jorge, (tx) => resolveNote(tx, jorge, noteId, { resolutionNote: null }));
-
-    const occurrence = shiftOccurrenceOn(morning, DAY, TZ);
-    const summary = await withTenant(app, marta, async (tx) => {
-      const handover = await getHandover(tx, siteId, morning.id, DAY);
-      return handoverSummary(tx, siteId, occurrence, handover, new Date());
-    });
-    expect(summary.notes.map((item) => item.id)).toEqual([noteId]);
-    expect(summary.pending.map((item) => item.id)).toEqual([noteId]);
   });
 
   it("otra residencia no ve el traspaso; la app no borra ni cambia el turno", async () => {
