@@ -205,8 +205,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
 export function visibleNavItems(permissions: ReadonlySet<PermissionKey>): NavItem[] {
   return NAV_ITEMS.filter(
     (item) =>
-      !item.hidden &&
-      (!item.anyOf || item.anyOf.some((permission) => permissions.has(permission))),
+      !item.hidden && (!item.anyOf || item.anyOf.some((permission) => permissions.has(permission))),
   );
 }
 
