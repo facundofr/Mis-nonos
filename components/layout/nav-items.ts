@@ -52,6 +52,8 @@ export interface NavItem {
   anyOf?: readonly PermissionKey[];
   /** Teléfono: pestaña de la barra inferior o entrada de "Más". */
   mobile: "tab" | "more";
+  /** Oculta del menú por ahora; la página sigue disponible por su dirección. */
+  hidden?: boolean;
 }
 
 export const NAV_ITEMS: readonly NavItem[] = [
@@ -92,6 +94,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     // Asistente no entrega ni recibe el turno (docs/decisions/0021).
     anyOf: ["handover.deliver", "handover.confirm"],
     mobile: "tab",
+    hidden: true,
   },
   // Asistencia con QR (docs/decisions/0020): solo Administración.
   {
@@ -121,6 +124,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     section: "cuidado",
     anyOf: ["care.read"],
     mobile: "more",
+    hidden: true,
   },
   {
     key: "profesionales",
@@ -200,8 +204,14 @@ export const NAV_ITEMS: readonly NavItem[] = [
 /** Las secciones que puede ver alguien con estos permisos. */
 export function visibleNavItems(permissions: ReadonlySet<PermissionKey>): NavItem[] {
   return NAV_ITEMS.filter(
-    (item) => !item.anyOf || item.anyOf.some((permission) => permissions.has(permission)),
+    (item) =>
+      !item.hidden && (!item.anyOf || item.anyOf.some((permission) => permissions.has(permission))),
   );
+}
+
+/** Si una sección del menú está oculta (para no enlazarla desde otras pantallas). */
+export function isNavHidden(key: string): boolean {
+  return NAV_ITEMS.some((item) => item.key === key && item.hidden);
 }
 
 /** Las secciones agrupadas por bloque, en el orden del menú (los vacíos no van). */

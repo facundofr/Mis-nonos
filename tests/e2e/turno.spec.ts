@@ -54,7 +54,8 @@ test("se entrega el turno con sus pendientes y el entrante confirma la recepció
   await marta.getByRole("button", { name: "Guardar novedad" }).click();
   await expect(marta.getByText("Novedad registrada.")).toBeVisible();
 
-  await marta.getByRole("link", { name: "Turno", exact: true }).click();
+  // El traspaso está oculto del menú: se entra por su dirección.
+  await marta.goto("/turno");
   await expect(marta.getByRole("heading", { name: "Traspaso de turno" })).toBeVisible();
   await expect(marta.getByRole("heading", { name: "Entregar el turno" })).toBeVisible();
   await expect(
