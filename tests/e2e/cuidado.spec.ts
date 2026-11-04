@@ -47,22 +47,11 @@ test("Administración carga un profesional, un profesional registra una atenció
   await expect(page.getByText("Profesional agregado.")).toBeVisible();
   await expect(page.getByRole("link", { name: "Llamar a Lic. Paula Díaz" })).toBeVisible();
 
-  // Enfermería registra un control desde su sección.
+  // Enfermería está oculta por ahora (lib/navigation/hidden): no se abre.
   const nurse = await newPhone(browser);
   await firstLoginWithTemporaryPassword(nurse, nurseCredentials);
-  await nurse.goto("/enfermeria");
-  await expect(nurse.getByText("Sin atenciones").first()).toBeVisible();
-  await nurse.getByRole("link", { name: "Registrar atención de enfermería" }).click();
-  await nurse.getByRole("link", { name: /Héctor Benítez/ }).click();
-  await expect(nurse.getByLabel(/^Especialidad/)).toHaveValue(/.+/);
-  await nurse.getByRole("button", { name: "Guardar atención" }).click();
-  await expect(nurse.getByText("Escribí el motivo.")).toBeVisible();
-  await nurse.getByLabel(/^Motivo/).fill("Control de presión");
-  await nurse.getByLabel("Observaciones").fill("Presión 13/8, sin mareos.");
-  await nurse.getByRole("button", { name: "Guardar atención" }).click();
-  await expect(nurse.getByText("Atención de enfermería registrada.")).toBeVisible();
-  await expect(nurse.getByText(/^Hoy · /).first()).toBeVisible();
-  await expect(nurse.getByText("Control de presión")).toBeVisible();
+  const hidden = await nurse.goto("/enfermeria");
+  expect(hidden?.status()).toBe(404);
 
   // Kinesiología: la última visita todavía no existe.
   await nurse.goto("/especialidades");
@@ -76,7 +65,7 @@ test("Administración carga un profesional, un profesional registra una atenció
   // Asistente no ve atenciones ni registra emergencias (docs/decisions/0021).
   const assistant = await newPhone(browser);
   await firstLoginWithTemporaryPassword(assistant, carerCredentials);
-  const denied = await assistant.goto("/enfermeria");
+  const denied = await assistant.goto("/especialidades");
   expect(denied?.url()).toMatch(/sin-permiso/);
   await assistant.goto(`/pacientes/${residentId}/emergencia`);
   await expect(assistant.getByText("Ficha de emergencia", { exact: true })).toBeVisible();

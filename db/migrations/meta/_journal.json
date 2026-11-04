@@ -288,6 +288,13 @@
       "when": 1793756982525,
       "tag": "0040_roles_master_admin_profesional_asistente",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1793802066579,
+      "tag": "0041_fees_module_off",
+      "breakpoints": true
     }
   ]
 }

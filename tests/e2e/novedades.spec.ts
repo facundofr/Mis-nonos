@@ -11,6 +11,9 @@ import { admitResident } from "./support/residents";
 // Etapa 3.4: novedades con categorías y versiones (F1-NOV-01) y
 // seguimiento simple (F1-NOV-02), con las reglas de F.4. Datos ficticios.
 
+// Novedades está oculta por ahora (lib/navigation/hidden).
+test.skip(true, "Novedades está oculta");
+
 test("Profesional registra y corrige; otro profesional resuelve; queda el historial", async ({
   page,
   browser,

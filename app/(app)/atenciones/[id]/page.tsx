@@ -13,6 +13,7 @@ import { ENCOUNTER_LOCATIONS, type EncounterLocation } from "@/features/care/sch
 import { fullName } from "@/features/residents/format";
 import { inTenant } from "@/lib/actions";
 import { can, requirePermission } from "@/lib/auth/authorization";
+import { isSectionHidden } from "@/lib/navigation/hidden";
 import { getSiteContext } from "@/lib/site/server";
 import { formatDateKey, formatDateTime } from "@/lib/time/format";
 
@@ -55,7 +56,7 @@ export default async function EncounterPage({
     lastName: encounter.residentLastName,
   });
   const back =
-    specialty?.key === NURSING_SPECIALTY_KEY
+    specialty?.key === NURSING_SPECIALTY_KEY && !isSectionHidden("enfermeria")
       ? { href: "/enfermeria" as Route, label: "Enfermería" }
       : {
           href: `/especialidades/${encounter.specialtyId}` as Route,
