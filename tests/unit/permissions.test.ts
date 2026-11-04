@@ -10,15 +10,19 @@ import {
   rolePermissionPairs,
 } from "@/lib/auth/permissions";
 
-// La matriz está en la migración original y en las que suman o quitan permisos.
-const migration = [
+// El catálogo está en la migración original y en las que suman permisos. Desde
+// los roles nuevos (docs/decisions/0021), la matriz entera se carga en 0040.
+const read = (file: string) =>
+  readFileSync(path.resolve(__dirname, "../../db/migrations", file), "utf8");
+const catalogMigrations = [
   "0005_permissions_matrix.sql",
   "0035_care_grants.sql",
   "0037_attendance_grants.sql",
-  "0038_attendance_admin_only.sql",
+  "0040_roles_master_admin_profesional_asistente.sql",
 ]
-  .map((file) => readFileSync(path.resolve(__dirname, "../../db/migrations", file), "utf8"))
+  .map(read)
   .join("\n");
+const matrixMigration = read("0040_roles_master_admin_profesional_asistente.sql");
 
 function permissionsOfRole(role: string) {
   return rolePermissionPairs()
@@ -27,9 +31,9 @@ function permissionsOfRole(role: string) {
     .sort();
 }
 
-describe("matriz de permisos (F.3, DC-01)", () => {
+describe("matriz de permisos (docs/decisions/0021)", () => {
   it("la migración tiene el mismo catálogo que el código", () => {
-    const catalog = [...migration.matchAll(/\('([a-z_.]+)', '([a-z_]+)', '[^']+'\)/g)].map(
+    const catalog = [...catalogMigrations.matchAll(/\('([a-z_.]+)', '([a-z_]+)', '[^']+'\)/g)].map(
       ([, key, module]) => `${key}:${module}`,
     );
     const expected = PERMISSION_KEYS.map((key) => `${key}:${PERMISSIONS[key].module}`);
@@ -37,69 +41,47 @@ describe("matriz de permisos (F.3, DC-01)", () => {
   });
 
   it("la migración tiene los mismos pares (permiso, rol) que el código", () => {
-    // Los pares de un DELETE son bajas; los demás, altas.
-    const pairsIn = (text: string) =>
-      [...text.matchAll(/\('([a-z_.]+)', '(admin|direccion|enfermeria|cuidado)'\)/g)].map(
-        ([, permission, role]) => `${permission}:${role}`,
-      );
-    const statements = migration.split("--> statement-breakpoint");
-    const removed = new Set(
-      statements.filter((part) => /DELETE FROM role_permissions/.test(part)).flatMap(pairsIn),
-    );
-    const pairs = statements
-      .filter((part) => !/DELETE FROM role_permissions/.test(part))
-      .flatMap(pairsIn)
-      .filter((pair) => !removed.has(pair));
+    const pairs = [
+      ...matrixMigration.matchAll(/\('([a-z_.]+)', '(master|admin|profesional|asistente)'\)/g),
+    ].map(([, permission, role]) => `${permission}:${role}`);
     const expected = rolePermissionPairs().map((pair) => `${pair.permission}:${pair.role}`);
     expect(pairs.sort()).toEqual(expected.sort());
-    expect(expected).toHaveLength(82);
+    expect(expected).toHaveLength(78);
   });
 
-  it("Administración gestiona usuarios y configuración, pero no entrega turnos", () => {
+  it("Master tiene todo, incluido el registro completo de cambios", () => {
+    expect(permissionsOfRole("master")).toEqual([...PERMISSION_KEYS].sort());
+  });
+
+  it("Administración tiene todo menos el registro completo", () => {
     const admin = permissionsOfRole("admin");
+    expect(admin).not.toContain("audit.master");
     expect(admin).toContain("users.manage");
-    expect(admin).toContain("settings.manage");
-    expect(admin).not.toContain("handover.deliver");
-    expect(admin).toContain("care.record");
-    expect(admin).toHaveLength(27);
+    expect(admin).toContain("residents.update");
+    expect(admin).toContain("handover.deliver");
+    expect(admin).toHaveLength(PERMISSION_KEYS.length - 1);
   });
 
-  it("Dirección hace todo menos usuarios y configuración (nota 2)", () => {
-    const direccion = permissionsOfRole("direccion");
-    expect(direccion).not.toContain("users.manage");
-    expect(direccion).not.toContain("settings.manage");
-    expect(direccion).toContain("residents.update");
-    expect(direccion).toContain("handover.deliver");
-    expect(direccion).toContain("care.manage");
-    expect(direccion).toHaveLength(26);
+  it("Profesional escribe sobre los pacientes, pero no edita datos ni gestiona", () => {
+    const profesional = permissionsOfRole("profesional");
+    expect(profesional).toContain("notes.create");
+    expect(profesional).toContain("care.record");
+    expect(profesional).toContain("handover.deliver");
+    expect(profesional).toContain("emergencies.manage");
+    expect(profesional).not.toContain("residents.update");
+    expect(profesional).not.toContain("contacts.manage");
+    expect(profesional).not.toContain("fees.read");
+    expect(profesional).not.toContain("users.manage");
+    expect(profesional).not.toContain("attendance.read");
+    expect(profesional).toHaveLength(14);
   });
 
-  it("Enfermería edita datos y contactos, sin montos ni fotos del legajo (nota 1)", () => {
-    const enfermeria = permissionsOfRole("enfermeria");
-    expect(enfermeria).toContain("residents.update");
-    expect(enfermeria).toContain("contacts.manage");
-    expect(enfermeria).not.toContain("fees.read");
-    expect(enfermeria).not.toContain("documents.files");
-    expect(enfermeria).not.toContain("audit.read_all");
-    expect(enfermeria).toContain("care.record");
-    expect(enfermeria).not.toContain("care.manage");
-    expect(enfermeria).toHaveLength(17);
-  });
-
-  it("Cuidado ve fichas y emergencias, registra novedades, turnos y emergencias, sin atenciones", () => {
-    const cuidado = permissionsOfRole("cuidado");
-    expect(cuidado).toEqual(
+  it("Asistente solo ve a los pacientes y ficha", () => {
+    expect(permissionsOfRole("asistente")).toEqual(
       [
         "attendance.record",
-        "audit.read_resident",
         "emergency.pdf",
         "emergency.view",
-        "emergencies.manage",
-        "handover.confirm",
-        "handover.deliver",
-        "notes.create",
-        "notes.edit_own",
-        "notes.resolve",
         "residents.read",
         "staff.read",
       ].sort(),

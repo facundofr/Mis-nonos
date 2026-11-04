@@ -24,6 +24,7 @@ export type NavIcon =
   | "fees"
   | "users"
   | "settings"
+  | "audit"
   | "more";
 
 /**
@@ -88,7 +89,8 @@ export const NAV_ITEMS: readonly NavItem[] = [
     href: "/turno",
     icon: "handover",
     section: "diario",
-    anyOf: ["residents.read"],
+    // Asistente no entrega ni recibe el turno (docs/decisions/0021).
+    anyOf: ["handover.deliver", "handover.confirm"],
     mobile: "tab",
   },
   // Asistencia con QR (docs/decisions/0020): solo Administración.
@@ -181,6 +183,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
     icon: "settings",
     section: "ajustes",
     anyOf: ["settings.manage"],
+    mobile: "more",
+  },
+  // Registro completo de cambios: solo Master (docs/decisions/0021).
+  {
+    key: "registro",
+    label: "Registro de cambios",
+    href: "/registro",
+    icon: "audit",
+    section: "ajustes",
+    anyOf: ["audit.master"],
     mobile: "more",
   },
 ];

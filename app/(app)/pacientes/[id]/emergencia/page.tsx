@@ -140,12 +140,12 @@ export default async function EmergencyPage({ params }: PageProps<"/pacientes/[i
   const physicianReachable = Boolean(resident.primaryPhysicianPhone);
   const noServiceAction =
     familyReachable && physicianReachable
-      ? "Llamá a la familia, en el orden de abajo, o al médico de cabecera. Después avisá a Dirección."
+      ? "Llamá a la familia, en el orden de abajo, o al médico de cabecera. Después avisá a Administración."
       : familyReachable
-        ? "Llamá a la familia, en el orden de abajo. Después avisá a Dirección."
+        ? "Llamá a la familia, en el orden de abajo. Después avisá a Administración."
         : physicianReachable
-          ? "Llamá al médico de cabecera (abajo). Después avisá a Dirección."
-          : "Esta ficha no tiene teléfonos cargados. Avisá a Dirección.";
+          ? "Llamá al médico de cabecera (abajo). Después avisá a Administración."
+          : "Esta ficha no tiene teléfonos cargados. Avisá a Administración.";
   const coverage = [
     COVERAGE_TYPES[resident.coverageType as keyof typeof COVERAGE_TYPES],
     resident.coverageName,
@@ -459,7 +459,7 @@ export default async function EmergencyPage({ params }: PageProps<"/pacientes/[i
       ) : null}
       <p className="flex items-center justify-center gap-1.5 text-center text-[13px] text-balance text-muted-foreground">
         <ShieldCheck aria-hidden="true" className="size-4 shrink-0" />
-        Se avisa a Dirección que abriste esta ficha · {formatTime(new Date(), site.timezone)}
+        Queda registrado que abriste esta ficha · {formatTime(new Date(), site.timezone)}
       </p>
     </div>
   );

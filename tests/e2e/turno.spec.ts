@@ -36,11 +36,11 @@ test("se entrega el turno con sus pendientes y el entrante confirma la recepció
   });
   const martaCredentials = await createUserWithoutEmail(page, {
     name: "Marta Gómez",
-    roleName: "Cuidador/a",
+    roleName: "Profesional",
   });
   const jorgeCredentials = await createUserWithoutEmail(page, {
     name: "Jorge Suárez",
-    roleName: "Enfermería",
+    roleName: "Profesional",
   });
 
   // Marta registra un seguimiento y entrega el turno.

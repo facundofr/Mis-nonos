@@ -6,6 +6,7 @@ import {
   ClipboardList,
   Inbox,
   HeartPulse,
+  History,
   House,
   IdCard,
   Menu,
@@ -42,6 +43,7 @@ const ICONS: Record<NavIcon, LucideIcon> = {
   fees: Wallet,
   users: ShieldCheck,
   settings: Settings,
+  audit: History,
   more: Menu,
 };
 

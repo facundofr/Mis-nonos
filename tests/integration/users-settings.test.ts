@@ -104,7 +104,7 @@ async function newCaregiver(org: Org, name = "Marta Gómez") {
     createMemberWithoutEmail(tx, org.admin, {
       name,
       username: `marta.${randomUUID().slice(0, 8)}`,
-      roleKey: "cuidado",
+      roleKey: "profesional",
       phone: null,
       profession: null,
       licenseNumber: null,
@@ -150,7 +150,7 @@ describe("Usuarios y roles", () => {
         inviteMember(tx, orgA.admin, {
           name: "Laura Pereyra",
           email: admin!.email,
-          roleKey: "cuidado",
+          roleKey: "profesional",
           phone: null,
           profession: null,
           licenseNumber: null,
@@ -164,7 +164,7 @@ describe("Usuarios y roles", () => {
     const ownRole = await domainError(
       asA((tx) =>
         updateMember(tx, orgA.admin, orgA.adminMembershipId, {
-          roleKey: "direccion",
+          roleKey: "profesional",
           phone: null,
           profession: null,
           licenseNumber: null,
@@ -205,6 +205,43 @@ describe("Usuarios y roles", () => {
     expect(
       await domainError(asA((tx) => setMemberActive(tx, orgA.admin, membershipId, false))),
     ).toBe("Esa persona no está en la residencia.");
+  });
+
+  it("el Master no se asigna ni se toca desde la app (0021)", async () => {
+    const { membershipId } = await newCaregiver(orgA, "Facundo Master");
+    const [master] = await owner
+      .select({ id: schema.roles.id })
+      .from(schema.roles)
+      .where(and(eq(schema.roles.key, "master"), isNull(schema.roles.organizationId)));
+    const other = await newCaregiver(orgA, "Rosa Quiroga");
+    const edit = (id: string, roleKey: "master" | "admin") =>
+      asA((tx) =>
+        updateMember(tx, orgA.admin, id, {
+          roleKey,
+          phone: null,
+          profession: null,
+          licenseNumber: null,
+          usualShiftId: null,
+        }),
+      );
+    expect(await domainError(edit(other.membershipId, "master"))).toBe(
+      "El rol Master no se asigna desde la app.",
+    );
+
+    await owner
+      .update(schema.organizationMemberships)
+      .set({ roleId: master!.id })
+      .where(eq(schema.organizationMemberships.id, membershipId));
+    const locked = "El usuario Master no se puede modificar desde la app.";
+    expect(await domainError(edit(membershipId, "admin"))).toBe(locked);
+    expect(
+      await domainError(asA((tx) => setMemberActive(tx, orgA.admin, membershipId, false))),
+    ).toBe(locked);
+    expect(
+      await domainError(
+        asA((tx) => resetTemporaryPassword(tx, orgA.admin, membershipId, "hash-ficticio")),
+      ),
+    ).toBe(locked);
   });
 });
 
@@ -248,7 +285,7 @@ describe("Turnos", () => {
 });
 
 describe("Alta con email y contraseña provisoria (0018)", () => {
-  const input = (email: string, roleKey: "admin" | "direccion" | "enfermeria" | "cuidado") => ({
+  const input = (email: string, roleKey: "admin" | "profesional" | "asistente") => ({
     name: "Elena Ruiz",
     email,
     roleKey,
@@ -259,7 +296,7 @@ describe("Alta con email y contraseña provisoria (0018)", () => {
   });
 
   it("crea la cuenta con cualquier rol, pidiendo cambiar la contraseña al entrar", async () => {
-    for (const roleKey of ["admin", "direccion", "enfermeria", "cuidado"] as const) {
+    for (const roleKey of ["admin", "profesional", "asistente"] as const) {
       const email = `${roleKey}-${randomUUID().slice(0, 8)}@prueba.test`;
       const created = await withTenant(app, orgA.admin, (tx) =>
         createMemberWithEmail(tx, orgA.admin, input(email, roleKey)),
@@ -275,19 +312,19 @@ describe("Alta con email y contraseña provisoria (0018)", () => {
   it("no repite a alguien de la residencia ni un email con cuenta", async () => {
     const email = `repetida-${randomUUID().slice(0, 8)}@prueba.test`;
     await withTenant(app, orgA.admin, (tx) =>
-      createMemberWithEmail(tx, orgA.admin, input(email, "cuidado")),
+      createMemberWithEmail(tx, orgA.admin, input(email, "profesional")),
     );
     expect(
       await domainError(
         withTenant(app, orgA.admin, (tx) =>
-          createMemberWithEmail(tx, orgA.admin, input(email, "cuidado")),
+          createMemberWithEmail(tx, orgA.admin, input(email, "profesional")),
         ),
       ),
     ).toBe("Esa persona ya trabaja en la residencia.");
     expect(
       await domainError(
         withTenant(app, orgB.admin, (tx) =>
-          createMemberWithEmail(tx, orgB.admin, input(email, "cuidado")),
+          createMemberWithEmail(tx, orgB.admin, input(email, "profesional")),
         ),
       ),
     ).toBe("Ese email ya tiene una cuenta en Mis Nonos: sumala con “Invitar con enlace”.");
@@ -296,7 +333,7 @@ describe("Alta con email y contraseña provisoria (0018)", () => {
   it("Administración le da una provisoria nueva a quien tiene email, y devuelve el email", async () => {
     const email = `olvido-${randomUUID().slice(0, 8)}@prueba.test`;
     const created = await withTenant(app, orgA.admin, (tx) =>
-      createMemberWithEmail(tx, orgA.admin, input(email, "enfermeria")),
+      createMemberWithEmail(tx, orgA.admin, input(email, "profesional")),
     );
     const result = await withTenant(app, orgA.admin, (tx) =>
       resetTemporaryPassword(tx, orgA.admin, created.membershipId, "otro-hash"),

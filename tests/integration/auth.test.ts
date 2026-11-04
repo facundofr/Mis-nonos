@@ -62,7 +62,7 @@ beforeAll(async () => {
     .from(schema.roles)
     .where(isNull(schema.roles.organizationId));
   ids.adminRole = systemRoles.find((role) => role.key === "admin")!.id;
-  ids.careRole = systemRoles.find((role) => role.key === "cuidado")!.id;
+  ids.careRole = systemRoles.find((role) => role.key === "profesional")!.id;
 });
 
 /** Crea una invitación con el rol dueño, como el script de alta (DC-12). */
@@ -114,7 +114,7 @@ describe("Invitaciones", () => {
     expect(found).toMatchObject({
       email: "busqueda@prueba.test",
       organizationId: ids.org,
-      roleKey: "cuidado",
+      roleKey: "profesional",
     });
     expect(await findInvitationByToken(app, generateToken())).toBeNull();
     expect(await app.select().from(schema.invitations)).toEqual([]);

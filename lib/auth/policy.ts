@@ -29,19 +29,33 @@ export const AUTH_POLICY = {
   loginWindowSeconds: 15 * MINUTE,
 } as const;
 
-/** Roles de sistema del MVP (F.3). Las claves son las del diseño (InvitarUsuario). */
+/**
+ * Roles de sistema (docs/decisions/0021). Master es una sola persona por
+ * residencia y no se asigna desde la app; los demás se eligen al dar el alta.
+ */
 export const SYSTEM_ROLES = [
+  { key: "master", name: "Master" },
   { key: "admin", name: "Administración" },
-  { key: "direccion", name: "Dirección" },
-  { key: "enfermeria", name: "Enfermería" },
-  { key: "cuidado", name: "Cuidador/a" },
+  { key: "profesional", name: "Profesional" },
+  { key: "asistente", name: "Asistente" },
 ] as const;
 
 export type SystemRoleKey = (typeof SYSTEM_ROLES)[number]["key"];
 
-const PRIVILEGED_ROLES: ReadonlySet<string> = new Set<SystemRoleKey>(["admin", "direccion"]);
+/** Los roles que Administración puede elegir para una persona. */
+export const ASSIGNABLE_ROLES = [
+  "asistente",
+  "profesional",
+  "admin",
+] as const satisfies readonly SystemRoleKey[];
+export type AssignableRoleKey = (typeof ASSIGNABLE_ROLES)[number];
 
-/** Administración y Dirección: 2FA obligatoria y cierre por inactividad. */
+/** Roles que gestionan la residencia: usuarios, configuración y cuotas. */
+export const MANAGER_ROLES: readonly SystemRoleKey[] = ["master", "admin"];
+
+const PRIVILEGED_ROLES: ReadonlySet<string> = new Set<SystemRoleKey>(MANAGER_ROLES);
+
+/** Master y Administración: 2FA obligatoria y cierre por inactividad. */
 export function isPrivilegedRole(roleKey: string): boolean {
   return PRIVILEGED_ROLES.has(roleKey);
 }

@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 
 import {
   createTestOrganization,
+  makeMaster,
   onboardAdmin,
   PASSWORD,
   settleWelcome,
@@ -32,7 +33,7 @@ test("Administración invita por email; la persona acepta y entra con su rol", a
   await page.getByLabel("Nombre y apellido").fill("Marta Gómez");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Teléfono").fill("11 4011 2234");
-  await page.getByRole("radio", { name: /^Cuidador\/a/ }).check();
+  await page.getByRole("radio", { name: /^Asistente/ }).check();
   await page.getByRole("button", { name: "Enviar invitación" }).click();
   await expect(page.getByText(`Invitación enviada a ${email}`)).toBeVisible();
   const link = (await page.locator("code").textContent()) ?? "";
@@ -46,7 +47,7 @@ test("Administración invita por email; la persona acepta y entra con su rol", a
   await marta.getByLabel("Contraseña nueva").fill(PASSWORD);
   await marta.getByLabel("Repetí la contraseña").fill(PASSWORD);
   await marta.getByRole("button", { name: "Crear contraseña e ingresar" }).click();
-  // Cuidador/a no necesita 2FA: entra directo.
+  // Asistente no necesita 2FA: entra directo.
   await expect(marta).toHaveURL(/\/inicio/);
   await settleWelcome(marta);
   await expect(marta.getByRole("heading", { name: /, Marta$/ })).toBeVisible();
@@ -75,7 +76,11 @@ test("Administración agrega un usuario con email; le llega la contraseña provi
   await expect(page.getByRole("heading", { name: "Agregar usuario" })).toBeVisible();
   await page.getByLabel("Nombre y apellido").fill("Elena Ruiz");
   await page.getByLabel("Email").fill(email);
-  await page.getByRole("radio", { name: /^Enfermería/ }).check();
+  await page.getByRole("radio", { name: /^Profesional/ }).check();
+  // Profesional lleva la profesión escrita a mano (docs/decisions/0021).
+  await page.getByRole("button", { name: "Crear usuario y mandar contraseña" }).click();
+  await expect(page.getByText("Escribí la profesión, por ejemplo Kinesiólogo.")).toBeVisible();
+  await page.getByLabel("Profesión").fill("Kinesióloga");
   await page.getByRole("button", { name: "Crear usuario y mandar contraseña" }).click();
   await expect(
     page.getByText(`Listo: le mandamos a ${email} su contraseña provisoria.`),
@@ -111,7 +116,7 @@ test("alguien sin email entra con usuario y elige su contraseña al primer ingre
   await onboardAdmin(page, organization);
   const credentials = await createUserWithoutEmail(page, {
     name: "Jorge Suárez",
-    roleName: "Enfermería",
+    roleName: "Profesional",
   });
 
   const jorge = await newPhone(browser);
@@ -134,7 +139,7 @@ test("desactivar a alguien le corta el acceso en el momento", async ({ page, bro
   await onboardAdmin(page, organization);
   const credentials = await createUserWithoutEmail(page, {
     name: "Héctor Benítez",
-    roleName: "Cuidador/a",
+    roleName: "Asistente",
   });
   const memberUrl = page.url().split("?")[0]!;
 
@@ -157,9 +162,27 @@ test("Administración no se puede desactivar ni cambiar su propio rol", async ({
   await page.getByRole("link", { name: /Laura Pereyra/ }).click();
   await expect(page.getByRole("button", { name: /Desactivar/ })).toHaveCount(0);
 
-  await page.getByRole("radio", { name: /^Dirección/ }).check();
+  await page.getByRole("radio", { name: /^Asistente/ }).check();
   await page.getByRole("button", { name: "Guardar cambios" }).click();
   await expect(page.getByText("No podés cambiar tu propio rol.")).toBeVisible();
+});
+
+test("el Master no se elige ni se modifica desde la app", async ({ page }) => {
+  const organization = await createTestOrganization();
+  await onboardAdmin(page, organization);
+  await page.goto("/usuarios/nuevo");
+  await expect(page.getByRole("radio", { name: /^Master/ })).toHaveCount(0);
+
+  const credentials = await createUserWithoutEmail(page, {
+    name: "Rosa Quiroga",
+    roleName: "Administración",
+  });
+  const memberUrl = page.url().split("?")[0]!;
+  await makeMaster(credentials.username);
+  await page.goto(memberUrl);
+  await expect(page.getByText(/Es el usuario Master de la residencia/)).toBeVisible();
+  await expect(page.getByRole("button", { name: "Guardar cambios" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Desactivar/ })).toHaveCount(0);
 });
 
 test("Configuración: servicio de emergencias, turnos sin superposición y categorías", async ({

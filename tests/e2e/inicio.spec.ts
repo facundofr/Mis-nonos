@@ -24,7 +24,7 @@ test("Inicio: el personal ve sus pendientes; Administración, además, legajos y
   });
   const martaCredentials = await createUserWithoutEmail(page, {
     name: "Marta Gómez",
-    roleName: "Cuidador/a",
+    roleName: "Profesional",
   });
 
   const marta = await newPhone(browser);

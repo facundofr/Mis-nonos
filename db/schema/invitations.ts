@@ -29,6 +29,7 @@ export const invitations = pgTable(
       .notNull()
       .references(() => roles.id, { onDelete: "restrict" }),
     phone: text("phone"),
+    profession: text("profession"),
     licenseNumber: text("license_number"),
     tokenHash: text("token_hash").notNull().unique("invitations_token_hash_unique"),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),

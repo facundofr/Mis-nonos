@@ -36,8 +36,8 @@ test("capturas de las pantallas", async ({ page }) => {
   await welcome.getByRole("button", { name: "Saltar la guía" }).click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await shot("movil-inicio-puesta-en-marcha");
-  await createUserWithoutEmail(page, { name: "Jorge Suárez", roleName: "Enfermería" });
-  await createUserWithoutEmail(page, { name: "Marta Gómez", roleName: "Cuidador/a" });
+  await createUserWithoutEmail(page, { name: "Jorge Suárez", roleName: "Profesional" });
+  await createUserWithoutEmail(page, { name: "Marta Gómez", roleName: "Profesional" });
   const ficha = await admitResident(page, {
     firstName: "Elena",
     lastName: "Ramírez",

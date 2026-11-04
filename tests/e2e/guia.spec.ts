@@ -62,12 +62,12 @@ test("Administración: bienvenida, lista de puesta en marcha y consejos", async 
   await expect(page.getByRole("complementary", { name: "Consejo" })).toBeVisible();
 });
 
-test("Cuidador/a: la bienvenida muestra solo lo que puede hacer", async ({ page, browser }) => {
+test("Asistente: la bienvenida muestra solo lo que puede hacer", async ({ page, browser }) => {
   const organization = await createTestOrganization();
   await onboardAdmin(page, organization);
   const credentials = await createUserWithoutEmail(page, {
     name: "Marta Gómez",
-    roleName: "Cuidador/a",
+    roleName: "Asistente",
   });
 
   const marta = await newPhone(browser, { skipWelcome: false });
@@ -86,8 +86,6 @@ test("Cuidador/a: la bienvenida muestra solo lo que puede hacer", async ({ page,
   expect(titles).toEqual([
     "Te damos la bienvenida, Marta",
     "Pacientes y emergencia",
-    "Novedades con el botón «+»",
-    "Traspaso de turno",
     "Cuidamos los datos",
   ]);
   await welcome.getByRole("button", { name: "Empezar" }).click();

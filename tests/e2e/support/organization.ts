@@ -103,11 +103,11 @@ export async function onboardAdmin(
   await page.getByLabel("Repetí la contraseña").fill(PASSWORD);
   await page.getByRole("button", { name: "Crear contraseña e ingresar" }).click();
 
-  // Administración y Dirección activan el 2FA antes de usar la app.
+  // Master y Administración activan el 2FA antes de usar la app.
   return activateTwoFactor(page);
 }
 
-/** Activa el 2FA (Administración y Dirección) y termina en el inicio. */
+/** Activa el 2FA (Master y Administración) y termina en el inicio. */
 export async function activateTwoFactor(page: Page, password = PASSWORD) {
   await expect(page).toHaveURL(/\/activar-2fa/);
   await page.getByLabel("Contraseña", { exact: true }).fill(password);
@@ -188,6 +188,21 @@ export function backdateAttendance(siteId: string, minutes: number): Promise<voi
   return withOwner(async (db) => {
     await db.execute(
       sql`update attendance_records set occurred_at = occurred_at - make_interval(mins => ${minutes}) where site_id = ${siteId}`,
+    );
+  });
+}
+
+/**
+ * Deja a una persona como usuario Master (docs/decisions/0021). En la app no
+ * se asigna: en producción lo hace el script user:master.
+ */
+export function makeMaster(username: string): Promise<void> {
+  return withOwner(async (db) => {
+    await db.execute(
+      sql`update organization_memberships m
+          set role_id = (select id from roles where key = 'master' and organization_id is null)
+          from users u
+          where u.id = m.user_id and u.username = ${username}`,
     );
   });
 }

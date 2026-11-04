@@ -24,9 +24,10 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
     "org:create": "tsx scripts/create-organization.ts",
+    "user:master": "tsx scripts/set-master.ts",
     "worker": "tsx watch worker/index.ts",
     "worker:build": "esbuild worker/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/worker/index.cjs --sourcemap --external:pg-native --log-level=warning",
-    "tools:build": "esbuild scripts/migrate.ts scripts/create-organization.ts --bundle --platform=node --target=node24 --format=cjs --outdir=dist/tools --out-extension:.js=.cjs --sourcemap --external:pg-native --log-level=warning",
+    "tools:build": "esbuild scripts/migrate.ts scripts/create-organization.ts scripts/set-master.ts --bundle --platform=node --target=node24 --format=cjs --outdir=dist/tools --out-extension:.js=.cjs --sourcemap --external:pg-native --log-level=warning",
     "test:e2e": "playwright test"
   },
   "dependencies": {

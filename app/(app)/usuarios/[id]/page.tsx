@@ -32,6 +32,8 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/u
   }));
   if (!member) notFound();
   const isSelf = member.userId === context.user.id;
+  // El Master no se modifica desde la app, salvo sus propios datos (0021).
+  const locked = member.roleKey === "master" && !isSelf;
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-5">
@@ -51,7 +53,12 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/u
             {member.email ?? `Entra con el usuario ${member.username}`}
           </span>
           <span className="flex flex-wrap gap-1.5">
-            <Badge tone="primary">{member.roleName}</Badge>
+            <Badge tone="primary">
+              {member.roleName}
+              {member.profession && member.roleKey === "profesional"
+                ? ` · ${member.profession}`
+                : ""}
+            </Badge>
             {member.status === "active" ? (
               <Badge tone="success">Activo</Badge>
             ) : (
@@ -62,23 +69,30 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/u
         </div>
       </div>
 
-      <Card>
-        <CardHeader
-          title="Rol y datos"
-          description={
-            isSelf ? "Tu propio rol lo cambia otra persona de Administración." : undefined
-          }
-        />
-        <div className="p-5">
-          <MemberForm
-            membershipId={member.membershipId}
-            defaults={member}
-            shifts={shifts.map((shift) => ({ id: shift.id, label: shiftLabel(shift) }))}
+      {locked ? (
+        <Notice tone="info">
+          Es el usuario Master de la residencia: su rol, su contraseña y su acceso no se cambian
+          desde la app.
+        </Notice>
+      ) : (
+        <Card>
+          <CardHeader
+            title="Rol y datos"
+            description={
+              isSelf ? "Tu propio rol lo cambia otra persona de Administración." : undefined
+            }
           />
-        </div>
-      </Card>
+          <div className="p-5">
+            <MemberForm
+              membershipId={member.membershipId}
+              defaults={member}
+              shifts={shifts.map((shift) => ({ id: shift.id, label: shiftLabel(shift) }))}
+            />
+          </div>
+        </Card>
+      )}
 
-      {!isSelf ? (
+      {!isSelf && !locked ? (
         <Card>
           <CardHeader
             title="Contraseña"
@@ -97,7 +111,7 @@ export default async function MemberPage({ params, searchParams }: PageProps<"/u
         </Card>
       ) : null}
 
-      {!isSelf ? (
+      {!isSelf && !locked ? (
         <Card>
           <CardHeader
             title={member.status === "active" ? "Desactivar" : "Reactivar"}

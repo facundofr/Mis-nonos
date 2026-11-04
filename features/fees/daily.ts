@@ -14,7 +14,7 @@ import { CHARGE_HORIZON_DAYS, ensureCharges, voidChargesAfterDischarge } from ".
  * Trabajo diario del abono (7.3-C4), en el worker con withSystemTenant:
  * 1. genera las cuotas que faltan (la próxima de cada paciente siempre existe);
  * 2. anula las que vencen después de un egreso y no tienen pagos;
- * 3. avisa a Administración y Dirección de las cuotas impagas que vencen
+ * 3. avisa a Administración y Master de las cuotas impagas que vencen
  *    en los próximos días (feeReminderDaysBefore, 7 por defecto). Un aviso
  *    por cuota y por persona: si el trabajo se reintenta, no se repite.
  *    Monto 0 no genera cuotas, así que no avisa (DC-22).
@@ -40,7 +40,7 @@ export async function runDailyFees(
   let chargesCreated = 0;
   let chargesVoided = 0;
   const newReminders = new Map<string, { count: number; days: number }>();
-  const recipients = await activeMembersWithRoles(tx, organizationId, ["admin", "direccion"]);
+  const recipients = await activeMembersWithRoles(tx, organizationId, ["admin", "master"]);
 
   for (const site of sites) {
     const today = localDateKey(toLocal(now, site.timezone));

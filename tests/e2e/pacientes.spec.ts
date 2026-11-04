@@ -113,7 +113,7 @@ test("ficha: alergias, edición, internado fuera, vuelta, egreso y actividad", a
   await expect(page.getByText("Confirmó el ingreso")).toBeVisible();
 });
 
-test("Cuidador/a ve la ficha, pero no edita ni hace ingresos", async ({ page, browser }) => {
+test("Asistente ve la ficha, pero no edita ni hace ingresos", async ({ page, browser }) => {
   const organization = await createTestOrganization();
   await onboardAdmin(page, organization);
   const ficha = await admitResident(page, {
@@ -124,7 +124,7 @@ test("Cuidador/a ve la ficha, pero no edita ni hace ingresos", async ({ page, br
   });
   const credentials = await createUserWithoutEmail(page, {
     name: "Marta Gómez",
-    roleName: "Cuidador/a",
+    roleName: "Asistente",
   });
 
   const marta = await newPhone(browser);

@@ -65,7 +65,7 @@ export default async function ProfessionalsPage({ searchParams }: PageProps<"/pr
           <EmptyState icon={IdCard} title="Todavía no hay profesionales">
             {canManage
               ? "Agregá al médico de cabecera, a enfermería y a los profesionales externos que atienden a los pacientes."
-              : "Administración o Dirección los agregan."}
+              : "Administración los agrega."}
           </EmptyState>
         </div>
       ) : (

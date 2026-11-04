@@ -1,6 +1,7 @@
 import { and, desc, eq, sql } from "drizzle-orm";
 
 import * as schema from "@/db/schema";
+import { roleLabel } from "@/lib/auth/role-label";
 import type { Transaction } from "@/lib/db/client";
 
 import { OPEN_ENTRY_MAX_MS, type AttendanceKind, type AttendanceMark } from "./rules";
@@ -77,7 +78,7 @@ export async function presentNow(
     .select({
       userId: last.userId,
       name: schema.users.name,
-      roleName: schema.roles.name,
+      roleName: roleLabel,
       enteredAt: last.occurredAt,
     })
     .from(last)
@@ -137,7 +138,7 @@ export async function attendanceBoard(
     .select({
       userId: schema.users.id,
       name: schema.users.name,
-      roleName: schema.roles.name,
+      roleName: roleLabel,
       kind: last.kind,
       occurredAt: last.occurredAt,
     })

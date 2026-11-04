@@ -22,7 +22,7 @@ test("la cuidadora registra entrada y salida con el QR; Administración ve quié
   await onboardAdmin(page, organization);
   const credentials = await createUserWithoutEmail(page, {
     name: "Marta Gómez",
-    roleName: "Cuidador/a",
+    roleName: "Asistente",
   });
 
   // Administración abre el QR para imprimir; el enlace es el que abre la cámara.

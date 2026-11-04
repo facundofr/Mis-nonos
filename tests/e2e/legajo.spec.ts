@@ -60,10 +60,10 @@ test("legajo: la foto se sube, se ve con enlace temporal, la apertura queda audi
   await expect(page.getByText("Abrió un documento del legajo").first()).toBeVisible();
   await expect(page.getByText("Subió un documento al legajo")).toBeVisible();
 
-  // Cuidador/a ve que el documento está cargado, pero no las fotos (F.3, nota 5).
+  // Asistente ve que el documento está cargado, pero no las fotos (F.3, nota 5).
   const credentials = await createUserWithoutEmail(page, {
     name: "Marta Gómez",
-    roleName: "Cuidador/a",
+    roleName: "Asistente",
   });
   const marta = await newPhone(browser);
   await firstLoginWithTemporaryPassword(marta, credentials);

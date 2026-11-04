@@ -52,9 +52,9 @@ beforeAll(async () => {
     }),
   );
   ids.org = created.organizationId;
-  ids.direccion1 = await member("Sofía Medina", "direccion");
-  ids.direccion2 = await member("Pablo Ríos", "direccion");
-  ids.cuidado = await member("Marta Gómez", "cuidado");
+  ids.direccion1 = await member("Sofía Medina", "admin");
+  ids.direccion2 = await member("Pablo Ríos", "master");
+  ids.cuidado = await member("Marta Gómez", "profesional");
   const actor = { organizationId: ids.org, userId: ids.direccion1 };
   ({ residentId: ids.resident } = await withTenant(app, actor, (tx) =>
     startAdmission(
@@ -77,7 +77,7 @@ afterAll(async () => {
 });
 
 describe("Aviso de ficha de emergencia abierta", () => {
-  it("avisa a Dirección (salvo a quien la abrió) y no duplica si el trabajo se reintenta", async () => {
+  it("avisa al Master (salvo a quien la abrió) y no duplica si el trabajo se reintenta", async () => {
     const event = {
       eventId: randomUUID(),
       organizationId: ids.org,

@@ -61,7 +61,7 @@ test("abono: primer mes cobrado, pago parcial y total, cambio de precio y lista 
   // Cuidado no ve montos: ni la pestaña ni la lista.
   const credentials = await createUserWithoutEmail(page, {
     name: "Marta Gómez",
-    roleName: "Cuidador/a",
+    roleName: "Asistente",
   });
   const marta = await newPhone(browser);
   await firstLoginWithTemporaryPassword(marta, credentials);
