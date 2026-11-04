@@ -24,9 +24,7 @@ export default async function PublicLayout({
       <header className="border-b bg-card">
         <div className="mx-auto flex w-full max-w-3xl items-center gap-3 px-5 py-4">
           <Link href={base as Route} className="flex min-w-0 items-center gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-[11px] bg-primary text-primary-foreground">
-              <LogoMark className="size-[22px]" />
-            </span>
+            <LogoMark className="size-10 rounded-[11px]" />
             <span className="truncate text-lg font-semibold tracking-tight">{site.name}</span>
           </Link>
         </div>

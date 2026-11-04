@@ -28,9 +28,7 @@ export default async function KioskPage({ params }: PageProps<"/pantalla/[token]
   return (
     <main className="flex min-h-dvh flex-col items-center justify-center gap-5 bg-white p-6 text-center text-[#16201e]">
       <div className="flex items-center gap-3">
-        <span className="flex size-12 items-center justify-center rounded-[13px] bg-[#fa8072] text-[#1f0f0b]">
-          <LogoMark className="size-7" />
-        </span>
+        <LogoMark className="size-12 rounded-[13px]" />
         <span className="text-3xl font-semibold tracking-tight">{BRAND.appName}</span>
       </div>
       <h1 className="max-w-3xl text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">

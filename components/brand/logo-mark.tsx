@@ -1,18 +1,21 @@
-// Ícono de la marca (casa con corazón), tomado del canvas de diseño.
+import Image from "next/image";
+
+import logo from "@/assets/logo-misnonos-cuadrado.jpg";
+import { cn } from "@/lib/utils";
+
+/**
+ * Logo de Mis Nonos (la nona en la mecedora). Es el mismo en toda la app:
+ * menús, ingreso, página pública y kiosco. El tamaño y el redondeo los da
+ * quien lo usa (por ejemplo, "size-9 rounded-[10px]").
+ */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <Image
+      src={logo}
+      alt=""
       aria-hidden="true"
-      className={className}
-    >
-      <path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1z" />
-      <path d="M12 17.5s-3.5-2-3.5-4.3a1.9 1.9 0 0 1 3.5-1 1.9 1.9 0 0 1 3.5 1c0 2.3-3.5 4.3-3.5 4.3z" />
-    </svg>
+      sizes="48px"
+      className={cn("shrink-0 bg-white object-contain ring-1 ring-black/5", className)}
+    />
   );
 }

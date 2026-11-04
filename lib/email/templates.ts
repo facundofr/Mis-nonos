@@ -22,6 +22,7 @@ export function passwordResetEmail(input: { to: string; name: string; url: strin
      <p>Pediste crear una nueva contraseña. El enlace vence en 30 minutos.</p>
      ${button(input.url, "Crear contraseña")}
      <p>Si no lo pediste, ignorá este email: tu contraseña sigue igual.</p>`,
+    input.url,
   );
   return { to: input.to, subject, text, html };
 }
@@ -50,6 +51,7 @@ export function invitationEmail(input: {
         ${escapeHtml(input.roleName)}. El enlace vence en 72 horas.</p>
      ${button(input.url, "Crear mi contraseña")}
      <p>Si no esperabas esta invitación, ignorá este email.</p>`,
+    input.url,
   );
   return { to: input.to, subject, text, html };
 }
@@ -92,14 +94,22 @@ export function temporaryPasswordEmail(input: {
      ${button(input.loginUrl, "Entrar")}
      <p>Al entrar, la app te pide elegir una contraseña propia.</p>
      <p>Si no esperabas este email, avisale a la residencia.</p>`,
+    input.loginUrl,
   );
   return { to: input.to, subject, text, html };
 }
 
-function layout(body: string): string {
+/**
+ * Marco común de los emails. Con el enlace a la app, el encabezado lleva el
+ * logo (el ícono público de la app, en el mismo dominio que el enlace).
+ */
+function layout(body: string, appLink?: string): string {
+  const logo = appLink
+    ? `<img src="${escapeHtml(new URL("/icon.png", appLink).toString())}" width="36" height="36" alt="" style="vertical-align:middle;border-radius:8px;margin-right:10px">`
+    : "";
   return `<!doctype html><html lang="es"><body style="margin:0;padding:24px;background:#f7faf9;font-family:system-ui,sans-serif;color:#16201e;line-height:1.5">
 <div style="max-width:480px;margin:0 auto;background:#ffffff;border:1px solid #dfe6e3;border-radius:12px;padding:24px">
-<p style="margin:0 0 16px;font-weight:600;color:#863a2a">${escapeHtml(BRAND.appName)}</p>
+<p style="margin:0 0 16px;font-weight:600;color:#863a2a">${logo}${escapeHtml(BRAND.appName)}</p>
 ${body}
 </div></body></html>`;
 }

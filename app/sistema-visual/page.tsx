@@ -24,9 +24,7 @@ export default function VisualSystemPage() {
   return (
     <main className="mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center gap-8 bg-surface px-5 py-12">
       <div className="flex items-center gap-3">
-        <span className="flex size-11 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-          <LogoMark className="size-6" />
-        </span>
+        <LogoMark className="size-11 rounded-xl" />
         <div className="flex flex-col">
           <span className="text-xl font-semibold tracking-tight">{BRAND.appName}</span>
           <span className="text-sm text-muted-foreground">Sistema visual (solo desarrollo)</span>
