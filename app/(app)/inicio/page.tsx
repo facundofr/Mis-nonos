@@ -204,6 +204,8 @@ export default async function HomePage() {
   const canDocuments = permissions.has("documents.files") || permissions.has("admissions.manage");
   const canCare = permissions.has("care.read");
   const canStaff = permissions.has("staff.read");
+  // Asistente no hace el traspaso: sin enlaces a /turno (docs/decisions/0021).
+  const canHandover = permissions.has("handover.deliver") || permissions.has("handover.confirm");
 
   const data = canRead
     ? await inTenant(context, async (tx) => ({
@@ -358,7 +360,7 @@ export default async function HomePage() {
       meta: `Desde ${formatWhen(item.startedAt, now, site.timezone)}`,
       urgent: true,
     })),
-    ...(current && canDeliverAt(current, now)
+    ...(canHandover && current && canDeliverAt(current, now)
       ? [
           {
             key: "traspaso",
@@ -369,16 +371,17 @@ export default async function HomePage() {
         ]
       : []),
   ];
-  const handoverAction = current ? (
-    <Link
-      href="/turno"
-      className="shrink-0 text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
-    >
-      {canDeliverAt(current, now)
-        ? "Entregar turno"
-        : `Entrega en ${duration(current.endsAt.getTime() - now.getTime())}`}
-    </Link>
-  ) : null;
+  const handoverAction =
+    canHandover && current ? (
+      <Link
+        href="/turno"
+        className="shrink-0 text-sm font-medium text-primary-ink underline-offset-4 hover:underline"
+      >
+        {canDeliverAt(current, now)
+          ? "Entregar turno"
+          : `Entrega en ${duration(current.endsAt.getTime() - now.getTime())}`}
+      </Link>
+    ) : null;
 
   const agendaUntil = shiftDays(today, 30);
   const agenda = (controls ?? []).filter((item) => item.nextControlOn <= agendaUntil);
@@ -469,7 +472,7 @@ export default async function HomePage() {
             detail="Ver personal"
             href="/empleados"
           />
-        ) : (
+        ) : canHandover ? (
           <KpiCard
             icon={ListChecks}
             label="Traspaso de turno"
@@ -483,7 +486,7 @@ export default async function HomePage() {
             detail={!current ? "Sin turno en curso" : "Ir al traspaso"}
             href="/turno"
           />
-        )}
+        ) : null}
       </div>
 
       {setupCard}

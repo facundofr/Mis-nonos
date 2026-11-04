@@ -13,6 +13,7 @@ import { saveContactAction } from "../../../pacientes/actions";
 import { ContactForm } from "../../../pacientes/resident-forms";
 import { AdmissionSteps, loadDraftAdmission } from "../../_shared";
 import { completeStepAction } from "../../actions";
+import { CancelAdmissionButton } from "../confirmar/confirm-buttons";
 
 export const metadata: Metadata = { title: "Ingreso · Responsable" };
 
@@ -104,6 +105,9 @@ export default async function AdmissionResponsiblePage({
       ) : (
         <Notice tone="info">Para seguir, cargá primero al responsable de la internación.</Notice>
       )}
+      <div className="self-start">
+        <CancelAdmissionButton admissionId={id} />
+      </div>
     </div>
   );
 }
