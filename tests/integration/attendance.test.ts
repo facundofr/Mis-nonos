@@ -4,7 +4,13 @@ import { and, eq, isNull } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, inject, it } from "vitest";
 
 import * as schema from "@/db/schema";
-import { attendanceBoard, presentNow, recentRecords } from "@/features/attendance/queries";
+import {
+  attendanceBoard,
+  getStaffMember,
+  presentNow,
+  recentRecords,
+  recordsBetween,
+} from "@/features/attendance/queries";
 import {
   isValidAttendanceToken,
   recordAttendance,
@@ -160,6 +166,24 @@ describe("asistencia con QR", () => {
           .where(eq(schema.attendanceRecords.userId, nurse.userId)),
       ),
     ).rejects.toThrow();
+  });
+
+  it("el historial trae las entradas y salidas del período, con el nombre", async () => {
+    const from = new Date(Date.now() - 24 * 3600 * 1000);
+    const to = new Date(Date.now() + 3600 * 1000);
+    const all = await withTenant(app, admin, (tx) => recordsBetween(tx, { siteId, from, to }));
+    expect(all.find((row) => row.userId === carer.userId)?.name).toBe("Marta Gómez");
+    const own = await withTenant(app, admin, (tx) =>
+      recordsBetween(tx, { siteId, from, to, userId: carer.userId }),
+    );
+    expect(own.map((row) => row.kind)).toEqual(["in", "out"]);
+    // Sin attendance.read, solo lo propio (RLS).
+    const seenByCarer = await withTenant(app, carer, (tx) =>
+      recordsBetween(tx, { siteId, from, to }),
+    );
+    expect(seenByCarer.every((row) => row.userId === carer.userId)).toBe(true);
+    const member = await withTenant(app, admin, (tx) => getStaffMember(tx, carer.userId));
+    expect(member).toMatchObject({ name: "Marta Gómez", active: true });
   });
 
   it("una guardia de 24 h termina con la salida", async () => {

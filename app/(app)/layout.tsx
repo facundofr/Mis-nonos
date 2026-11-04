@@ -8,8 +8,6 @@ import { getSeenOnboarding } from "@/features/onboarding/server";
 import { inTenant } from "@/lib/actions";
 import { getPermissions } from "@/lib/auth/authorization";
 import { requireAppContextWithGates } from "@/lib/auth/session";
-import { getSiteContext } from "@/lib/site/server";
-import { shiftLabel } from "@/lib/time/shifts";
 
 import { WelcomeTour } from "./guia/welcome-tour";
 
@@ -24,9 +22,8 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
     return <GateShell organizationName={context.membership.organizationName}>{children}</GateShell>;
   }
 
-  const [permissions, site, unread, seen] = await Promise.all([
+  const [permissions, unread, seen] = await Promise.all([
     getPermissions(context),
-    getSiteContext(context),
     inTenant(context, (tx) => countUnread(tx, context.user.id)),
     getSeenOnboarding(context),
   ]);
@@ -41,7 +38,6 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
       userName={context.user.name}
       roleName={context.membership.roleName}
       roleTitle={context.membership.roleTitle}
-      shiftLabel={site.current ? shiftLabel(site.current.shift) : null}
       items={visibleNavItems(permissions)}
       unreadNotifications={unread}
     >
