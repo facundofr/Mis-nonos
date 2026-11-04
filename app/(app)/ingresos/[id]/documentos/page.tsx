@@ -12,6 +12,7 @@ import { can } from "@/lib/auth/authorization";
 
 import { AdmissionSteps, loadDraftAdmission } from "../../_shared";
 import { completeStepAction } from "../../actions";
+import { CancelAdmissionButton } from "../confirmar/confirm-buttons";
 
 export const metadata: Metadata = { title: "Ingreso · Documentación" };
 
@@ -57,6 +58,9 @@ export default async function AdmissionDocumentsPage({
           Siguiente: revisar
         </SubmitButton>
       </form>
+      <div className="self-start">
+        <CancelAdmissionButton admissionId={id} />
+      </div>
     </div>
   );
 }

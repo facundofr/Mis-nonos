@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { listHandoversSince } from "@/features/handover/queries";
 import { canDeliverAt, recentOccurrences } from "@/features/handover/rules";
 import { inTenant } from "@/lib/actions";
-import { requirePermission } from "@/lib/auth/authorization";
+import { requireAnyPermission } from "@/lib/auth/authorization";
 import { getSiteContext } from "@/lib/site/server";
 import { formatDateKey, formatTime } from "@/lib/time/format";
 import { shiftLabel } from "@/lib/time/shifts";
@@ -17,7 +17,8 @@ const DAYS = 7;
 
 /** Historial de traspasos (F.6): última semana, con entregados y "sin entrega". */
 export default async function HandoverHistoryPage() {
-  const context = await requirePermission("residents.read");
+  // Asistente no hace el traspaso de turno (docs/decisions/0021).
+  const context = await requireAnyPermission(["handover.deliver", "handover.confirm"]);
   const { site, shifts } = await getSiteContext(context);
   const now = new Date();
   const occurrences = recentOccurrences(shifts, now, site.timezone, DAYS);

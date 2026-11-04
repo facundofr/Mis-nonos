@@ -134,8 +134,33 @@ test("Asistente ve la ficha, pero no edita ni hace ingresos", async ({ page, bro
   await expect(marta.getByRole("link", { name: "Editar datos" })).toHaveCount(0);
   await expect(marta.getByLabel("Alergia a")).toHaveCount(0);
 
-  for (const path of [`${new URL(ficha).pathname}/editar`, "/ingresos/nuevo", "/ingresos"]) {
+  // Tampoco carga novedades ni hace el traspaso de turno (docs/decisions/0021).
+  for (const path of [
+    `${new URL(ficha).pathname}/editar`,
+    "/ingresos/nuevo",
+    "/ingresos",
+    "/novedades/nueva",
+    "/turno",
+    "/turno/historial",
+  ]) {
     await marta.goto(path);
     await expect(marta).toHaveURL(/\/sin-permiso/);
   }
+  await marta.goto("/inicio");
+  await expect(marta.getByRole("link", { name: /Entregar turno|Entrega en/ })).toHaveCount(0);
+});
+
+test("un ingreso a medio hacer se cancela desde cualquier paso", async ({ page }) => {
+  const organization = await createTestOrganization();
+  await onboardAdmin(page, organization);
+  await page.goto("/ingresos/nuevo");
+  await page.getByLabel(/^Nombre/).fill("Rosa");
+  await page.getByLabel(/^Apellido/).fill("Medina");
+  await page.getByLabel("N.º de beneficiario PAMI").fill("15-0000000-0-00");
+  await page.getByRole("button", { name: "Siguiente: responsable" }).click();
+  await expect(page).toHaveURL(/\/responsable/);
+  await page.getByRole("button", { name: "Cancelar este ingreso" }).click();
+  await page.getByRole("button", { name: "Sí, cancelar el ingreso" }).click();
+  await expect(page).toHaveURL(/\/ingresos\?cancelado=1/);
+  await expect(page.getByRole("link", { name: /Rosa Medina/ })).toHaveCount(0);
 });

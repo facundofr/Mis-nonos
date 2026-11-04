@@ -18,7 +18,7 @@ import {
   incomingShift,
 } from "@/features/handover/rules";
 import { inTenant } from "@/lib/actions";
-import { getPermissions, requirePermission } from "@/lib/auth/authorization";
+import { getPermissions, requireAnyPermission } from "@/lib/auth/authorization";
 import { getSiteContext } from "@/lib/site/server";
 import { formatDateKey, formatDateTime, formatTime } from "@/lib/time/format";
 import { shiftLabel, shiftOccurrenceOn } from "@/lib/time/shifts";
@@ -44,7 +44,8 @@ function Stat({ value, label }: { value: number; label: string }) {
  * ?turno=&fecha= muestra un traspaso anterior (historial).
  */
 export default async function HandoverPage({ searchParams }: PageProps<"/turno">) {
-  const context = await requirePermission("residents.read");
+  // Asistente no hace el traspaso de turno (docs/decisions/0021).
+  const context = await requireAnyPermission(["handover.deliver", "handover.confirm"]);
   const params = await searchParams;
   const [permissions, { site, shifts }] = await Promise.all([
     getPermissions(context),

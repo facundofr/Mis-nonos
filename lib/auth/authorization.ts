@@ -43,3 +43,16 @@ export async function requirePermission(permission: PermissionKey): Promise<AppC
   if (!(await can(context, permission))) redirect("/sin-permiso");
   return context;
 }
+
+/**
+ * Para pantallas que se abren con cualquiera de varios permisos (como la
+ * entrada del menú, components/layout/nav-items.ts).
+ */
+export async function requireAnyPermission(
+  permissions: readonly PermissionKey[],
+): Promise<AppContext> {
+  const context = await requireAppContext();
+  const granted = await getPermissions(context);
+  if (!permissions.some((permission) => granted.has(permission))) redirect("/sin-permiso");
+  return context;
+}

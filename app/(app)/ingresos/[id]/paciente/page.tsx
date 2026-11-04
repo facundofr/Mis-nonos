@@ -6,6 +6,7 @@ import { getSiteContext } from "@/lib/site/server";
 import { ResidentDataForm } from "../../../pacientes/resident-forms";
 import { AdmissionSteps, loadDraftAdmission } from "../../_shared";
 import { updateAdmissionPatientAction } from "../../actions";
+import { CancelAdmissionButton } from "../confirmar/confirm-buttons";
 
 export const metadata: Metadata = { title: "Ingreso · Paciente" };
 
@@ -26,6 +27,10 @@ export default async function AdmissionPatientPage({
         submitLabel="Siguiente: responsable"
         today={today}
       />
+      {/* Se puede cancelar desde cualquier paso, no solo desde el último. */}
+      <div className="self-start">
+        <CancelAdmissionButton admissionId={id} />
+      </div>
     </div>
   );
 }
