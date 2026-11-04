@@ -82,9 +82,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
 function BrandName() {
   return (
     <div className="inline-flex items-center gap-2.5 self-start rounded-[14px] bg-white/90 py-1.5 pr-3.5 pl-1.5 text-[#16201e] shadow-sm backdrop-blur-sm">
-      <span className="flex size-9 items-center justify-center rounded-[10px] bg-primary text-primary-foreground">
-        <LogoMark className="size-5" />
-      </span>
+      <LogoMark className="size-9 rounded-[10px]" />
       <span className="text-lg font-semibold tracking-tight">{BRAND.appName}</span>
     </div>
   );

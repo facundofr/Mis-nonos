@@ -52,9 +52,7 @@ export function AppShell({
           aria-label="Ir al inicio"
           className="mx-3 mt-4 mb-2 flex items-center gap-3 rounded-lg p-2 focus-visible:ring-3 focus-visible:ring-sidebar-ring/40 focus-visible:outline-none"
         >
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-[10px] bg-primary text-primary-foreground">
-            <LogoMark className="size-5" />
-          </span>
+          <LogoMark className="size-9 rounded-[10px]" />
           <span className="flex min-w-0 flex-col">
             <span className="truncate text-[15px] font-semibold">{BRAND.appName}</span>
             <span className="truncate text-xs text-muted-foreground">{organizationName}</span>
@@ -92,9 +90,7 @@ export function AppShell({
         <header className="sticky top-0 z-20 border-b bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/85 print:hidden">
           <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4 lg:h-16 lg:px-8">
             <Link href="/inicio" className="flex min-w-0 items-center gap-2.5 lg:hidden">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground">
-                <LogoMark className="size-4" />
-              </span>
+              <LogoMark className="size-8 rounded-[9px]" />
               <span className="flex min-w-0 flex-col leading-tight">
                 <span className="truncate text-[15px] font-semibold">Bienvenido, {firstName}</span>
                 <span className="truncate text-xs text-muted-foreground">
@@ -183,9 +179,7 @@ export function GateShell({
       <header className="border-b bg-card">
         <div className="mx-auto flex h-14 w-full max-w-2xl items-center justify-between gap-3 px-4">
           <span className="flex min-w-0 items-center gap-2.5">
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-[9px] bg-primary text-primary-foreground">
-              <LogoMark className="size-4" />
-            </span>
+            <LogoMark className="size-8 rounded-[9px]" />
             <span className="truncate text-[15px] font-semibold">{organizationName}</span>
           </span>
           <form action={signOutAction}>
