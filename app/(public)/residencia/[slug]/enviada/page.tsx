@@ -33,10 +33,10 @@ export default async function PublicRequestSentPage({
         {site.phone ? ` Si es urgente, podés llamar al ${site.phone}.` : null}
       </p>
       <Link
-        href={`/residencia/${slug}` as Route}
+        href={`/residencia/${slug}/solicitar` as Route}
         className={buttonClassName({ variant: "outline" })}
       >
-        Volver al inicio
+        Enviar otra solicitud
       </Link>
     </section>
   );

@@ -34,11 +34,11 @@ export function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
 
   const hasSession = SESSION_COOKIE_NAMES.some((name) => request.cookies.has(name));
-  // En el dominio de la residencia, quien llega a la raíz sin sesión ve la
-  // landing (HOME_LANDING_SLUG); el personal entra por /ingresar.
-  const landing = process.env.HOME_LANDING_SLUG?.trim().toLowerCase();
-  if (pathname === "/" && !hasSession && landing && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(landing)) {
-    return NextResponse.redirect(new URL(`/residencia/${landing}`, request.url));
+  // La landing está oculta (docs/decisions/0022): la app arranca en
+  // /ingresar. El formulario para familias sigue en su enlace
+  // (/residencia/<dirección>/solicitar).
+  if (/^\/residencia\/[^/]+\/?$/.test(pathname)) {
+    return NextResponse.redirect(new URL(hasSession ? "/inicio" : "/ingresar", request.url));
   }
   if (!isPublic(pathname) && !hasSession) {
     const login = new URL("/ingresar", request.url);
