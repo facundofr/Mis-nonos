@@ -1,4 +1,3 @@
-import { Check } from "lucide-react";
 import Image from "next/image";
 import type { ReactNode } from "react";
 
@@ -6,54 +5,23 @@ import { HERO_PHOTO } from "@/components/brand/hero-photo";
 import { LogoMark } from "@/components/brand/logo-mark";
 import { BRAND } from "@/lib/brand";
 
-const HIGHLIGHTS = [
-  "Ficha de emergencia con llamada directa",
-  "Traspaso de turno sin cuadernos",
-  "Historial completo de cada registro",
-];
-
 /**
- * Marco de las pantallas de ingreso (diseño Login.dc.html). En escritorio,
- * la foto sin filtro arriba a la izquierda y el mensaje en un bloque salmón
- * debajo; en el teléfono, una franja corta de la foto con la marca, para que
- * el formulario quede a la vista.
+ * Marco de las pantallas de ingreso. En escritorio, la foto sola ocupa la
+ * columna izquierda; en el teléfono, una franja corta de la foto. La marca va
+ * siempre arriba del formulario.
  */
 export function AuthShell({ children }: { children: ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col bg-background lg:flex-row">
-      <aside className="hidden flex-col bg-primary text-primary-foreground lg:flex lg:w-[45%] lg:max-w-[640px]">
-        <div className="relative min-h-64 flex-1 overflow-hidden">
-          <Image
-            src={HERO_PHOTO}
-            alt=""
-            fill
-            preload
-            sizes="(min-width: 1024px) 45vw, 0px"
-            className="absolute inset-0 size-full object-cover object-[42%_45%]"
-          />
-          <div className="relative p-12 pb-0">
-            <BrandName />
-          </div>
-        </div>
-        <div className="flex flex-col gap-8 p-12">
-          <div className="flex max-w-[460px] flex-col gap-4">
-            <p className="text-4xl leading-tight font-semibold tracking-tight text-balance">
-              Cada residente, cada turno, todo en un solo lugar.
-            </p>
-            <p className="text-base leading-relaxed text-primary-foreground/80">
-              Contactos y la ficha de emergencia a un toque, con registro de quién hizo qué y
-              cuándo.
-            </p>
-          </div>
-          <ul className="flex flex-col gap-2.5 text-sm text-primary-foreground/80">
-            {HIGHLIGHTS.map((item) => (
-              <li key={item} className="flex items-center gap-2.5">
-                <Check aria-hidden="true" className="size-4 text-primary-foreground" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
+      <aside className="relative hidden overflow-hidden bg-primary lg:block lg:w-[45%] lg:max-w-[640px]">
+        <Image
+          src={HERO_PHOTO}
+          alt=""
+          fill
+          preload
+          sizes="(min-width: 1024px) 45vw, 0px"
+          className="absolute inset-0 size-full object-cover object-[42%_45%]"
+        />
       </aside>
 
       <div className="flex flex-1 flex-col">
@@ -66,24 +34,24 @@ export function AuthShell({ children }: { children: ReactNode }) {
             sizes="(min-width: 1024px) 0px, 100vw"
             className="absolute inset-0 size-full object-cover object-[45%_42%]"
           />
-          <div className="relative px-6 pt-5">
-            <BrandName />
-          </div>
         </header>
         <main className="flex flex-1 justify-center px-6 py-8 lg:items-center lg:py-12">
-          <div className="flex w-full max-w-[380px] flex-col gap-7">{children}</div>
+          <div className="flex w-full max-w-[380px] flex-col gap-7">
+            <BrandName />
+            {children}
+          </div>
         </main>
       </div>
     </div>
   );
 }
 
-/** Marca sobre la foto: una pastilla clara para que se lea sobre cualquier zona. */
+/** Marca arriba del formulario. */
 function BrandName() {
   return (
-    <div className="inline-flex items-center gap-2.5 self-start rounded-[14px] bg-white/90 py-1.5 pr-3.5 pl-1.5 text-[#16201e] shadow-sm backdrop-blur-sm">
-      <LogoMark className="size-9 rounded-[10px]" />
-      <span className="text-lg font-semibold tracking-tight">{BRAND.appName}</span>
+    <div className="flex items-center gap-3 self-start">
+      <LogoMark className="size-11 rounded-[12px]" />
+      <span className="text-xl font-semibold tracking-tight">{BRAND.appName}</span>
     </div>
   );
 }
