@@ -11,6 +11,9 @@ import { admitResident } from "./support/residents";
 // Etapa 3.5: traspaso de turno con confirmación por sede (F1-TUR-01, F.4).
 // Los turnos se corren para que el actual termine en 30 minutos.
 
+// El traspaso y las novedades están ocultos por ahora (lib/navigation/hidden).
+test.skip(true, "Traspaso y novedades están ocultos");
+
 test("se entrega el turno con sus pendientes y el entrante confirma la recepción", async ({
   page,
   browser,

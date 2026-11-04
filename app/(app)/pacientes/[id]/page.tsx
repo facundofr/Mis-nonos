@@ -32,6 +32,7 @@ import { COVERAGE_TYPES, DISCHARGE_REASONS, MODALITIES } from "@/features/reside
 import { listDocumentTypes } from "@/features/settings/queries";
 import { inTenant } from "@/lib/actions";
 import { getPermissions, requirePermission } from "@/lib/auth/authorization";
+import { isSectionHidden } from "@/lib/navigation/hidden";
 import { getSiteContext } from "@/lib/site/server";
 import { formatDateKey } from "@/lib/time/format";
 import { cn } from "@/lib/utils";
@@ -140,7 +141,10 @@ export default async function ResidentPage({ params, searchParams }: PageProps<"
     getPermissions(context),
     getSiteContext(context),
   ]);
-  const tabs = TABS.filter((tab) => !("permission" in tab) || permissions.has(tab.permission));
+  const tabs = TABS.filter(
+    (tab) =>
+      (!("permission" in tab) || permissions.has(tab.permission)) && !isSectionHidden(tab.key),
+  );
   const tab: TabKey = tabs.some((item) => item.key === query.tab)
     ? (query.tab as TabKey)
     : "resumen";

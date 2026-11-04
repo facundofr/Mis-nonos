@@ -16,7 +16,6 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { isNavHidden } from "@/components/layout/nav-items";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
@@ -36,6 +35,7 @@ import { setupProgress } from "@/features/onboarding/service";
 import { countResidents } from "@/features/residents/queries";
 import { listMembers } from "@/features/users/queries";
 import { inTenant } from "@/lib/actions";
+import { isSectionHidden } from "@/lib/navigation/hidden";
 import { getPermissions } from "@/lib/auth/authorization";
 import { requireAppContext } from "@/lib/auth/session";
 import { getSiteContext } from "@/lib/site/server";
@@ -208,16 +208,22 @@ export default async function HomePage() {
   // Asistente no hace el traspaso: sin enlaces a /turno (docs/decisions/0021).
   // Con el traspaso oculto del menú, Inicio tampoco lo enlaza.
   const canHandover =
-    !isNavHidden("turno") &&
+    !isSectionHidden("turno") &&
     (permissions.has("handover.deliver") || permissions.has("handover.confirm"));
+
+  // Novedades está oculta (lib/navigation/hidden): Inicio no la muestra.
+  const showNotes = canRead && !isSectionHidden("novedades");
 
   const data = canRead
     ? await inTenant(context, async (tx) => ({
-        pending: await listNotes(tx, { siteId: site.id, view: "pendientes", limit: 100 }),
-        shiftNotes: current
-          ? await listNotes(tx, { siteId: site.id, from: current.startsAt, limit: 100 })
+        pending: showNotes
+          ? await listNotes(tx, { siteId: site.id, view: "pendientes", limit: 100 })
           : [],
-        recent: await listNotes(tx, { siteId: site.id, limit: 5 }),
+        shiftNotes:
+          showNotes && current
+            ? await listNotes(tx, { siteId: site.id, from: current.startsAt, limit: 100 })
+            : [],
+        recent: showNotes ? await listNotes(tx, { siteId: site.id, limit: 5 }) : [],
         counts: await countResidents(tx),
         emergencies: permissions.has("emergencies.manage")
           ? (await listEmergencies(tx, { siteId: site.id, limit: 10 })).filter(
@@ -283,7 +289,7 @@ export default async function HomePage() {
           <span className="first-letter:uppercase">{formatLongDate(now, site.timezone)}</span>
         </p>
       </div>
-      {canRead ? (
+      {showNotes ? (
         <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
           {permissions.has("notes.create") ? (
             <Link href="/novedades/nueva" className={buttonClassName({ size: "md" })}>
@@ -437,29 +443,33 @@ export default async function HomePage() {
           }
           href="/pacientes"
         />
-        <KpiCard
-          icon={ClipboardList}
-          label="En seguimiento"
-          value={String(pending.length)}
-          detail={
-            earlier.length > 0 && current
-              ? `${earlier.length} de turnos anteriores`
-              : "Ver pendientes"
-          }
-          href="/novedades?ver=pendientes"
-          tone={pending.length > 0 ? "attention" : "default"}
-        />
-        <KpiCard
-          icon={NotebookPen}
-          label="Novedades del turno"
-          value={String(shiftNotes.length)}
-          detail={
-            lastNote
-              ? `Última ${formatWhen(lastNote.createdAt, now, site.timezone)}`
-              : "Ninguna todavía"
-          }
-          href="/novedades?ver=todas"
-        />
+        {showNotes ? (
+          <>
+            <KpiCard
+              icon={ClipboardList}
+              label="En seguimiento"
+              value={String(pending.length)}
+              detail={
+                earlier.length > 0 && current
+                  ? `${earlier.length} de turnos anteriores`
+                  : "Ver pendientes"
+              }
+              href="/novedades?ver=pendientes"
+              tone={pending.length > 0 ? "attention" : "default"}
+            />
+            <KpiCard
+              icon={NotebookPen}
+              label="Novedades del turno"
+              value={String(shiftNotes.length)}
+              detail={
+                lastNote
+                  ? `Última ${formatWhen(lastNote.createdAt, now, site.timezone)}`
+                  : "Ninguna todavía"
+              }
+              href="/novedades?ver=todas"
+            />
+          </>
+        ) : null}
         {present ? (
           <KpiCard
             icon={UserRound}
@@ -500,23 +510,33 @@ export default async function HomePage() {
           <CardHeader
             id="tareas"
             title="Tareas del turno"
-            description="Ordenadas por urgencia. Tocá una para abrirla."
+            description={
+              showNotes
+                ? "Ordenadas por urgencia. Tocá una para abrirla."
+                : "Emergencias en curso. Tocá una para abrirla."
+            }
             action={handoverAction}
           />
           <div className="divide-y">
-            <TaskBand title="Ahora" hint="emergencias y entrega" items={nowTasks} />
-            {current ? (
+            <TaskBand
+              title="Ahora"
+              hint={canHandover ? "emergencias y entrega" : "emergencias"}
+              items={nowTasks}
+            />
+            {showNotes && current ? (
               <TaskBand
                 title="De este turno"
                 hint="pendientes abiertos"
                 items={thisShift.slice(0, 6).map(noteTask)}
               />
             ) : null}
-            <TaskBand
-              title={current ? "De turnos anteriores" : "Pendientes"}
-              hint="siguen abiertos"
-              items={earlier.slice(0, 6).map(noteTask)}
-            />
+            {showNotes ? (
+              <TaskBand
+                title={current ? "De turnos anteriores" : "Pendientes"}
+                hint="siguen abiertos"
+                items={earlier.slice(0, 6).map(noteTask)}
+              />
+            ) : null}
           </div>
           {pending.length > 12 ? (
             <div className="border-t px-5 py-3">
@@ -566,7 +586,7 @@ export default async function HomePage() {
                     <CalendarDays aria-hidden="true" className="size-4" />
                     No hay nada agendado para los próximos 30 días.
                   </p>
-                  {isNavHidden("especialidades") ? null : (
+                  {isSectionHidden("especialidades") ? null : (
                     <Link
                       href="/especialidades"
                       className="font-medium text-primary-ink underline-offset-4 hover:underline"
@@ -621,39 +641,41 @@ export default async function HomePage() {
             </Card>
           ) : null}
 
-          <Card aria-labelledby="recientes">
-            <CardHeader id="recientes" title="Novedades recientes" />
-            {recent.length === 0 ? (
-              <p className="px-5 py-4 text-sm text-muted-foreground">Todavía no hay novedades.</p>
-            ) : (
-              <ul className="divide-y">
-                {recent.map((note) => (
-                  <li key={note.id}>
-                    <Link
-                      href={`/novedades/${note.id}` as Route}
-                      className="flex flex-col gap-0.5 px-5 py-3 hover:bg-muted/60"
-                    >
-                      <span className="line-clamp-2 text-[15px]">
-                        {note.residentFirstName && note.residentLastName ? (
-                          <b className="font-semibold">
-                            {fullName({
-                              firstName: note.residentFirstName,
-                              lastName: note.residentLastName,
-                            })}
-                            :{" "}
-                          </b>
-                        ) : null}
-                        {note.content}
-                      </span>
-                      <span className="text-[13px] text-muted-foreground">
-                        {note.categoryName} · {formatWhen(note.createdAt, now, site.timezone)}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
+          {showNotes ? (
+            <Card aria-labelledby="recientes">
+              <CardHeader id="recientes" title="Novedades recientes" />
+              {recent.length === 0 ? (
+                <p className="px-5 py-4 text-sm text-muted-foreground">Todavía no hay novedades.</p>
+              ) : (
+                <ul className="divide-y">
+                  {recent.map((note) => (
+                    <li key={note.id}>
+                      <Link
+                        href={`/novedades/${note.id}` as Route}
+                        className="flex flex-col gap-0.5 px-5 py-3 hover:bg-muted/60"
+                      >
+                        <span className="line-clamp-2 text-[15px]">
+                          {note.residentFirstName && note.residentLastName ? (
+                            <b className="font-semibold">
+                              {fullName({
+                                firstName: note.residentFirstName,
+                                lastName: note.residentLastName,
+                              })}
+                              :{" "}
+                            </b>
+                          ) : null}
+                          {note.content}
+                        </span>
+                        <span className="text-[13px] text-muted-foreground">
+                          {note.categoryName} · {formatWhen(note.createdAt, now, site.timezone)}
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Card>
+          ) : null}
         </div>
       </div>
 

@@ -8,6 +8,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { listDocumentTypes, listModules, listNoteCategories } from "@/features/settings/queries";
 import { listPaymentMethods } from "@/features/fees/queries";
 import { inTenant } from "@/lib/actions";
+import { isSectionHidden } from "@/lib/navigation/hidden";
 import { requirePermission } from "@/lib/auth/authorization";
 import { getSiteContext } from "@/lib/site/server";
 import { formatTimeOfDay } from "@/lib/time/zoned";
@@ -48,7 +49,7 @@ export default async function SettingsPage() {
         site.medicalControlText
           ? `Control médico ${site.medicalControlText.toLocaleLowerCase("es-AR")}`
           : null,
-        `Aviso del abono ${site.feeReminderDaysBefore} días antes`,
+        enabled.has("fees") ? `Aviso del abono ${site.feeReminderDaysBefore} días antes` : null,
       ]
         .filter(Boolean)
         .join(" · "),
@@ -69,14 +70,18 @@ export default async function SettingsPage() {
       title: "Asistencia con QR",
       summary: "El QR de la entrada para registrar la llegada y la salida del personal",
     },
-    {
-      href: "/configuracion/categorias",
-      title: "Categorías de novedades",
-      summary: categories
-        .filter((category) => category.active)
-        .map((category) => category.name)
-        .join(" · "),
-    },
+    ...(isSectionHidden("novedades")
+      ? []
+      : [
+          {
+            href: "/configuracion/categorias" as Route,
+            title: "Categorías de novedades",
+            summary: categories
+              .filter((category) => category.active)
+              .map((category) => category.name)
+              .join(" · "),
+          },
+        ]),
     {
       href: "/configuracion/documentos",
       title: "Documentos del legajo",

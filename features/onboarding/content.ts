@@ -1,4 +1,5 @@
 import type { PermissionKey } from "@/lib/auth/permissions";
+import { isSectionHidden } from "@/lib/navigation/hidden";
 
 /*
  * Textos de la guía de uso (onboarding). Cada paso y cada consejo aparece
@@ -33,7 +34,7 @@ export const WELCOME_STEPS: readonly WelcomeStep[] = [
     key: "inicio",
     icon: "home",
     title: "Te damos la bienvenida",
-    body: "Acá se registra el día a día de la residencia: pacientes, novedades y el traspaso de turno. En un minuto te mostramos lo principal.",
+    body: "Acá se registra el día a día de la residencia. En un minuto te mostramos lo principal.",
   },
   {
     key: "pacientes",
@@ -94,7 +95,9 @@ export const WELCOME_STEPS: readonly WelcomeStep[] = [
 
 export function welcomeStepsFor(permissions: ReadonlySet<PermissionKey>): WelcomeStep[] {
   return WELCOME_STEPS.filter(
-    (step) => !step.anyOf || step.anyOf.some((permission) => permissions.has(permission)),
+    (step) =>
+      !isSectionHidden(step.key) &&
+      (!step.anyOf || step.anyOf.some((permission) => permissions.has(permission))),
   );
 }
 

@@ -134,12 +134,11 @@ test("Asistente ve la ficha, pero no edita ni hace ingresos", async ({ page, bro
   await expect(marta.getByRole("link", { name: "Editar datos" })).toHaveCount(0);
   await expect(marta.getByLabel("Alergia a")).toHaveCount(0);
 
-  // Tampoco carga novedades ni hace el traspaso de turno (docs/decisions/0021).
+  // Tampoco hace el traspaso de turno (docs/decisions/0021).
   for (const path of [
     `${new URL(ficha).pathname}/editar`,
     "/ingresos/nuevo",
     "/ingresos",
-    "/novedades/nueva",
     "/turno",
     "/turno/historial",
   ]) {
