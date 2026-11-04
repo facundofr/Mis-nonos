@@ -16,6 +16,7 @@ import type { Metadata, Route } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 
+import { isNavHidden } from "@/components/layout/nav-items";
 import { buttonClassName } from "@/components/ui/button";
 import { Card, CardHeader } from "@/components/ui/card";
 import { Notice } from "@/components/ui/notice";
@@ -205,7 +206,10 @@ export default async function HomePage() {
   const canCare = permissions.has("care.read");
   const canStaff = permissions.has("staff.read");
   // Asistente no hace el traspaso: sin enlaces a /turno (docs/decisions/0021).
-  const canHandover = permissions.has("handover.deliver") || permissions.has("handover.confirm");
+  // Con el traspaso oculto del menú, Inicio tampoco lo enlaza.
+  const canHandover =
+    !isNavHidden("turno") &&
+    (permissions.has("handover.deliver") || permissions.has("handover.confirm"));
 
   const data = canRead
     ? await inTenant(context, async (tx) => ({
@@ -562,12 +566,14 @@ export default async function HomePage() {
                     <CalendarDays aria-hidden="true" className="size-4" />
                     No hay nada agendado para los próximos 30 días.
                   </p>
-                  <Link
-                    href="/especialidades"
-                    className="font-medium text-primary-ink underline-offset-4 hover:underline"
-                  >
-                    Gestionar en Especialidades
-                  </Link>
+                  {isNavHidden("especialidades") ? null : (
+                    <Link
+                      href="/especialidades"
+                      className="font-medium text-primary-ink underline-offset-4 hover:underline"
+                    >
+                      Gestionar en Especialidades
+                    </Link>
+                  )}
                 </div>
               ) : (
                 <ul className="divide-y">
